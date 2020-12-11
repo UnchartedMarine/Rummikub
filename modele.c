@@ -1,40 +1,16 @@
 /******************************************
  * Modele
  ******************************************/
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
-#define NOMBRE_TUILES 106
-
-typedef struct TUILE 
-{	
-	int num,coul;
-} TUILE;
-
-TUILE pioche[NOMBRE_TUILES];
-
-void init_pioche();
-void init_tuiles();
-void melange_pioche(TUILE* pioche);
-void lit_pioche(TUILE* pioche);
+#include "header.h" 
 
 
-int main()
-{   
-	srand(time(NULL));
 
-	init_pioche();
-	return 0;
-}
-
-
+// les fonctions sur la mise ne place du jeu:
 void init_pioche()
 {
 	init_tuiles();
 	melange_pioche(pioche);
-	lit_pioche(pioche);
+	//lit_pioche(pioche);
 }
 
 
@@ -79,8 +55,7 @@ void melange_pioche(TUILE* pioche) // 100 mélanges ça me paraît pas mal
 }
 
 
-
-void lit_pioche(TUILE* pioche)
+void lit_pioche(TUILE *pioche)
 {
 	int i;
 
@@ -91,17 +66,55 @@ void lit_pioche(TUILE* pioche)
 }
 
 
+void init_main(LISTE *liste,int *niveauPioche)
+{
+	int i=*niveauPioche+6;	
+
+	for(*niveauPioche;(*niveauPioche)<i;(*niveauPioche)++)
+	{
+		ajoute_liste(liste,pioche[*niveauPioche]);
+	}
+}
 
 
 
+// les fonctions sur les listes:
+LISTE * cree_liste()
+{
+	MAIN *main = (MAIN*) malloc(sizeof(MAIN));
+	LISTE *liste = (LISTE*) malloc(sizeof(LISTE));
+
+	main->tuile.num = NULL;
+	main->tuile.coul = NULL;
+	main->suivant = NULL;
+	
+	liste->premier=main;
+
+	return liste;
+}
 
 
+void ajoute_liste(LISTE *liste,TUILE tuile)
+{
+	MAIN *nouveau = malloc(sizeof(*nouveau));
+
+	nouveau->tuile=tuile;
+	nouveau->suivant=liste->premier;
+
+	liste->premier=nouveau;
+}
 
 
+void lit_liste(LISTE *liste)
+{
+	MAIN *tuileMain=liste->premier;
 
-
-
-
+	while(tuileMain != NULL)
+	{
+		printf("%d;%d\n",tuileMain->tuile.num,tuileMain->tuile.coul);	
+		tuileMain=tuileMain->suivant;			
+	}
+}
 
 
 
