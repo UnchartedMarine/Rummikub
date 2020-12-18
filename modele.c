@@ -117,6 +117,64 @@ void lit_liste(LISTE *liste)
 }
 
 
+int nb_elements_liste(LISTE *liste)
+{
+	MAIN *tuileMain=liste->premier;
+	int nombreElements=0;
+
+	while(tuileMain != NULL)
+	{
+		nombreElements = nombreElements +1;
+		tuileMain=tuileMain->suivant;			
+	}
+	return nombreElements
+}
+
+//On considère que le premier élément d'une liste est l'élément 1
+//position ici est la position à laquelle on souhaite placer la tuile dans la suite
+void placement_tuile_plateau(LISTE *liste, TUILE tuile, int position)
+{
+	MAIN *tuileAvant=liste->premier;
+	MAIN *nouveau = malloc(sizeof(*nouveau));
+	int i;
+
+	nouveau->tuile=tuile;
+	
+	if(position==1){
+		ajoute_liste(liste,tuile);
+	}
+	else{
+		for(i=1;i<position-1;i++){
+			tuileAvant=tuileAvant->suivant;
+		}
+
+		nouveau->suivant=tuileAvant->suivant;
+		tuileAvant->suivant=nouveau;
+	}
+}
+
+//On considère ici que la position c'est l'endroit de coupe soit l'element à cette position sera le premier élément de la seconde liste, que l'on va créer
+LISTE * separer_liste_en_deux(LISTE *liste, int position){
+	MAIN *tuileAvant=liste->premier;
+	int i;
+
+	for(i=1;i<position-1;i++){
+		tuileAvant=tuileAvant->suivant;
+	}
+	
+	//Creation nouvelle liste a partir de l element demande
+	LISTE *liste2 = (LISTE*) malloc(sizeof(LISTE));
+	liste2->premier=tuileAvant->suivant;
+
+	//Remplacer la tuile suivante de la derniere tuile de la suite 1 par la tuile vide (null)
+	MAIN *derniereTuile = (MAIN*) malloc(sizeof(MAIN));
+	derniereTuile->tuile.num = NULL;
+	derniereTuile->tuile.coul = NULL;
+	derniereTuile->suivant = NULL;
+	tuileAvant->suivant=derniereTuile;
+
+	return liste2;
+}
 
 
 
