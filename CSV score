@@ -9,6 +9,4 @@ void rentrer_nom_score(int score, char nom)
         fputs("nom;score", fichier);
         fclose(fichier);
     }
- 
-    return 0;
 }
