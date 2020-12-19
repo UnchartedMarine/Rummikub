@@ -42,7 +42,7 @@ LISTE * cree_liste();
 void ajoute_liste(LISTE *liste,TUILE tuile);
 void lit_liste(LISTE *liste);
 int nb_elements_liste(LISTE *liste);
-void placement_tuile_liste(LISTE *liste, TUILE tuile, int position);
+int placement_tuile_liste(LISTE *liste, TUILE tuile, int position);
 LISTE * separer_liste_en_deux(LISTE *liste, int position);
 bool est_valide(LISTE *liste);
 
