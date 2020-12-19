@@ -4,7 +4,7 @@ int main(char nom)
     char caractereActuel ;
     int score;
  
-    fichier = fopen("test.txt", "r");
+    fichier = fopen("tab_score", "r");
  
     if (fichier != NULL)
     {
