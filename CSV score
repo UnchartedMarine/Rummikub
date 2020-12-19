@@ -6,7 +6,7 @@ int main(int score, char nom)
  
     if (fichier != NULL)
     {
-        fputs("nom ; score", fichier);
+        fputs("nom;score", fichier);
         fclose(fichier);
     }
  
