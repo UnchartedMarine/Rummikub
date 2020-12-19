@@ -116,7 +116,6 @@ void lit_liste(LISTE *liste)
 	}
 }
 
-
 int nb_elements_liste(LISTE *liste)
 {
 	MAIN *tuileMain=liste->premier;
@@ -132,8 +131,12 @@ int nb_elements_liste(LISTE *liste)
 
 //On considère que le premier élément d'une liste est l'élément 1
 //position ici est la position à laquelle on souhaite placer la tuile dans la suite
-void placement_tuile_plateau(LISTE *liste, TUILE tuile, int position)
+int placement_tuile_liste(LISTE *liste, TUILE tuile, int position)
 {
+	if(position > nb_elements_liste(liste)){
+		return 1;
+	}
+
 	MAIN *tuileAvant=liste->premier;
 	MAIN *nouveau = malloc(sizeof(*nouveau));
 	int i;
@@ -151,6 +154,7 @@ void placement_tuile_plateau(LISTE *liste, TUILE tuile, int position)
 		nouveau->suivant=tuileAvant->suivant;
 		tuileAvant->suivant=nouveau;
 	}
+	return 0;
 }
 
 //On considère ici que la position c'est l'endroit de coupe soit l'element à cette position sera le premier élément de la seconde liste, que l'on va créer
@@ -183,25 +187,29 @@ bool est_valide(LISTE *liste){
 	int i,j;
 	int typeListe;
 	int couleursVues[4];
+	int numRepete;
 
-	if(tuileVerif->tuile.num == tuileVerifSuivante->tuile.num -1){
+	
+	if((tuileVerif->tuile.num == tuileVerifSuivante->tuile.num-1) && (tuileVerif->tuile.coul == tuileVerifSuivante->tuile.coul)){
 		typeListe=1;
 		tuileVerif = tuileVerif->suivant;
 		tuileVerifSuivante = tuileVerifSuivante->suivant;
 	}
-	else if(tuileVerif->tuile.coul != tuileVerifSuivante->tuile.coul){
+	else if((tuileVerif->tuile.coul != tuileVerifSuivante->tuile.coul) && (tuileVerif->tuile.num == tuileVerifSuivante->tuile.num)){
 		typeListe=2;	
 		couleursVues[0] = tuileVerif->tuile.coul;
 		couleursVues[1] = tuileVerifSuivante->tuile.coul;
 		tuileVerif = tuileVerifSuivante->suivant;
+		numRepete = tuileVerif->tuile.num;
 	}
 	else{
 		return false;
 	}
+	
 
 	if (typeListe == 1){
 		for(i=2;i<tailleListe;i++){
-			if(tuileVerif->tuile.num == tuileVerifSuivante->tuile.num -1){
+			if((tuileVerif->tuile.num == tuileVerifSuivante->tuile.num-1) && (tuileVerif->tuile.coul == tuileVerifSuivante->tuile.coul)){
 				tuileVerif = tuileVerif->suivant;
 				tuileVerifSuivante = tuileVerifSuivante->suivant;
 			}
@@ -212,13 +220,18 @@ bool est_valide(LISTE *liste){
 	}
 	else{
 		for(i=2;i<tailleListe;i++){
-			for(j=0;j<4;j++){
-				if(couleursVues[j] == tuileVerif->tuile.coul){
-					return false;
-				}			
+			if(tuileVerif->tuile.num == numRepete){
+				for(j=0;j<4;j++){
+					if(couleursVues[j] == tuileVerif->tuile.coul){
+						return false;
+					}			
+				}
+				couleursVues[i] = tuileVerif->tuile.coul;
+				tuileVerif = tuileVerif->suivant;
 			}
-			couleursVues[i] = tuileVerif->tuile.coul;
-			tuileVerif = tuileVerif->suivant;
+			else{
+				return false;
+			}
 		}
 	}
 
