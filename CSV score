@@ -1,4 +1,4 @@
-int main(int score, char nom)
+void rentrer_nom_score(int score, char nom)
 {
     FILE fichier = NULL;
  
