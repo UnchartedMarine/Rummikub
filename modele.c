@@ -179,7 +179,7 @@ LISTE * separer_liste_en_deux(LISTE *liste, int position){
 bool est_valide(LISTE *liste){
 	MAIN *tuileVerif = liste->premier;
 	MAIN *tuileVerifSuivante = tuileVerif->suivant;
-	int tailleListe = nb_elements_liste();
+	int tailleListe = nb_elements_liste(liste);
 	int i,j;
 	int typeListe;
 	int couleursVues[4];
