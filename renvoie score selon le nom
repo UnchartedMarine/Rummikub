@@ -1,4 +1,4 @@
-int main(char nom)
+int score(char nom)
 {
     FILE* fichier = NULL;
     char caractereActuel ;
@@ -10,7 +10,7 @@ int main(char nom)
     {
         while(caractereActuel !=nom)
         {
-            fscanf(fichier, "%c;%d", &caractereActuel, &score);
+            fscanf(fichier, "%s;%d", &caractereActuel, &score);
         }
         printf("%d", score);
         fclose(fichier);
