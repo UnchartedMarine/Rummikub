@@ -10,7 +10,7 @@ int main(char nom)
     {
         while(caractereActuel !=nom)
         {
-            fscanf(fichier, "%c;%d", &char, &score);
+            fscanf(fichier, "%c;%d", &caractereActuel, &score);
         }
         printf("%d", score);
         fclose(fichier);
