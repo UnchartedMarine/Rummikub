@@ -134,7 +134,7 @@ int nb_elements_liste(LISTE *liste)
 int placement_tuile_liste(LISTE *liste, TUILE tuile, int position)
 {
 	if(position > nb_elements_liste(liste)){
-		return 1;
+		return 0;
 	}
 
 	MAIN *tuileAvant=liste->premier;
@@ -154,7 +154,7 @@ int placement_tuile_liste(LISTE *liste, TUILE tuile, int position)
 		nouveau->suivant=tuileAvant->suivant;
 		tuileAvant->suivant=nouveau;
 	}
-	return 0;
+	return 1;
 }
 
 //On considère ici que la position c'est l'endroit de coupe soit l'element à cette position sera le premier élément de la seconde liste, que l'on va créer
