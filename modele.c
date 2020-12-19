@@ -127,7 +127,7 @@ int nb_elements_liste(LISTE *liste)
 		nombreElements = nombreElements +1;
 		tuileMain=tuileMain->suivant;			
 	}
-	return nombreElements
+	return nombreElements -1;
 }
 
 //On considère que le premier élément d'une liste est l'élément 1
@@ -174,6 +174,55 @@ LISTE * separer_liste_en_deux(LISTE *liste, int position){
 	tuileAvant->suivant=derniereTuile;
 
 	return liste2;
+}
+
+bool est_valide(LISTE *liste){
+	MAIN *tuileVerif = liste->premier;
+	MAIN *tuileVerifSuivante = tuileVerif->suivant;
+	int tailleListe = nb_elements_liste();
+	int i,j;
+	int typeListe;
+	int couleursVues[4];
+
+	if(tuileVerif->tuile.num == tuileVerifSuivante->tuile.num -1){
+		typeListe=1;
+		tuileVerif = tuileVerif->suivant;
+		tuileVerifSuivante = tuileVerifSuivante->suivant;
+	}
+	else if(tuileVerif->tuile.coul != tuileVerifSuivante->tuile.coul){
+		typeListe=2;	
+		couleursVues[0] = tuileVerif->tuile.coul;
+		couleursVues[1] = tuileVerifSuivante->tuile.coul;
+		tuileVerif = tuileVerifSuivante->suivant;
+	}
+	else{
+		return false;
+	}
+
+	if (typeListe == 1){
+		for(i=2;i<tailleListe;i++){
+			if(tuileVerif->tuile.num == tuileVerifSuivante->tuile.num -1){
+				tuileVerif = tuileVerif->suivant;
+				tuileVerifSuivante = tuileVerifSuivante->suivant;
+			}
+			else{
+				return false;
+			}
+		}
+	}
+	else{
+		for(i=2;i<tailleListe;i++){
+			for(j=0;j<4;j++){
+				if(couleursVues[j] == tuileVerif->tuile.coul){
+					return false;
+				}			
+			}
+			couleursVues[i] = tuileVerif->tuile.coul;
+			tuileVerif = tuileVerif->suivant;
+		}
+	}
+
+	return true;
 }
 
 
