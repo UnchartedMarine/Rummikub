@@ -159,6 +159,7 @@ int placement_tuile_liste(LISTE *liste, TUILE tuile, int position)
 		//la tuile qui la précède change son attribut suivant pour pointer la nouvelle tuile.
 		tuileAvant->suivant=nouveau;
 	}
+	//Ici 1 indique que la fonction a réussie à placer la tuile dans la liste.
 	return 1;
 }
 
@@ -186,20 +187,28 @@ LISTE * separer_liste_en_deux(LISTE *liste, int position){
 }
 
 bool est_valide(LISTE *liste){
+	//tuileVerif est la tuile courante à vérifier et tuileVerifSuivante la tuile suivante de la tuile courante.
 	MAIN *tuileVerif = liste->premier;
 	MAIN *tuileVerifSuivante = tuileVerif->suivant;
 	int tailleListe = nb_elements_liste(liste);
 	int i,j;
+	
+	//typeListe permet de savoir à partir des deux premières tuiles de la liste fournie si l'on va traiter une suite de numéros ou une suite de tuile de même numéro et de couleurs différentes.
 	int typeListe;
+	
+	//couleursVues est un tableau qui accueille les couleurs des tuiles rencontrées dans la suite de numéros similaires
 	int couleursVues[4];
+	
+	//numRepete permet de savoir dans une suite de mêmes numéros et de couleurs différentes si le numéro de toutes les tuiles est le même.
 	int numRepete;
 
-	
+	//Si les deux premières tuiles ont des numéros qui se suivent et la même couleur.
 	if((tuileVerif->tuile.num == tuileVerifSuivante->tuile.num-1) && (tuileVerif->tuile.coul == tuileVerifSuivante->tuile.coul)){
 		typeListe=1;
 		tuileVerif = tuileVerif->suivant;
 		tuileVerifSuivante = tuileVerifSuivante->suivant;
 	}
+	//Si les deux premières tuiles ont des couleurs différentes mais le même numéro
 	else if((tuileVerif->tuile.coul != tuileVerifSuivante->tuile.coul) && (tuileVerif->tuile.num == tuileVerifSuivante->tuile.num)){
 		typeListe=2;	
 		couleursVues[0] = tuileVerif->tuile.coul;
@@ -207,39 +216,50 @@ bool est_valide(LISTE *liste){
 		tuileVerif = tuileVerifSuivante->suivant;
 		numRepete = tuileVerif->tuile.num;
 	}
+	//Sinon la suite n'est déja pas valide 
 	else{
 		return false;
 	}
 	
-
+	//Si typeListe est égal à 1 c'est une suite de tuiles de numéros qui se suivent et de même couleur.
 	if (typeListe == 1){
+		//Parcours du reste de la suite
 		for(i=2;i<tailleListe;i++){
+			//Si les deux tuiles courantes ont des numéros qui se suivent et la même couleur.
 			if((tuileVerif->tuile.num == tuileVerifSuivante->tuile.num-1) && (tuileVerif->tuile.coul == tuileVerifSuivante->tuile.coul)){
 				tuileVerif = tuileVerif->suivant;
 				tuileVerifSuivante = tuileVerifSuivante->suivant;
 			}
+			//Sinon on s'arrete et on renvoie que la suite n'est pas valide
 			else{
 				return false;
 			}
 		}
 	}
+	//Sinon c'est une suite de tuiles de même numéro et de couleurs différentes.
 	else{
+		//Parcours du reste de la suite
 		for(i=2;i<tailleListe;i++){
+			//Si le numéro de la tuile courante est le même que celui du reste de la suite
 			if(tuileVerif->tuile.num == numRepete){
+				//Parcours des couleurs déjà rencontrées
 				for(j=0;j<4;j++){
+					//Si la couleur de la tuile courante est retrouvée dans le tableau des couleurs déjà vues dans la suite alors la suite n'est pas valide
 					if(couleursVues[j] == tuileVerif->tuile.coul){
 						return false;
 					}			
 				}
+				//Ajout de la couleur de la tuile courante qui est valide par rapport au début de la suite
 				couleursVues[i] = tuileVerif->tuile.coul;
 				tuileVerif = tuileVerif->suivant;
 			}
+			//Sinon la liste n'est pas valide
 			else{
 				return false;
 			}
 		}
 	}
-
+	//La suite est valide
 	return true;
 }
 
