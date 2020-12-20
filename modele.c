@@ -116,6 +116,7 @@ void lit_liste(LISTE *liste)
 	}
 }
 
+//Permet de connaitre la taille d'une liste ou suite dans le jeu, en faisant abstraction de la tuile de fin dont la couleur et le numéro vallent NULL.
 int nb_elements_liste(LISTE *liste)
 {
 	MAIN *tuileMain=liste->premier;
@@ -137,21 +138,25 @@ int placement_tuile_liste(LISTE *liste, TUILE tuile, int position)
 		return 0;
 	}
 
-	MAIN *tuileAvant=liste->premier;
-	MAIN *nouveau = malloc(sizeof(*nouveau));
-	int i;
-
-	nouveau->tuile=tuile;
-	
 	if(position==1){
 		ajoute_liste(liste,tuile);
 	}
 	else{
+		//On créer un type MAIN pour la tuile fournie en paramètres afin de la placer dans la liste qui est composés d'éléments de type MAIN.
+		MAIN *tuileAvant=liste->premier;
+		MAIN *nouveau = malloc(sizeof(*nouveau));
+		int i;
+		nouveau->tuile=tuile;
+		
+		//On parcourt la liste jusqu'à obtenir la tuile dont la position est celle qui précède la position où la tuile va être ajoutée.
 		for(i=1;i<position-1;i++){
 			tuileAvant=tuileAvant->suivant;
 		}
-
+		
+		//La nouvelle tuile pointe la tuile suivante de la tuile qui la précède dorénavant.
 		nouveau->suivant=tuileAvant->suivant;
+		
+		//la tuile qui la précède change son attribut suivant pour pointer la nouvelle tuile.
 		tuileAvant->suivant=nouveau;
 	}
 	return 1;
@@ -170,7 +175,7 @@ LISTE * separer_liste_en_deux(LISTE *liste, int position){
 	LISTE *liste2 = (LISTE*) malloc(sizeof(LISTE));
 	liste2->premier=tuileAvant->suivant;
 
-	//Remplacer la tuile suivante de la derniere tuile de la suite 1 par la tuile vide (null)
+	//Remplacer la tuile suivante de la derniere tuile de la suite 1 par la tuile vide (dont le numero et la couleur sont NULL)
 	MAIN *derniereTuile = (MAIN*) malloc(sizeof(MAIN));
 	derniereTuile->tuile.num = NULL;
 	derniereTuile->tuile.coul = NULL;
