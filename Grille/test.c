@@ -46,7 +46,7 @@ void quit(SDL_Window** fenetre,SDL_Renderer** renderer,erreur err)
 	exit(err);
 }
 
-void affiche_grille(SDL_DisplayMode DM,SDL_Renderer** renderer)
+void affiche_grille(SDL_Window** fenetre,SDL_Renderer** renderer,SDL_DisplayMode DM)
 {
 	int largeur = (int)((float)DM.w * G_RATIO);
 	int hauteur = (int)((float)DM.h * G_RATIO);
@@ -54,22 +54,69 @@ void affiche_grille(SDL_DisplayMode DM,SDL_Renderer** renderer)
 	float x=DM.w * (1.0 - G_RATIO)/2;
 	float y=DM.h * (1.0 - G_RATIO)/2;
 	SDL_Point depart ={x,y};
-	int i,j;
 	SDL_Rect rect = {depart.x,depart.y,largeur,hauteur};
 	SDL_SetRenderDrawColor(*renderer,orange.r,orange.g,orange.b,orange.a);
-	SDL_RenderDrawRect(*renderer,&rect);
-	for(i=0;i<hauteur;i++)
+	/*if( SDL_RenderDrawRect(*renderer,&rect) != 0 )
 	{
-		for(j=0;j<largeur;j+=150)
-		{
-			//Dessiner ligne verticale a mettre dans une fonction
-			// Faire une autre fonction pour les lignes horizontale
-		}
+		printf("%s", SDL_GetError());
+		quit(fenetre,renderer,E_SDL_DESSIN);
+	}*/
+	if ( affiche_grille_interieur(rect ,renderer) != 0)
+	{
+		printf("%s", SDL_GetError());
+		quit(fenetre,renderer,E_SDL_DESSIN);
 	}
 	SDL_RenderPresent(*renderer);
 }
 
+int affiche_grille_interieur(SDL_Rect rect ,SDL_Renderer** renderer)
+{
+	/*
+		Le rectangle contient toutes les informations de la grille.
+	*/
+	int i,j;
+	Resolution res = {rect.w,rect.h};	
+	int multiplicateur = multiplicateur_taille_image(res);
+	int nbrLigneVertical = (int)((float)rect.w /((float)LARGEURIMAGE * multiplicateur));
+	int nbrLigneHorizontale = (int)((float)rect.h /((float)HAUTEURIMAGE * multiplicateur));
+	int espacementX = (int)((float)rect.w / (float)nbrLigneVertical);
+	int espacementY = (int)((float)rect.h / (float)nbrLigneHorizontale);
+	/*
+	for(i = rect.x;i <= rect.x+rect.w;i += espacementY)
+	{
+		
+		if( SDL_RenderDrawLine(*renderer,i,rect.y,i,rect.y+rect.h) != 0 )
+			return -1;
+	}
+	for(j=rect.y;j<= rect.y+rect.h;j+=espacementX)
+	{
+		if( SDL_RenderDrawLine(*renderer,rect.x,j,rect.x+rect.w,j) != 0 )
+			return -1;
+	}
+	*/
+	int x = rect.x;
+	int y = rect.y;
+	for(i = 0;i <= nbrLigneVertical;i ++)
+	{
+		
+		if( SDL_RenderDrawLine(*renderer,x,rect.y,x,rect.y+rect.h) != 0 )
+			return -1;
+		x+=espacementX;
+	}
+	for(j = 0;j <= nbrLigneHorizontale;j++)
+	{
+		if( SDL_RenderDrawLine(*renderer,rect.x,y,rect.x+rect.w,y) != 0 )
+			return -1;
+		y+=espacementY;
+	}
+	return 0;
+}
 
+float multiplicateur_taille_image(Resolution res)
+{
+	// TODO renvoyer le multiplicateur en fonction de la resolution.
+	return 1;
+}
 
 int main (int argc, char *argv[]) {
 
@@ -80,8 +127,8 @@ int main (int argc, char *argv[]) {
 	renderer = NULL;
 	SDL_DisplayMode DM;
 	init(&fenetre,&renderer,&DM);
-	affiche_grille(DM,&renderer);
-	SDL_Delay(5000);
+	affiche_grille(&fenetre,&renderer,DM);
+	SDL_Delay(10000);
 	quit(&fenetre,&renderer,OK);
 
 
