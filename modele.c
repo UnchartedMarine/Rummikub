@@ -116,7 +116,7 @@ void lit_liste(LISTE *liste)
 	}
 }
 
-//Permet de connaitre la taille d'une liste ou suite dans le jeu, en faisant abstraction de la tuile de fin dont la couleur et le numéro vallent NULL.
+//Renvoie la taille d'une liste ou suite dans le jeu, en faisant abstraction de la tuile de fin dont la couleur et le numéro vallent NULL.
 int nb_elements_liste(LISTE *liste)
 {
 	MAIN *tuileMain=liste->premier;
@@ -130,6 +130,7 @@ int nb_elements_liste(LISTE *liste)
 	return nombreElements -1;
 }
 
+//Renvoie 0 si le placement n'a pas été réalisé; 1 si le placement est un succès.
 //On considère que le premier élément d'une liste est l'élément 1
 //position ici est la position à laquelle on souhaite placer la tuile dans la suite
 int placement_tuile_liste(LISTE *liste, TUILE tuile, int position)
@@ -163,6 +164,7 @@ int placement_tuile_liste(LISTE *liste, TUILE tuile, int position)
 	return 1;
 }
 
+//Renvoie la liste créée; la première liste en paramètres a été modifiée
 //On considère ici que la position c'est l'endroit de coupe soit l'element à cette position sera le premier élément de la seconde liste, que l'on va créer
 LISTE * separer_liste_en_deux(LISTE *liste, int position){
 	MAIN *tuileAvant=liste->premier;
@@ -186,6 +188,7 @@ LISTE * separer_liste_en_deux(LISTE *liste, int position){
 	return liste2;
 }
 
+//Renvoie un booléen pour dire si la suite est valide: false(0) si la suite n'est pas valide, true(1) si elle est valide.
 bool est_valide(LISTE *liste){
 	//tuileVerif est la tuile courante à vérifier et tuileVerifSuivante la tuile suivante de la tuile courante.
 	MAIN *tuileVerif = liste->premier;
