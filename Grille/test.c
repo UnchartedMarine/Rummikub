@@ -75,12 +75,13 @@ int affiche_grille_interieur(SDL_Rect rect ,SDL_Renderer** renderer)
 		Le rectangle contient toutes les informations de la grille.
 	*/
 	int i,j;
-	Resolution res = {rect.w,rect.h};	
-	int multiplicateur = multiplicateur_taille_image(res);
-	int nbrLigneVertical = (int)((float)rect.w /((float)LARGEURIMAGE * multiplicateur));
-	int nbrLigneHorizontale = (int)((float)rect.h /((float)HAUTEURIMAGE * multiplicateur));
-	int espacementX = (int)((float)rect.w / (float)nbrLigneVertical);
-	int espacementY = (int)((float)rect.h / (float)nbrLigneHorizontale);
+	//Resolution res = {(int)(rect.w*(5.0/4)),(int)(rect.h*(5.0/4))};	
+	//float multiplicateur = multiplicateur_taille_image(res);
+	//printf("X %d\n",multiplicateur);
+	//int nbrLigneVertical = (int)((float)rect.w /((float)LARGEURIMAGE * multiplicateur));
+	//int nbrLigneHorizontale = (int)((float)rect.h /((float)HAUTEURIMAGE * multiplicateur));
+	int espacementX = (int)((float)rect.w / (float)GRILLELARGEUR);
+	int espacementY = (int)((float)rect.h / (float)GRILLEHAUTEUR);
 	/*
 	for(i = rect.x;i <= rect.x+rect.w;i += espacementY)
 	{
@@ -94,30 +95,49 @@ int affiche_grille_interieur(SDL_Rect rect ,SDL_Renderer** renderer)
 			return -1;
 	}
 	*/
+	//printf("%d %d \n",espacementX,espacementY);
 	int x = rect.x;
 	int y = rect.y;
-	for(i = 0;i <= nbrLigneVertical;i ++)
+	for(i = 0;i <= GRILLELARGEUR;i ++)
 	{
 		
-		if( SDL_RenderDrawLine(*renderer,x,rect.y,x,rect.y+rect.h) != 0 )
+		if( SDL_RenderDrawLine(*renderer,x,rect.y,x,rect.y+GRILLEHAUTEUR * espacementY) != 0 )
 			return -1;
 		x+=espacementX;
+		printf("%d\n",x );
 	}
-	for(j = 0;j <= nbrLigneHorizontale;j++)
+	for(j = 0;j <= GRILLEHAUTEUR;j++)
 	{
-		if( SDL_RenderDrawLine(*renderer,rect.x,y,rect.x+rect.w,y) != 0 )
+		if( SDL_RenderDrawLine(*renderer,rect.x,y,rect.x+GRILLELARGEUR * espacementX,y) != 0 )
 			return -1;
 		y+=espacementY;
 	}
 	return 0;
 }
-
+/*
 float multiplicateur_taille_image(Resolution res)
 {
 	// TODO renvoyer le multiplicateur en fonction de la resolution.
+	Resolution tabRes[4] = { {800,600},{1280,720},{ 1920,1080 },{ 2560,1440} };
+	//printf("%d %d ,,,,, %d %d \n ",res.largeur,res.hauteur,tabRes[1].largeur,tabRes[1].hauteur);
+	if ( compare_resolution(res, tabRes[0] ) )
+		return 1;
+	else if ( compare_resolution(res, tabRes[1] ) )
+	{
+		return 1.5;
+	}
+	else if ( compare_resolution(res, tabRes[2] ) )
+		return 2.5;
+	else if ( compare_resolution(res, tabRes[3] ) )
+		return 3.5;
 	return 1;
 }
+int compare_resolution(Resolution res1, Resolution res2)
+{
+	return (res1.largeur == res2.largeur) && ( res1.hauteur == res2.hauteur );
 
+}
+*/
 int main (int argc, char *argv[]) {
 
 
