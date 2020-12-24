@@ -55,13 +55,18 @@ void melange_pioche(TUILE* pioche) // 100 mélanges ça me paraît pas mal
 }
 
 
+void lit_tuile(TUILE tuile)
+{
+	printf("Num:%d ; Coul:%d\n",tuile.num,tuile.coul);
+}
+
 void lit_pioche(TUILE *pioche)
 {
 	int i;
 
 	for(i=0;i<NOMBRE_TUILES;i++) 
 	{
-		printf("Num:%d ; Coul:%d\n",pioche[i].num,pioche[i].coul);
+		lit_tuile(pioche[i]);
 	}	
 }
 
@@ -74,6 +79,26 @@ void init_main(LISTE *liste,int *niveauPioche)
 	{
 		ajoute_liste(liste,pioche[*niveauPioche]);
 	}
+}
+
+
+int regarde_qui_commence(int nbJoueurs)  
+/*****si 2 piochent le max le premier commence ? ou il faut retirer ? + problème c'est que ça aide car on peut deviner comment est la pioche et on peut connaître des tuiles de la main des autres*****/
+{
+	int max=-1;	
+	int i,position;
+
+	for(i=0;i<nbJoueurs;i++)
+	{
+		printf("Joueur %d pioche %d\n",i,pioche[i]);
+		
+		if(pioche[i].num>max)
+		{
+			max=pioche[i].num;
+			position=i;		
+		}			
+	}
+	return position;
 }
 
 
@@ -264,6 +289,147 @@ bool est_valide(LISTE *liste){
 	}
 	//La suite est valide
 	return true;
+}
+
+
+
+void lit_tuile_liste(LISTE *liste, int position)  //fonction pour lire la tuile de la liste à la position donnée 
+{
+	if(position>=0 && position<=nb_elements_liste(liste))  //vérifie que position soit bien une position de la liste
+	{
+		MAIN *premiereTuile = liste->premier;
+		for(position;position>0;position--) //boucle qui met à position à 0 afin de savoir quand la position est bonne
+		{
+			premiereTuile = premiereTuile->suivant;
+		}
+		lit_tuile(premiereTuile->tuile);
+	}
+}	
+
+
+int additionne_points_main(LISTE *main)
+{
+	MAIN *tuileMain=main->premier;
+	int points=0;
+
+	while(tuileMain != NULL)
+	{
+		if(tuileMain->tuile.num == 0) //si c'est un joker: 30 points
+			points += 30;
+		else  //sinon les points correspondent au numéro de chaque tuile
+			points += tuileMain->tuile.num;
+		tuileMain=tuileMain->suivant;			
+	}
+	return points;
+}
+
+
+int calcule_points_gagnant(LISTE **mains,int nbJoueurs,int gagnant,int aVOIR)
+{
+	int i;
+	int points=0;
+
+	if(aVOIR==1)
+	{
+		for(i=0;i<nbJoueurs;i++)
+		{
+			if(i!=gagnant)
+				points+=additionne_points_main(mains[i])-additionne_points_main(mains[gagnant]);
+		}
+	}
+	else
+	{
+		for(i=0;i<nbJoueurs;i++)
+			points+=additionne_points_main(mains[i]);
+	}
+
+	return points;
+}
+
+
+int calcule_points_perdant(LISTE **mains,int gagnant,int perdant,int aVOIR)
+{
+	int points=0;
+	
+	if(aVOIR==1)
+		points=additionne_points_main(mains[gagnant])-additionne_points_main(mains[perdant]);
+	else
+		points-=additionne_points_main(mains[perdant]);
+
+	return points;
+}
+
+
+int plus_petite_main(LISTE **mains, int nbJoueurs)
+{
+	int i;
+	int tmp;
+	int min=1000;  //valeur qui ne sera pas dépassée
+	int gagnant;
+
+	for(i=0;i<nbJoueurs;i++) 
+	{
+		tmp=additionne_points_main(mains[i]);
+		printf("tmp:%d\n",tmp);
+		if(tmp<min)   /*que faire si 2 personnes ont un même score en main ???? */
+		{
+			min=tmp;
+			gagnant=i;
+		}
+	}
+
+	return gagnant;
+}
+
+
+
+int trouve_joueur_precedent(int nbJoueurs, int tour) /***Est-ce que je crée une variable exprès pour mieux comprendre ce qui est renvoyé ?****/
+{
+	if(tour==0) //si on arrive au joueur zero, on veut faire une rotation
+		tour=nbJoueurs;
+	tour-=1;
+
+	return tour;
+}
+
+
+int detecte_gagnant(LISTE **mains,int nbJoueurs,int tour,int aVOIR)
+{
+	int gagnant;
+
+	if(aVOIR==1)
+		gagnant=plus_petite_main(mains,nbJoueurs);
+	else
+		gagnant=trouve_joueur_precedent(nbJoueurs,tour);
+
+	return gagnant;
+}
+
+
+bool main_finie(LISTE **mains, int nbJoueurs, int tour)
+{
+	int joueurPrecedent=trouve_joueur_precedent(nbJoueurs,tour);
+
+	if(nb_elements_liste(mains[joueurPrecedent])==0) //si le joueur a une main de 0 éléments
+		return true;		
+	return false;
+}
+
+
+bool pioche_finie(int niveauPioche)
+{
+	if(niveauPioche==NOMBRE_TUILES-1)
+		return true;
+	return false;
+}
+
+
+
+bool est_partie_finie(LISTE **mains, int niveauPioche, int nbJoueurs, int tour)
+{
+	if(pioche_finie(niveauPioche)|| main_finie(mains,nbJoueurs,tour)) //si la pioche est finie ou si la main du joueur a été finie
+		return true;
+	return false;
 }
 
 
