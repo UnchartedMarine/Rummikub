@@ -6,7 +6,7 @@ CC = gcc
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings
-COMPILER_FLAGS = -Wall -g
+COMPILER_FLAGS = -Wall -g -fsanitize=address
 
 #LINKER_FLAGS specifies the libraries we're linking against
 LINKER_FLAGS = -lSDL2 -lSDL2_mixer -lSDL2_image

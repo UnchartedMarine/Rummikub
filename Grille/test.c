@@ -52,7 +52,7 @@ SDL_Texture* createTextureFromImage (SDL_Renderer** renderer,char* path) {
 	SDL_Texture *texture = NULL;
 	SDL_Surface *surface = IMG_Load(path);
 	if (surface == NULL) {
-		printf("error load image: %s", IMG_GetError());
+		fprintf(stdout,"error load image: %s", IMG_GetError());
 		return texture;
 	}
 	texture = SDL_CreateTextureFromSurface(*renderer, surface);
@@ -61,20 +61,22 @@ SDL_Texture* createTextureFromImage (SDL_Renderer** renderer,char* path) {
 
 }
 
-void affiche_grille(SDL_Renderer** renderer)
+void affiche_texture(SDL_Renderer** renderer,SDL_Texture* texture,SDL_Rect* destination) 
 {
-	IMG_Init(IMG_INIT_PNG);
-	SDL_Texture *grille = createTextureFromImage (renderer,"grille.png");
-	SDL_RenderCopy(*renderer, grille, NULL, NULL);
-	SDL_RenderPresent(*renderer);
+	// peut etre pas utile car plus rapide de charger toutes les textures avant l'affichage
+	SDL_RenderCopy(*renderer, texture, NULL, destination);
+	//SDL_RenderPresent(*renderer); //pose des probleme quand on veut afficher plusieurs textures.
 
 }
 
-void init_grille(SDL_Window** fenetre,SDL_Renderer** renderer,SDL_DisplayMode DM,int *caseX, int *caseY,SDL_Rect *infoGrille)
+
+
+SDL_Texture* init_grille(SDL_Window** fenetre,SDL_Renderer** renderer,SDL_DisplayMode DM,int *caseX, int *caseY,SDL_Rect *infoGrille)
 {
 	int largeur = (int)((float)DM.w * G_RATIO);
 	int hauteur = (int)((float)DM.h * G_RATIO);
 	SDL_Color orange = {255,127,40,255};
+	SDL_Color black = {0,0,0,255};
 	float x=DM.w * (1.0 - G_RATIO)/2;
 	float y=DM.h * (1.0 - G_RATIO)/2;
 	SDL_Point depart ={x,y};
@@ -100,6 +102,10 @@ void init_grille(SDL_Window** fenetre,SDL_Renderer** renderer,SDL_DisplayMode DM
 	SDL_RenderReadPixels(*renderer, NULL, surface->format->format, surface->pixels, surface->pitch);
 	IMG_SavePNG(surface,"grille.png");
 	IMG_Quit();
+	SDL_SetRenderDrawColor(*renderer,black.r,black.g,black.b,black.a);
+	SDL_RenderClear(*renderer);
+	SDL_RenderPresent(*renderer);
+	return createTextureFromImage (renderer,"grille.png");
 }
 int init_grille_interieur(SDL_Rect rect ,SDL_Renderer** renderer,int *caseX, int *caseY)
 {
@@ -107,29 +113,10 @@ int init_grille_interieur(SDL_Rect rect ,SDL_Renderer** renderer,int *caseX, int
 		Le rectangle contient toutes les informations de la grille.
 	*/
 	int i,j;
-	//Resolution res = {(int)(rect.w*(5.0/4)),(int)(rect.h*(5.0/4))};	
-	//float multiplicateur = multiplicateur_taille_image(res);
-	//printf("X %d\n",multiplicateur);
-	//int nbrLigneVertical = (int)((float)rect.w /((float)LARGEURIMAGE * multiplicateur));
-	//int nbrLigneHorizontale = (int)((float)rect.h /((float)HAUTEURIMAGE * multiplicateur));
 	int espacementX = (int)((float)rect.w / (float)GRILLELARGEUR);
 	int espacementY = (int)((float)rect.h / (float)GRILLEHAUTEUR);
 	*caseX = espacementX;
 	*caseY = espacementY;
-	/*
-	for(i = rect.x;i <= rect.x+rect.w;i += espacementY)
-	{
-		
-		if( SDL_RenderDrawLine(*renderer,i,rect.y,i,rect.y+rect.h) != 0 )
-			return -1;
-	}
-	for(j=rect.y;j<= rect.y+rect.h;j+=espacementX)
-	{
-		if( SDL_RenderDrawLine(*renderer,rect.x,j,rect.x+rect.w,j) != 0 )
-			return -1;
-	}
-	*/
-	//printf("%d %d \n",espacementX,espacementY);
 	int x = rect.x;
 	int y = rect.y;
 	for(i = 0;i <= GRILLELARGEUR;i ++)
@@ -149,91 +136,92 @@ int init_grille_interieur(SDL_Rect rect ,SDL_Renderer** renderer,int *caseX, int
 	return 0;
 }
 
-int affiche_grille_interieur(SDL_Rect rect ,SDL_Renderer** renderer)
+SDL_Texture*** init_tuilles(SDL_Renderer** renderer)
 {
-	/*
-		Le rectangle contient toutes les informations de la grille.
-	*/
-	int i,j;
-	//Resolution res = {(int)(rect.w*(5.0/4)),(int)(rect.h*(5.0/4))};	
-	//float multiplicateur = multiplicateur_taille_image(res);
-	//printf("X %d\n",multiplicateur);
-	//int nbrLigneVertical = (int)((float)rect.w /((float)LARGEURIMAGE * multiplicateur));
-	//int nbrLigneHorizontale = (int)((float)rect.h /((float)HAUTEURIMAGE * multiplicateur));
-	int espacementX = (int)((float)rect.w / (float)GRILLELARGEUR);
-	int espacementY = (int)((float)rect.h / (float)GRILLEHAUTEUR);
-	/*
-	for(i = rect.x;i <= rect.x+rect.w;i += espacementY)
+	int i;
+	SDL_Texture*** tuilles;
+	tuilles = malloc(NBRCOUL * sizeof(SDL_Texture**));
+	
+	for (i = 0; i < NBRCOUL; i++)
 	{
-		
-		if( SDL_RenderDrawLine(*renderer,i,rect.y,i,rect.y+rect.h) != 0 )
-			return -1;
+		if(i < NBRCOUL)
+			tuilles[i] = malloc(NBRTUILLE * sizeof(SDL_Texture*));
+		else 
+			tuilles[i] = malloc(sizeof(SDL_Texture*));
 	}
-	for(j=rect.y;j<= rect.y+rect.h;j+=espacementX)
-	{
-		if( SDL_RenderDrawLine(*renderer,rect.x,j,rect.x+rect.w,j) != 0 )
-			return -1;
-	}
-	*/
-	//printf("%d %d \n",espacementX,espacementY);
-	int x = rect.x;
-	int y = rect.y;
-	for(i = 0;i <= GRILLELARGEUR;i ++)
-	{
-		
-		if( SDL_RenderDrawLine(*renderer,x,rect.y,x,rect.y+GRILLEHAUTEUR * espacementY) != 0 )
-			return -1;
-		x+=espacementX;
-		//printf("%d\n",x );
-	}
-	for(j = 0;j <= GRILLEHAUTEUR;j++)
-	{
-		if( SDL_RenderDrawLine(*renderer,rect.x,y,rect.x+GRILLELARGEUR * espacementX,y) != 0 )
-			return -1;
-		y+=espacementY;
-	}
-	return 0;
+	return tuilles;
+
 }
-/*
-float multiplicateur_taille_image(Resolution res)
+
+SDL_Texture* get_tuille(char chemin[14],SDL_Texture** tuilles) // inutile
 {
-	// TODO renvoyer le multiplicateur en fonction de la resolution.
-	Resolution tabRes[4] = { {800,600},{1280,720},{ 1920,1080 },{ 2560,1440} };
-	//printf("%d %d ,,,,, %d %d \n ",res.largeur,res.hauteur,tabRes[1].largeur,tabRes[1].hauteur);
-	if ( compare_resolution(res, tabRes[0] ) )
+	char buffer[2];
+	buffer[0]=chemin[0];
+	buffer[1]=chemin[1];
+	int nombre = atoi(buffer);
+	int couleur = get_couleur(chemin[3]);
+	return *((tuilles+nombre)+couleur);
+}
+
+int get_couleur(char c) // A remplacer par une enumeration 
+{
+	if(c == 'B')
+		return 0;
+	else if (c == 'L')
 		return 1;
-	else if ( compare_resolution(res, tabRes[1] ) )
-	{
-		return 1.5;
-	}
-	else if ( compare_resolution(res, tabRes[2] ) )
-		return 2.5;
-	else if ( compare_resolution(res, tabRes[3] ) )
-		return 3.5;
-	return 1;
+	else if (c == 'R')
+		return 2;
+	else if (c == 'J')
+		return 3;
+	return 4;
 }
-int compare_resolution(Resolution res1, Resolution res2)
+
+void affiche_tuille(SDL_Renderer** renderer,SDL_Rect* destination,SDL_Texture*** tuilles, int couleur,int nombre)
 {
-	return (res1.largeur == res2.largeur) && ( res1.hauteur == res2.hauteur );
-
+	if( nombre == 0 )
+	{
+		affiche_texture(renderer,tuilles[NBRCOUL][0],destination);
+	}
+	else
+	{
+		affiche_texture(renderer,tuilles[couleur][nombre],destination);
+	}
 }
-*/
-int main (int argc, char *argv[]) {
+
+void affiche_tuilles(SDL_Renderer** renderer,SDL_Rect* destination,SDL_Texture*** tuilles/*,Liste plateau*/)
+{
+	
+	//TODO
+	//regarder chaque case de la table de hasage
+	//recuperer les tuilles de la suites aet les afficher.
+	//Chaque case du tableau est un pointer vers une suite de tuilles donc, il faut juste parcourir la suite
+	//pour savoir les tuilles à afficher
+	//la clé est la position de la case en Y et il y a une variable X. 
+}
 
 
+
+int main (int argc, char *argv[]) 
+{
 	SDL_Window* fenetre;
 	SDL_Renderer* renderer;
 	fenetre = NULL;
 	renderer = NULL;
 	SDL_DisplayMode DM;
-	SDL_Rect infoGrille;
+	SDL_Rect infoGrille; // point de départ + taille
+	SDL_Texture* grille;
+	SDL_Texture*** tuilles=NULL;
 	int caseX,caseY;
 	init(&fenetre,&renderer,&DM);
-	init_grille(&fenetre,&renderer,DM,&caseX,&caseY,&infoGrille);
+	grille = init_grille(&fenetre,&renderer,DM,&caseX,&caseY,&infoGrille);
+	SDL_Rect infoCase={infoGrille.x,infoGrille.y,caseX,caseY};
+	tuilles=init_tuilles(&renderer);
+	tuilles[0][0] = createTextureFromImage (renderer,"Image/01B.png");
 	//fprintf(stdout, "info : %d;%d\n",caseX,caseY);
-	SDL_RenderClear(renderer);
-	SDL_RenderPresent(renderer);
-	affiche_grille(&renderer);
+	SDL_Texture* test = *(*(tuilles));
+	affiche_texture(&renderer, grille,NULL);
+	//SDL_RenderPresent(renderer);
+	affiche_texture(&renderer, test,&infoCase);
 	SDL_RenderPresent(renderer);
 	SDL_Event e;int exit = 0;
 	/*
@@ -257,9 +245,9 @@ int main (int argc, char *argv[]) {
 	                fprintf(stdout, "\tbouton : %d\n",e.button.button);
 	                fprintf(stdout, "\tclics : %d\n",e.button.clicks);
 	                fprintf(stdout, "\tposition : %d;%d\n",e.button.x,e.button.y);
-	                int x = (e.button.x-infoGrille.x)/caseX;
+	                
+					int x = (e.button.x-infoGrille.x)/caseX;
 	                int y = (e.button.y-infoGrille.y)/caseY;
-
 	                fprintf(stdout, "\tcase selectionee : %d;%d\n",x ,y );
 	                break;
 			}
