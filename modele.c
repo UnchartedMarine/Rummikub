@@ -304,21 +304,37 @@ void lit_tuile_liste(LISTE *liste, int position)  //fonction pour lire la tuile 
 		}
 		lit_tuile(premiereTuile->tuile);
 	}
-}	
+}
 
+}
 
-int additionne_points_main(LISTE *main)
+int additionne_points(LISTE *main, int fin) //Jonathan j'ai enlevé main à la fin de l'intitulé de la fonction car pour eviter une redondance de code j'utilise cette fonction pour compter les points d'une suite
 {
 	MAIN *tuileMain=main->premier;
 	int points=0;
+	int valTuilePrecedente = -1;
+	int valTuileSuivante;
 
 	while(tuileMain != NULL)
 	{
-		if(tuileMain->tuile.num == 0) //si c'est un joker: 30 points
-			points += 30;
+		if(tuileMain->tuile.num == 0) 
+			if(fin == 1){
+				points += 30;//à la fin de la partie, si c'est un joker: 30 points
+			}
+			else{ //si c'est pour avoir la valeur du joker dans la suite
+				if(valTuilePrecedente == -1){ //Si joker est le premier de la suite à calculer
+					MAIN *tuileSuivante = tuileMain->suivant;
+					valTuileSuivante = tuileSuivante->tuile.num;
+					points += valTuileSuivante;
+				}
+				else{ //Si joker n'est pas la première tuile de la suite à calculer
+					points += valTuilePrecedente + 1;
+				}
+			}
 		else  //sinon les points correspondent au numéro de chaque tuile
 			points += tuileMain->tuile.num;
-		tuileMain=tuileMain->suivant;			
+			valTuilePrecedente = tuileMain->tuile.num;
+			tuileMain=tuileMain->suivant;			
 	}
 	return points;
 }
