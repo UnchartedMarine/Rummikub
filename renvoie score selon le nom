@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
-int score(char nom)
+int main(char nom[10])
 {
     FILE* fichier = NULL;
-    char caractereActuel ;
+    char caractereActuel[10] ;
     int score;
  
     fichier = fopen("tab_score", "r");
