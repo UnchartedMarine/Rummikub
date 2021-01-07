@@ -3,7 +3,7 @@
 int score(char nom)
 {
     FILE* fichier = NULL;
-    char caractereActuel [10];
+    char caractereActuel ;
     int score;
  
     fichier = fopen("tab_score", "r");
