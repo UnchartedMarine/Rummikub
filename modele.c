@@ -213,8 +213,13 @@ LISTE * separer_liste_en_deux(LISTE *liste, int position){
 	return liste2;
 }
 
+
+//A FINIR, REDONNER A LA FIN DU TOUR DE VERTIF SON NUMERO AU JOKER
+//TRAITER LE GOTO A FAIRE POUR EVITER LE BLOC DE IF
+//TRAITER SI YA PLUSIEURS JOKER DANS LA SUITE
+//FINIR TRAITEMENT JOKER PLACER AUTRE QUE 1 OU 2EME DANS LE CAS DE LA SUITE DE MEME NOMBRE ET DANS LE CAS DE LA SUITE D'UNE SUITE DE NOMBRE
 //Renvoie un booléen pour dire si la suite est valide: false(0) si la suite n'est pas valide, true(1) si elle est valide.
-bool est_valide(LISTE *liste){
+bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérification
 	//tuileVerif est la tuile courante à vérifier et tuileVerifSuivante la tuile suivante de la tuile courante.
 	MAIN *tuileVerif = liste->premier;
 	MAIN *tuileVerifSuivante = tuileVerif->suivant;
@@ -229,14 +234,46 @@ bool est_valide(LISTE *liste){
 	
 	//numRepete permet de savoir dans une suite de mêmes numéros et de couleurs différentes si le numéro de toutes les tuiles est le même.
 	int numRepete;
+	
+	//
+	int tuileJoker = 0;
 
-	//Si les deux premières tuiles ont des numéros qui se suivent et la même couleur.
+	//Si un joker est la première tuile, la suite du programme regardera si la suite de la suite est valide
+	if(tuileVerif->tuile.num == 0){
+		tuileVerif = tuileVerif->suivant;
+		tuileVerifSuivante = tuileVerifSuivante->suivant;
+		tuileJoker = 1;
+	}
+	//Si un joker est la seconde tuile, vérifie le type de liste entre la première tuile et la troisième
+	else if(tuileVerifSuivante->tuile.num == 0){
+		tuileVerifSuivante=tuileVerifSuivante->suivant;
+		tuileJoker = 1;
+		
+		if((tuileVerif->tuile.num == tuileVerifSuivante->tuile.num-2) && (tuileVerif->tuile.coul == tuileVerifSuivante->tuile.coul)){
+			typeListe=1;
+			tuileVerif = tuileVerifSuivante;
+			tuileVerifSuivante = tuileVerifSuivante->suivant;
+		}
+		
+		else if((tuileVerif->tuile.coul != tuileVerifSuivante->tuile.coul) && (tuileVerif->tuile.num == tuileVerifSuivante->tuile.num)){
+			typeListe=2;	
+			couleursVues[0] = tuileVerif->tuile.coul;
+			couleursVues[1] = -1; //pas sur
+			couleursVues[2] = tuileVerifSuivante->tuile.coul;
+			tuileVerif = tuileVerifSuivante->suivant;
+			numRepete = tuileVerif->tuile.num;
+		}
+	}
+	
+	
+	
+	//Si les deux premières tuiles (ou la 2nde et 3eme si Joker est la premiere tuile) ont des numéros qui se suivent et la même couleur.
 	if((tuileVerif->tuile.num == tuileVerifSuivante->tuile.num-1) && (tuileVerif->tuile.coul == tuileVerifSuivante->tuile.coul)){
 		typeListe=1;
 		tuileVerif = tuileVerif->suivant;
 		tuileVerifSuivante = tuileVerifSuivante->suivant;
 	}
-	//Si les deux premières tuiles ont des couleurs différentes mais le même numéro
+	//Si les deux premières tuiles (ou la 2nde et 3eme si Joker est la premiere tuile) ont des couleurs différentes mais le même numéro
 	else if((tuileVerif->tuile.coul != tuileVerifSuivante->tuile.coul) && (tuileVerif->tuile.num == tuileVerifSuivante->tuile.num)){
 		typeListe=2;	
 		couleursVues[0] = tuileVerif->tuile.coul;
@@ -249,10 +286,11 @@ bool est_valide(LISTE *liste){
 		return false;
 	}
 	
+	
 	//Si typeListe est égal à 1 c'est une suite de tuiles de numéros qui se suivent et de même couleur.
 	if (typeListe == 1){
 		//Parcours du reste de la suite
-		for(i=2;i<tailleListe;i++){
+		for(i=2+tuileJoker;i<tailleListe;i++){
 			//Si les deux tuiles courantes ont des numéros qui se suivent et la même couleur.
 			if((tuileVerif->tuile.num == tuileVerifSuivante->tuile.num-1) && (tuileVerif->tuile.coul == tuileVerifSuivante->tuile.coul)){
 				tuileVerif = tuileVerif->suivant;
@@ -265,9 +303,12 @@ bool est_valide(LISTE *liste){
 		}
 	}
 	//Sinon c'est une suite de tuiles de même numéro et de couleurs différentes.
-	else{
+	else if(typeListe == 2){
 		//Parcours du reste de la suite
-		for(i=2;i<tailleListe;i++){
+		for(i=2+tuileJoker;i<tailleListe;i++){
+			if(tuileVerif->tuile.num == 0){
+				tuileVerif->tuile.num = numRepete;
+			}
 			//Si le numéro de la tuile courante est le même que celui du reste de la suite
 			if(tuileVerif->tuile.num == numRepete){
 				//Parcours des couleurs déjà rencontrées
@@ -287,6 +328,7 @@ bool est_valide(LISTE *liste){
 			}
 		}
 	}
+	
 	//La suite est valide
 	return true;
 }
