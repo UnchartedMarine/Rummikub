@@ -1,14 +1,16 @@
+#include <stdio.h>
+#include <string.h>
 int score(char nom)
 {
     FILE* fichier = NULL;
-    char caractereActuel ;
+    char caractereActuel [10];
     int score;
  
     fichier = fopen("tab_score", "r");
  
     if (fichier != NULL)
     {
-        while(caractereActuel !=nom)
+        while(strcmp(caractereActuel,nom) != 0)
         {
             fscanf(fichier, "%s;%d", &caractereActuel, &score);
         }
@@ -16,5 +18,5 @@ int score(char nom)
         fclose(fichier);
     }
  
-    return res;
+    return score;
 }
