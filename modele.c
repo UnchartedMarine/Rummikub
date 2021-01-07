@@ -263,6 +263,9 @@ bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérifica
 			tuileVerif = tuileVerifSuivante->suivant;
 			numRepete = tuileVerif->tuile.num;
 		}
+		else{
+			return false;
+		}
 	}
 	
 	
