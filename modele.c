@@ -222,6 +222,7 @@ bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérifica
 	//tuileVerif est la tuile courante à vérifier et tuileVerifSuivante la tuile suivante de la tuile courante.
 	MAIN *tuileVerif = liste->premier;
 	MAIN *tuileVerifSuivante = tuileVerif->suivant;
+	MAIN *tuileAvantJoker;
 	int tailleListe = nb_elements_liste(liste);
 	int i,j;
 	
@@ -243,7 +244,7 @@ bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérifica
 		tuileVerifSuivante = tuileVerifSuivante->suivant;
 		tuileJoker = 1;
 	}
-	//Si un joker est la seconde tuile, vérifie le type de liste entre la première tuile et la troisième
+	//Si un joker est la seconde tuile, vérifie le type de liste entre la première tuile et la troisième tuile
 	else if(tuileVerifSuivante->tuile.num == 0){
 		tuileVerifSuivante=tuileVerifSuivante->suivant;
 		tuileJoker = 1;
@@ -265,16 +266,15 @@ bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérifica
 			return false;
 		}
 	}
-	
-	
-	if(tuileJoker!=1){
-		//Si les deux premières tuiles (ou la 2nde et 3eme si Joker est la premiere tuile) ont des numéros qui se suivent et la même couleur.
+	//SI pas de joker dans les deux premières tuiles, on regarde le type de liste
+	else{
+		//Si les deux premières tuiles ont des numéros qui se suivent et la même couleur.
 		if((tuileVerif->tuile.num == tuileVerifSuivante->tuile.num-1) && (tuileVerif->tuile.coul == tuileVerifSuivante->tuile.coul)){
 			typeListe=1;
 			tuileVerif = tuileVerif->suivant;
 			tuileVerifSuivante = tuileVerifSuivante->suivant;
 		}
-		//Si les deux premières tuiles (ou la 2nde et 3eme si Joker est la premiere tuile) ont des couleurs différentes mais le même numéro
+		//Si les deux premières tuiles ont des couleurs différentes mais le même numéro
 		else if((tuileVerif->tuile.coul != tuileVerifSuivante->tuile.coul) && (tuileVerif->tuile.num == tuileVerifSuivante->tuile.num)){
 			typeListe=2;	
 			couleursVues[0] = tuileVerif->tuile.coul;
@@ -293,22 +293,27 @@ bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérifica
 	if (typeListe == 1){
 		//Parcours du reste de la suite
 		for(i=2+tuileJoker;i<tailleListe;i++){
-			//Si tuileVerif est un joker
+			//Si la tuile courante est un joker (cela signifie qu'il y a une tuile apres le jokerà
 			if(tuileVerif->tuile.num == 0){
+				//On vérifie la suite entre la tuile avant le joker (car il n'a pas de valeur) et la tuile suivante du joker
+				if((tuileAvantJoker->tuile.num == tuileVerifSuivante->tuile.num-2) && (tuileAvantJoker->tuile.coul == tuileVerifSuivante->tuile.coul)){
+					typeListe=1;
+					tuileVerif = tuileVerifSuivante;
+					tuileVerifSuivante = tuileVerifSuivante->suivant;
+				}
+			}
+			//Si la tuile suiavnte de la tuile courante est un joker
+			if(tuileVerifSuivante->tuile.num==0){
 				tuileJoker=tuileJoker+1;
 				if(tuileJoker>1){
 					return false;
 				}
+				tuileAvantJoker = tuileVerif;
+				tuileVerif = tuileVerif->suivant;
+				tuileVerifSuivante = tuileVerifSuivante->suivant;
 			}
-			else if(tuileVerifSuivante->tuile.num==0){
-				tuileVerifSuivante->tuile.num = tuileVerif->tuile.num+1;
-				tuileVerifSuivante->tuile.coul = tuileVerif->tuile.coul;
-			}
-			
-			
-			
 			//Si les deux tuiles courantes ont des numéros qui se suivent et la même couleur.
-			if((tuileVerif->tuile.num == tuileVerifSuivante->tuile.num-1) && (tuileVerif->tuile.coul == tuileVerifSuivante->tuile.coul)){
+			else if((tuileVerif->tuile.num == tuileVerifSuivante->tuile.num-1) && (tuileVerif->tuile.coul == tuileVerifSuivante->tuile.coul)){
 				tuileVerif = tuileVerif->suivant;
 				tuileVerifSuivante = tuileVerifSuivante->suivant;
 			}
@@ -316,9 +321,6 @@ bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérifica
 			else{
 				return false;
 			}
-			
-			//si tuile null derriere on redonne au joker sa valeur 0 sinon pour la verif du prochain tour on garde
-			if(tuileVerifSuivante)
 		}
 	}
 	//Sinon c'est une suite de tuiles de même numéro et de couleurs différentes.
