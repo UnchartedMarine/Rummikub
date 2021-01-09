@@ -133,11 +133,13 @@ void ajoute_liste(LISTE *liste,TUILE tuile)
 void lit_liste(LISTE *liste)
 {
 	MAIN *tuileMain=liste->premier;
-
+	int indiceTuile=1;
+	
 	while(tuileMain != NULL)
 	{
-		printf("%d;%d\n",tuileMain->tuile.num,tuileMain->tuile.coul);	
-		tuileMain=tuileMain->suivant;			
+		printf("(%d) %d;%d\n",indiceTuile,tuileMain->tuile.num,tuileMain->tuile.coul);	
+		tuileMain=tuileMain->suivant;
+		indiceTuile = indiceTuile + 1;
 	}
 }
 
