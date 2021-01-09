@@ -215,7 +215,6 @@ LISTE * separer_liste_en_deux(LISTE *liste, int position){
 
 
 //A FINIR, REDONNER A LA FIN DU TOUR DE VERTIF SON NUMERO AU JOKER
-//TRAITER LE GOTO A FAIRE POUR EVITER LE BLOC DE IF
 //TRAITER SI YA PLUSIEURS JOKER DANS LA SUITE
 //FINIR TRAITEMENT JOKER PLACER AUTRE QUE 1 OU 2EME DANS LE CAS DE LA SUITE DE MEME NOMBRE ET DANS LE CAS DE LA SUITE D'UNE SUITE DE NOMBRE
 //Renvoie un booléen pour dire si la suite est valide: false(0) si la suite n'est pas valide, true(1) si elle est valide.
@@ -254,11 +253,10 @@ bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérifica
 			tuileVerif = tuileVerifSuivante;
 			tuileVerifSuivante = tuileVerifSuivante->suivant;
 		}
-		
 		else if((tuileVerif->tuile.coul != tuileVerifSuivante->tuile.coul) && (tuileVerif->tuile.num == tuileVerifSuivante->tuile.num)){
 			typeListe=2;	
 			couleursVues[0] = tuileVerif->tuile.coul;
-			couleursVues[1] = -1; //pas sur
+			couleursVues[1] = 0; 
 			couleursVues[2] = tuileVerifSuivante->tuile.coul;
 			tuileVerif = tuileVerifSuivante->suivant;
 			numRepete = tuileVerif->tuile.num;
@@ -269,24 +267,25 @@ bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérifica
 	}
 	
 	
-	
-	//Si les deux premières tuiles (ou la 2nde et 3eme si Joker est la premiere tuile) ont des numéros qui se suivent et la même couleur.
-	if((tuileVerif->tuile.num == tuileVerifSuivante->tuile.num-1) && (tuileVerif->tuile.coul == tuileVerifSuivante->tuile.coul)){
-		typeListe=1;
-		tuileVerif = tuileVerif->suivant;
-		tuileVerifSuivante = tuileVerifSuivante->suivant;
-	}
-	//Si les deux premières tuiles (ou la 2nde et 3eme si Joker est la premiere tuile) ont des couleurs différentes mais le même numéro
-	else if((tuileVerif->tuile.coul != tuileVerifSuivante->tuile.coul) && (tuileVerif->tuile.num == tuileVerifSuivante->tuile.num)){
-		typeListe=2;	
-		couleursVues[0] = tuileVerif->tuile.coul;
-		couleursVues[1] = tuileVerifSuivante->tuile.coul;
-		tuileVerif = tuileVerifSuivante->suivant;
-		numRepete = tuileVerif->tuile.num;
-	}
-	//Sinon la suite n'est déja pas valide 
-	else{
-		return false;
+	if(tuileJoker!=1){
+		//Si les deux premières tuiles (ou la 2nde et 3eme si Joker est la premiere tuile) ont des numéros qui se suivent et la même couleur.
+		if((tuileVerif->tuile.num == tuileVerifSuivante->tuile.num-1) && (tuileVerif->tuile.coul == tuileVerifSuivante->tuile.coul)){
+			typeListe=1;
+			tuileVerif = tuileVerif->suivant;
+			tuileVerifSuivante = tuileVerifSuivante->suivant;
+		}
+		//Si les deux premières tuiles (ou la 2nde et 3eme si Joker est la premiere tuile) ont des couleurs différentes mais le même numéro
+		else if((tuileVerif->tuile.coul != tuileVerifSuivante->tuile.coul) && (tuileVerif->tuile.num == tuileVerifSuivante->tuile.num)){
+			typeListe=2;	
+			couleursVues[0] = tuileVerif->tuile.coul;
+			couleursVues[1] = tuileVerifSuivante->tuile.coul;
+			tuileVerif = tuileVerifSuivante->suivant;
+			numRepete = tuileVerif->tuile.num;
+		}
+		//Sinon la suite n'est déja pas valide 
+		else{
+			return false;
+		}
 	}
 	
 	
@@ -294,6 +293,20 @@ bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérifica
 	if (typeListe == 1){
 		//Parcours du reste de la suite
 		for(i=2+tuileJoker;i<tailleListe;i++){
+			//Si tuileVerif est un joker
+			if(tuileVerif->tuile.num == 0){
+				tuileJoker=tuileJoker+1;
+				if(tuileJoker>1){
+					return false;
+				}
+			}
+			else if(tuileVerifSuivante->tuile.num==0){
+				tuileVerifSuivante->tuile.num = tuileVerif->tuile.num+1;
+				tuileVerifSuivante->tuile.coul = tuileVerif->tuile.coul;
+			}
+			
+			
+			
 			//Si les deux tuiles courantes ont des numéros qui se suivent et la même couleur.
 			if((tuileVerif->tuile.num == tuileVerifSuivante->tuile.num-1) && (tuileVerif->tuile.coul == tuileVerifSuivante->tuile.coul)){
 				tuileVerif = tuileVerif->suivant;
@@ -303,13 +316,20 @@ bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérifica
 			else{
 				return false;
 			}
+			
+			//si tuile null derriere on redonne au joker sa valeur 0 sinon pour la verif du prochain tour on garde
+			if(tuileVerifSuivante)
 		}
 	}
 	//Sinon c'est une suite de tuiles de même numéro et de couleurs différentes.
 	else if(typeListe == 2){
 		//Parcours du reste de la suite
 		for(i=2+tuileJoker;i<tailleListe;i++){
-			if(tuileVerif->tuile.num == 0){
+			if(tuileVerif->tuile.num == 0){ //si joker
+				tuileJoker=tuileJoker+1;
+				if(tuileJoker>1){
+					return false;
+				}
 				tuileVerif->tuile.num = numRepete;
 			}
 			//Si le numéro de la tuile courante est le même que celui du reste de la suite
@@ -323,6 +343,7 @@ bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérifica
 				}
 				//Ajout de la couleur de la tuile courante qui est valide par rapport au début de la suite
 				couleursVues[i] = tuileVerif->tuile.coul;
+				tuileVerif->tuile.num = 0;
 				tuileVerif = tuileVerif->suivant;
 			}
 			//Sinon la liste n'est pas valide
