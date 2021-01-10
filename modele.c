@@ -159,6 +159,7 @@ int nb_elements_liste(LISTE *liste)
 
 
 //EN CHANTIER
+//renvoi de est_valide le type de liste 
 bool pose_30_points(LISTE *liste){
 	MAIN *tuileCourante=liste->premier;
 	MAIN *tuileAvant;
