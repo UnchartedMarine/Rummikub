@@ -252,9 +252,9 @@ LISTE * separer_liste_en_deux(LISTE *liste, int position){
 }
 
 
-//A FINIR, REDONNER A LA FIN DU TOUR DE VERTIF SON NUMERO AU JOKER
-//TRAITER SI YA PLUSIEURS JOKER DANS LA SUITE
-//FINIR TRAITEMENT JOKER PLACER AUTRE QUE 1 OU 2EME DANS LE CAS DE LA SUITE DE MEME NOMBRE ET DANS LE CAS DE LA SUITE D'UNE SUITE DE NOMBRE
+//soit la sdl demande au joueur quel type de suite il souhaite poser et ca me permet de verifier que ce type dans la fonction valide et 30 points
+//soit si je rencontre un joker, je prend deux tuiles pour verification (jok=1st : 2et3; 2nd : 1 et 3; autre:les deux precedents)
+
 //Renvoie un booléen pour dire si la suite est valide: false(0) si la suite n'est pas valide, true(1) si elle est valide.
 bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérification
 	//tuileVerif est la tuile courante à vérifier et tuileVerifSuivante la tuile suivante de la tuile courante.
