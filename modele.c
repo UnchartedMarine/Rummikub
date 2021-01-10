@@ -157,6 +157,42 @@ int nb_elements_liste(LISTE *liste)
 	return nombreElements -1;
 }
 
+
+//EN CHANTIER
+bool pose_30_points(LISTE *liste){
+	MAIN *tuileCourante=liste->premier;
+	MAIN *tuileAvant;
+	int tailleListe = nb_elements_liste(liste);
+	int pointsListe=0;
+	int i;
+	
+	//Si la premiere tuile de la suite est un joker, on se 
+	if(tuileCourante->tuile.num == 0){
+		
+	}
+	for(i=1;i<tailleListe;i++){
+		if(tuileCourante->tuile.num == 0){
+			
+		}
+		pointsListe = pointsListe + tuileCourante->tuile.num;
+		if(pointsListe >= 30){
+			return true;
+		}
+		tuileAvant=tuileCourante;
+		tuileCourante = tuileCourante->suivant;
+	}
+	return false;
+
+}
+
+
+
+
+
+
+
+
+
 //Renvoie 0 si le placement n'a pas été réalisé; 1 si le placement est un succès.
 //On considère que le premier élément d'une liste est l'élément 1
 //position ici est la position à laquelle on souhaite placer la tuile dans la suite
