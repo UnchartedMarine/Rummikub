@@ -206,6 +206,10 @@ bool pose_30_points(LISTE *liste){
 //position ici est la position à laquelle on souhaite placer la tuile dans la suite
 int placement_element_liste(LISTE *liste, TUILE tuile, int position)
 {
+	ELEMENT *tuileAvant=liste->premier;
+	ELEMENT *nouveau = malloc(sizeof(*nouveau));
+	int i;
+	
 	if(position > nb_elements_liste(liste)){
 		return 0;
 	}
@@ -214,12 +218,7 @@ int placement_element_liste(LISTE *liste, TUILE tuile, int position)
 		ajoute_liste(liste,tuile);
 	}
 	else{
-		//On créer un type MAIN pour la tuile fournie en paramètres afin de la placer dans la liste qui est composés d'éléments de type MAIN.
-		ELEMENT *tuileAvant=liste->premier;
-		ELEMENT *nouveau = malloc(sizeof(*nouveau));
-		int i;
 		nouveau->tuile=tuile;
-		
 		//On parcourt la liste jusqu'à obtenir la tuile dont la position est celle qui précède la position où la tuile va être ajoutée.
 		for(i=1;i<position-1;i++){
 			tuileAvant=tuileAvant->suivant;
@@ -239,6 +238,9 @@ int placement_element_liste(LISTE *liste, TUILE tuile, int position)
 //On considère ici que la position c'est l'endroit de coupe soit l'element à cette position sera le premier élément de la seconde liste, que l'on va créer
 LISTE * separer_liste_en_deux(LISTE *liste, int position){
 	ELEMENT *tuileAvant=liste->premier;
+	ELEMENT *derniereTuile = (ELEMENT*) malloc(sizeof(ELEMENT));
+	LISTE *liste2 = (LISTE*) malloc(sizeof(LISTE));
+	
 	int i;
 
 	for(i=1;i<position-1;i++){
@@ -246,11 +248,9 @@ LISTE * separer_liste_en_deux(LISTE *liste, int position){
 	}
 	
 	//Creation nouvelle liste a partir de l element demande
-	LISTE *liste2 = (LISTE*) malloc(sizeof(LISTE));
 	liste2->premier=tuileAvant->suivant;
 
 	//Remplacer la tuile suivante de la derniere tuile de la suite 1 par la tuile vide (dont le numero et la couleur sont NULL)
-	ELEMENT *derniereTuile = (ELEMENT*) malloc(sizeof(ELEMENT));
 	derniereTuile->tuile.num = NULL;
 	derniereTuile->tuile.coul = NULL;
 	derniereTuile->suivant = NULL;
@@ -663,9 +663,34 @@ void enleve_element_liste(LISTE * liste,int position) ///////MENERVEEEEEEEEEEEEE
 	//free(elem->premier);
 }
 
+void enleve_element_liste(LISTE * liste,int position){
+	ELEMENT * courant=liste->premier;
+	ELEMENT * elemASuppr;
+	int i;
+	
+	if(position > nb_elements_liste(liste)){
+		return 0;
+	}
 
+	if(position==1){
+		liste->premier=courant->suivant
+		free(courant);
+	}
+	else{		
+		//On parcourt la liste jusqu'à obtenir la tuile dont la position est celle qui précède la position où la tuile va être supprimée.
+		for(i=1;i<position-1;i++){
+			courant=courant->suivant;
+		}
+		
+		elemeASuppr=courant->suivant
+		courant->suivant=elemASuppr->suivant;
+		free(elemASuppr);
+		
+	}
+	//Ici 1 indique que la fonction a réussie à placer la tuile dans la liste.
+	return 1;
 
-
+}
 
 
 
