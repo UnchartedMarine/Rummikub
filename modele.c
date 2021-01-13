@@ -60,6 +60,7 @@ void lit_tuile(TUILE tuile)
 	printf("Num:%d ; Coul:%d\n",tuile.num,tuile.coul);
 }
 
+
 void lit_pioche(TUILE *pioche)
 {
 	int i;
@@ -71,18 +72,23 @@ void lit_pioche(TUILE *pioche)
 }
 
 
-void init_main(LISTE *liste,int *niveauPioche)
+void pioche_tuile(LISTE *liste,int *niveauPioche)
 {
-	int i=*niveauPioche+6;	
-
-	for(*niveauPioche;(*niveauPioche)<i;(*niveauPioche)++)
-	{
-		ajoute_liste(liste,pioche[*niveauPioche]);
-	}
+	ajoute_liste(liste,pioche[*niveauPioche]);
+	*niveauPioche+=1;
 }
 
 
-int regarde_qui_commence(int nbJoueurs)  
+void init_main(LISTE *liste,int *niveauPioche)
+{
+	int i;
+
+	for(i=0;i<6;i++)
+		pioche_tuile(liste,niveauPioche);
+}
+
+
+int regarde_qui_commence(int nbJoueurs)  //////////////A FAIRE -> THOMAS S'EN OCCUPE
 /*****si 2 piochent le max le premier commence ? ou il faut retirer ? + problème c'est que ça aide car on peut deviner comment est la pioche et on peut connaître des tuiles de la main des autres*****/
 {
 	int max=-1;	
@@ -101,27 +107,35 @@ int regarde_qui_commence(int nbJoueurs)
 	return position;
 }
 
+LISTE * cree_plateau()
+{
+	PLATEAU *plateau = (PLATEAU*) malloc(sizeof(PLATEAU));
+	return plateau;
+}
+
+void ajoute_plateau(PLATEAU *plateau,LISTE *liste)
+{
+	ELEMENT_PLATEAU *nouveau = malloc(sizeof(*nouveau));
+
+
+	nouveau->suivant=plateau->premier;
+	nouveau->liste=liste;
+
+	plateau->premier=nouveau;
+}
 
 
 // les fonctions sur les listes:
 LISTE * cree_liste()
 {
-	MAIN *main = (MAIN*) malloc(sizeof(MAIN));
 	LISTE *liste = (LISTE*) malloc(sizeof(LISTE));
-
-	main->tuile.num = NULL;
-	main->tuile.coul = NULL;
-	main->suivant = NULL;
-	
-	liste->premier=main;
-
 	return liste;
 }
 
 
 void ajoute_liste(LISTE *liste,TUILE tuile)
 {
-	MAIN *nouveau = malloc(sizeof(*nouveau));
+	ELEMENT *nouveau = malloc(sizeof(*nouveau));
 
 	nouveau->tuile=tuile;
 	nouveau->suivant=liste->premier;
@@ -132,7 +146,7 @@ void ajoute_liste(LISTE *liste,TUILE tuile)
 
 void lit_liste(LISTE *liste)
 {
-	MAIN *tuileMain=liste->premier;
+	ELEMENT *tuileMain=liste->premier;
 	int indiceTuile=1;
 	
 	while(tuileMain != NULL)
@@ -141,12 +155,13 @@ void lit_liste(LISTE *liste)
 		tuileMain=tuileMain->suivant;
 		indiceTuile = indiceTuile + 1;
 	}
+	printf("\n");
 }
 
 //Renvoie la taille d'une liste ou suite dans le jeu, en faisant abstraction de la tuile de fin dont la couleur et le numéro vallent NULL.
 int nb_elements_liste(LISTE *liste)
 {
-	MAIN *tuileMain=liste->premier;
+	ELEMENT *tuileMain=liste->premier;
 	int nombreElements=0;
 
 	while(tuileMain != NULL)
@@ -157,12 +172,11 @@ int nb_elements_liste(LISTE *liste)
 	return nombreElements -1;
 }
 
-
 //EN CHANTIER
 //renvoi de est_valide le type de liste 
 bool pose_30_points(LISTE *liste){
-	MAIN *tuileCourante=liste->premier;
-	MAIN *tuileAvant;
+	ELEMENT *tuileCourante=liste->premier;
+	ELEMENT *tuileAvant;
 	int tailleListe = nb_elements_liste(liste);
 	int pointsListe=0;
 	int i;
@@ -187,17 +201,10 @@ bool pose_30_points(LISTE *liste){
 }
 
 
-
-
-
-
-
-
-
 //Renvoie 0 si le placement n'a pas été réalisé; 1 si le placement est un succès.
 //On considère que le premier élément d'une liste est l'élément 1
 //position ici est la position à laquelle on souhaite placer la tuile dans la suite
-int placement_tuile_liste(LISTE *liste, TUILE tuile, int position)
+int placement_element_liste(LISTE *liste, TUILE tuile, int position)
 {
 	if(position > nb_elements_liste(liste)){
 		return 0;
@@ -208,8 +215,8 @@ int placement_tuile_liste(LISTE *liste, TUILE tuile, int position)
 	}
 	else{
 		//On créer un type MAIN pour la tuile fournie en paramètres afin de la placer dans la liste qui est composés d'éléments de type MAIN.
-		MAIN *tuileAvant=liste->premier;
-		MAIN *nouveau = malloc(sizeof(*nouveau));
+		ELEMENT *tuileAvant=liste->premier;
+		ELEMENT *nouveau = malloc(sizeof(*nouveau));
 		int i;
 		nouveau->tuile=tuile;
 		
@@ -231,7 +238,7 @@ int placement_tuile_liste(LISTE *liste, TUILE tuile, int position)
 //Renvoie la liste créée; la première liste en paramètres a été modifiée
 //On considère ici que la position c'est l'endroit de coupe soit l'element à cette position sera le premier élément de la seconde liste, que l'on va créer
 LISTE * separer_liste_en_deux(LISTE *liste, int position){
-	MAIN *tuileAvant=liste->premier;
+	ELEMENT *tuileAvant=liste->premier;
 	int i;
 
 	for(i=1;i<position-1;i++){
@@ -243,7 +250,7 @@ LISTE * separer_liste_en_deux(LISTE *liste, int position){
 	liste2->premier=tuileAvant->suivant;
 
 	//Remplacer la tuile suivante de la derniere tuile de la suite 1 par la tuile vide (dont le numero et la couleur sont NULL)
-	MAIN *derniereTuile = (MAIN*) malloc(sizeof(MAIN));
+	ELEMENT *derniereTuile = (ELEMENT*) malloc(sizeof(ELEMENT));
 	derniereTuile->tuile.num = NULL;
 	derniereTuile->tuile.coul = NULL;
 	derniereTuile->suivant = NULL;
@@ -259,9 +266,9 @@ LISTE * separer_liste_en_deux(LISTE *liste, int position){
 //Renvoie un booléen pour dire si la suite est valide: false(0) si la suite n'est pas valide, true(1) si elle est valide.
 bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérification
 	//tuileVerif est la tuile courante à vérifier et tuileVerifSuivante la tuile suivante de la tuile courante.
-	MAIN *tuileVerif = liste->premier;
-	MAIN *tuileVerifSuivante = tuileVerif->suivant;
-	MAIN *tuileAvantJoker;
+	ELEMENT *tuileVerif = liste->premier;
+	ELEMENT *tuileVerifSuivante = tuileVerif->suivant;
+	ELEMENT *tuileAvantJoker;
 	int tailleListe = nb_elements_liste(liste);
 	int i,j;
 	
@@ -404,7 +411,7 @@ void lit_tuile_liste(LISTE *liste, int position)  //fonction pour lire la tuile 
 {
 	if(position>=0 && position<=nb_elements_liste(liste))  //vérifie que position soit bien une position de la liste
 	{
-		MAIN *premiereTuile = liste->premier;
+		ELEMENT *premiereTuile = liste->premier;
 		for(position;position>0;position--) //boucle qui met à position à 0 afin de savoir quand la position est bonne
 		{
 			premiereTuile = premiereTuile->suivant;
@@ -413,11 +420,11 @@ void lit_tuile_liste(LISTE *liste, int position)  //fonction pour lire la tuile 
 	}
 }
 
-}
+
 
 int additionne_points(LISTE *main, int fin) //Jonathan j'ai enlevé main à la fin de l'intitulé de la fonction car pour eviter une redondance de code j'utilise cette fonction pour compter les points d'une suite
 {
-	MAIN *tuileMain=main->premier;
+	ELEMENT *tuileMain=main->premier;
 	int points=0;
 	int valTuilePrecedente = -1;
 	int valTuileSuivante;
@@ -430,7 +437,7 @@ int additionne_points(LISTE *main, int fin) //Jonathan j'ai enlevé main à la f
 			}
 			else{ //si c'est pour avoir la valeur du joker dans la suite
 				if(valTuilePrecedente == -1){ //Si joker est le premier de la suite à calculer
-					MAIN *tuileSuivante = tuileMain->suivant;
+					ELEMENT *tuileSuivante = tuileMain->suivant;
 					valTuileSuivante = tuileSuivante->tuile.num;
 					points += valTuileSuivante;
 				}
@@ -447,7 +454,7 @@ int additionne_points(LISTE *main, int fin) //Jonathan j'ai enlevé main à la f
 }
 
 
-int calcule_points_gagnant(LISTE **mains,int nbJoueurs,int gagnant,int aVOIR)
+int calcule_points_gagnant(JOUEUR *joueurs,int nbJoueurs,int gagnant,int aVOIR)
 {
 	int i;
 	int points=0;
@@ -457,44 +464,44 @@ int calcule_points_gagnant(LISTE **mains,int nbJoueurs,int gagnant,int aVOIR)
 		for(i=0;i<nbJoueurs;i++)
 		{
 			if(i!=gagnant)
-				points+=additionne_points_main(mains[i])-additionne_points_main(mains[gagnant]);
+				points+=additionne_points(joueurs[i].main,1)-additionne_points(joueurs[gagnant].main,1);
 		}
 	}
 	else
 	{
 		for(i=0;i<nbJoueurs;i++)
-			points+=additionne_points_main(mains[i]);
+			points+=additionne_points(joueurs[i].main,1);
 	}
-
+	printf("ptsssss:%d\n",points);
 	return points;
 }
 
 
-int calcule_points_perdant(LISTE **mains,int gagnant,int perdant,int aVOIR)
+int calcule_points_perdant(JOUEUR *joueurs,int gagnant,int perdant,int aVOIR)
 {
 	int points=0;
 	
 	if(aVOIR==1)
-		points=additionne_points_main(mains[gagnant])-additionne_points_main(mains[perdant]);
+		points=additionne_points(joueurs[gagnant].main,1)-additionne_points(joueurs[perdant].main,1);
 	else
-		points-=additionne_points_main(mains[perdant]);
+		points-=additionne_points(joueurs[perdant].main,1);
 
 	return points;
 }
 
 
-int plus_petite_main(LISTE **mains, int nbJoueurs)
+int plus_petite_main(JOUEUR *joueurs, int nbJoueurs)
 {
 	int i;
 	int tmp;
-	int min=1000;  //valeur qui ne sera pas dépassée
+	int min=10000;  //valeur qui ne sera pas dépassée
 	int gagnant;
 
 	for(i=0;i<nbJoueurs;i++) 
 	{
-		tmp=additionne_points_main(mains[i]);
-		printf("tmp:%d\n",tmp);
-		if(tmp<min)   /*que faire si 2 personnes ont un même score en main ???? */
+		tmp=additionne_points(joueurs[i].main,1);
+
+		if(tmp<min)   /*REMARQUE IMPORTANTE: que faire si 2 personnes ont un même score en main ???? */
 		{
 			min=tmp;
 			gagnant=i;
@@ -516,12 +523,12 @@ int trouve_joueur_precedent(int nbJoueurs, int tour) /***Est-ce que je crée une
 }
 
 
-int detecte_gagnant(LISTE **mains,int nbJoueurs,int tour,int aVOIR)
+int detecte_gagnant(JOUEUR *joueurs,int nbJoueurs,int tour,int aVOIR)
 {
 	int gagnant;
 
 	if(aVOIR==1)
-		gagnant=plus_petite_main(mains,nbJoueurs);
+		gagnant=plus_petite_main(joueurs,nbJoueurs);
 	else
 		gagnant=trouve_joueur_precedent(nbJoueurs,tour);
 
@@ -529,11 +536,11 @@ int detecte_gagnant(LISTE **mains,int nbJoueurs,int tour,int aVOIR)
 }
 
 
-bool main_finie(LISTE **mains, int nbJoueurs, int tour)
+bool main_finie(JOUEUR *joueurs, int nbJoueurs, int tour)
 {
 	int joueurPrecedent=trouve_joueur_precedent(nbJoueurs,tour);
 
-	if(nb_elements_liste(mains[joueurPrecedent])==0) //si le joueur a une main de 0 éléments
+	if(nb_elements_liste(joueurs[joueurPrecedent].main)==0) //si le joueur a une main de 0 éléments
 		return true;		
 	return false;
 }
@@ -548,12 +555,116 @@ bool pioche_finie(int niveauPioche)
 
 
 
-bool est_partie_finie(LISTE **mains, int niveauPioche, int nbJoueurs, int tour)
+bool est_partie_finie(JOUEUR *joueurs, int niveauPioche, int nbJoueurs, int tour)
 {
-	if(pioche_finie(niveauPioche)|| main_finie(mains,nbJoueurs,tour)) //si la pioche est finie ou si la main du joueur a été finie
+	if(pioche_finie(niveauPioche)|| main_finie(joueurs,nbJoueurs,tour)) //si la pioche est finie ou si la main du joueur a été finie
 		return true;
 	return false;
 }
+
+
+int choisit_tour(bool premierCoup)
+{
+	int choix;
+
+	/////////EN ATTENDANT LA SDL ON SAISIE POUR JOUER (oui le code est degueuxxxx)
+	if(!premierCoup)
+		printf("1-Piocher\n2-Créer une combinaison d'au moins 30 points\nSaisie:");
+	else
+		printf("1-Piocher\n2-Créer une combinaison (jsais plus si y'a cette option)\n3-Compléter une combinaison\nSaisie:");
+	
+	scanf("%d",&choix);
+
+	if(!premierCoup && choix==2) ////////////////////// PROVISOIRE MAIS BERKKKKKKKKKKKKKKK
+		choix=4;
+
+
+	return choix;
+}
+
+
+void joue_tour(JOUEUR joueur, int choix,int *niveauPioche)
+{
+	switch(choix)
+	{
+	case 1:
+		printf("1 (pioche)\n");
+		pioche_tuile(joueur.main,niveauPioche);
+		break;
+	case 2:
+		printf("2 (crée combi)\n");
+		break;
+	case 3:
+		printf("3 (complète combi)\n");
+		break;
+	case 4:
+		printf("4 (30pts à mettre)\n");
+		saisit_combinaison(joueur.main);
+		break;
+	}
+
+}
+
+
+void saisit_combinaison(LISTE *main)
+{
+	int choix=1;
+	LISTE *combinaison=cree_liste();
+
+	while(choix!=0)
+	{
+		lit_liste(main);
+		printf("Saisir le n° de la tuile à jouer\n0 pour valider sa combinaison:\n");
+		scanf("%d",&choix);
+		if(choix!=0)
+			ajoute_liste(combinaison,renvoie_tuile_via_position(main,choix-1));
+	}
+	ajoute_plateau(plateau,combinaison);
+}
+
+
+
+TUILE renvoie_tuile_via_position(LISTE *liste,int position)
+{
+	ELEMENT *element=liste->premier;
+
+	while(element != NULL)
+	{
+		if(position==0)
+			return element->tuile;
+		element=element->suivant;
+		position-=1;
+	}
+
+	return element->tuile;	////////////////// GERER LE CAS OU MAUVAISE POSITION (déjà faire un encadrement de position)
+}
+
+
+void lit_plateau()
+{
+	ELEMENT_PLATEAU *element=plateau->premier;
+
+	while(element != NULL)
+	{
+		lit_liste(element->liste);
+		element=element->suivant;
+	}
+}
+
+
+void enleve_element_liste(LISTE * liste,int position) ///////MENERVEEEEEEEEEEEEEEEEEEE -> A FAIREEEE
+{
+	ELEMENT * courant=liste->premier;
+
+	for(position;position>0;position--)
+		courant=courant->suivant;
+
+	//courant->premier=courant->suivant->suivant;
+	//free(elem->premier);
+}
+
+
+
 
 
 
