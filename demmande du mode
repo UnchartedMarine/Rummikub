@@ -1,13 +1,13 @@
 #include <stdio.h>
-int main()
+int mode()
 {
   int mode;
-  printf("combien y a t'il d'humain mouhahaha\n");
+  printf("combien y a t'il d'humain\n");
   scanf("%d", &mode);
   if (mode<0 || mode>4)
   {
-    printf("noob le nombre de joueur rentré est incorrecte\n");
-    main();
+    printf("le nombre de joueur rentré est incorrecte\n");
+    mode();
   }
   else 
   {
