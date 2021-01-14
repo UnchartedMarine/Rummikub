@@ -3,6 +3,106 @@
  ******************************************/
 #include "header.h" 
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+
+int mode()
+{
+  int mode;
+  printf("combien y a t'il d'humain\n");
+  scanf("%d", &mode);
+  if (mode<0 || mode>4)
+  {
+    printf("le nombre de joueur rentré est incorrecte\n");
+    mode();
+  }
+  else 
+  {
+    printf("vous avez choisit %d joueurs. C'est partit!", mode);
+    return mode;
+  }
+}
+
+
+void rentrer_nom_score(int score, char nom)
+{
+    FILE fichier = NULL;
+ 
+    fichier = fopen("tab_score", "w");
+ 
+    if (fichier != NULL)
+    {
+        fputs("nom;score", fichier);
+        fclose(fichier);
+    }
+}
+
+
+int score_joueur(char *nom)
+{
+    FILE* fichier = NULL;
+    char *caractereActuel;
+    char ligneActuel[50] ;
+    char nombre;
+    int score;
+ 
+    fichier = fopen("tab_score", "r");
+ 
+    if (fichier != NULL)
+    {
+        while(fgets(ligneActuel, 50, fichier))
+        {
+            caractereActuel = strtok ( ligneActuel, ";" );
+            if (strcmp(caractereActuel,nom) == 0)
+            {
+              nombre = *strtok ( NULL, ";" );
+              score = atoi(&nombre);  
+            }
+        }
+        printf("%d", score);
+        fclose(fichier);
+    }
+    return score;
+}
+
+void changer_score(int ajout, char *nom)
+{
+  FILE* fichier = NULL;
+  char *caractereActuel;
+  char ligneActuel[50] ;
+  char nombre;
+  int score;
+  fichier = fopen("tab_score", "r");
+  if (fichier != NULL)
+   {
+      while(fgets(ligneActuel, 50, fichier))
+      {
+          caractereActuel = strtok ( ligneActuel, ";" );
+          if (strcmp(caractereActuel,nom) == 0)
+          {
+            nombre = *strtok ( NULL, ";" );
+            score = atoi(&nombre)+ajout;
+            fprintf(fichier, "nom;score")
+          }
+      }
+      fclose(fichier);
+  }
+}
+
+
+void demande_nom_joueur(int mode)
+{
+  int i;
+  char nom;
+  for(1,mode,i++)
+  {
+    printf("Quel est le nom du joueur %d ?",i);
+    scanf(%s, &nom);
+    renter_nom_score(0, nom);
+  }
+}
 
 
 // les fonctions sur la mise ne place du jeu:
