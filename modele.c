@@ -10,28 +10,26 @@
 
 int mode()
 {
-  int mode;
-  printf("combien y a t'il d'humain\n");
-  scanf("%d", &mode);
-  if (mode<0 || mode>4)
-  {
-    printf("le nombre de joueur rentré est incorrecte\n");
-    mode();
-  }
-  else 
-  {
-    printf("vous avez choisit %d joueurs. C'est partit!", mode);
-    return mode;
-  }
+	int mode;
+  	printf("combien y a t'il d'humain\n");
+  	scanf("%d", &mode);
+  	while (mode<0 || mode>4)
+  	{
+    	printf("le nombre de joueur rentré est incorrecte\n");
+    	printf("combien y a t'il d'humain\n");
+ 	 	scanf("%d", &mode);
+  	}
+	printf("vous avez choisit %d joueurs. C'est partit!", mode);
+	return mode;
 }
 
 
 void rentrer_nom_score(int score, char nom)
 {
-    FILE fichier = NULL;
- 
+    FILE* fichier = NULL;
+
     fichier = fopen("tab_score", "w");
- 
+
     if (fichier != NULL)
     {
         fputs("nom;score", fichier);
@@ -84,7 +82,7 @@ void changer_score(int ajout, char *nom)
           {
             nombre = *strtok ( NULL, ";" );
             score = atoi(&nombre)+ajout;
-            fprintf(fichier, "nom;score")
+            fprintf(fichier, "nom;score");
           }
       }
       fclose(fichier);
@@ -96,10 +94,10 @@ void demande_nom_joueur(int mode)
 {
   int i;
   char nom;
-  for(1,mode,i++)
+  for(i = 0;i < mode;i++)
   {
     printf("Quel est le nom du joueur %d ?",i);
-    scanf(%s, &nom);
+    scanf("%s", &nom);
     renter_nom_score(0, nom);
   }
 }
@@ -773,7 +771,7 @@ void enleve_element_liste(LISTE * liste,int position){
 	}
 
 	if(position==1){
-		liste->premier=courant->suivant
+		liste->premier=courant->suivant;
 		free(courant);
 	}
 	else{		
@@ -781,11 +779,9 @@ void enleve_element_liste(LISTE * liste,int position){
 		for(i=1;i<position-1;i++){
 			courant=courant->suivant;
 		}
-		
-		elemeASuppr=courant->suivant
+		elemASuppr=courant->suivant;
 		courant->suivant=elemASuppr->suivant;
 		free(elemASuppr);
-		
 	}
 	//Ici 1 indique que la fonction a réussie à placer la tuile dans la liste.
 	return 1;
