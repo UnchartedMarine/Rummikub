@@ -1,0 +1,12 @@
+void rentrer_nom_score(int score, char nom)
+{
+    FILE fichier = NULL;
+ 
+    fichier = fopen("tab_score", "w");
+ 
+    if (fichier != NULL)
+    {
+        fputs("nom;score", fichier);
+        fclose(fichier);
+    }
+}

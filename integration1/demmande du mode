@@ -1,0 +1,17 @@
+#include <stdio.h>
+int mode()
+{
+  int mode;
+  printf("combien y a t'il d'humain\n");
+  scanf("%d", &mode);
+  if (mode<0 || mode>4)
+  {
+    printf("le nombre de joueur rentré est incorrecte\n");
+    mode();
+  }
+  else 
+  {
+    printf("vous avez choisit %d joueurs. C'est partit!", mode);
+    return mode;
+  }
+}

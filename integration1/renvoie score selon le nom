@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+int score_joueur(char *nom)
+{
+    FILE* fichier = NULL;
+    char *caractereActuel;
+    char ligneActuel[50] ;
+    char nombre;
+    int score;
+ 
+    fichier = fopen("tab_score", "r");
+ 
+    if (fichier != NULL)
+    {
+        while(fgets(ligneActuel, 50, fichier))
+        {
+            caractereActuel = strtok ( ligneActuel, ";" );
+            if (strcmp(caractereActuel,nom) == 0)
+            {
+              nombre = *strtok ( NULL, ";" );
+              score = atoi(&nombre);  
+            }
+        }
+        printf("%d", score);
+        fclose(fichier);
+    }
+    return score;
+}
