@@ -1,106 +1,8 @@
 /******************************************
  * Modele
  ******************************************/
-#include "header.h" 
+#include "modele.h" 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
-
-int mode()
-{
-	int mode;
-  	printf("combien y a t'il d'humain\n");
-  	scanf("%d", &mode);
-  	while (mode<0 || mode>4)
-  	{
-    	printf("le nombre de joueur rentré est incorrecte\n");
-    	printf("combien y a t'il d'humain\n");
- 	 	scanf("%d", &mode);
-  	}
-	printf("vous avez choisit %d joueurs. C'est partit!", mode);
-	return mode;
-}
-
-
-void rentrer_nom_score(int score, char nom)
-{
-    FILE* fichier = NULL;
-
-    fichier = fopen("tab_score", "w");
-
-    if (fichier != NULL)
-    {
-        fputs("nom;score", fichier);
-        fclose(fichier);
-    }
-}
-
-
-int score_joueur(char *nom)
-{
-    FILE* fichier = NULL;
-    char *caractereActuel;
-    char ligneActuel[50] ;
-    char nombre;
-    int score;
- 
-    fichier = fopen("tab_score", "r");
- 
-    if (fichier != NULL)
-    {
-        while(fgets(ligneActuel, 50, fichier))
-        {
-            caractereActuel = strtok ( ligneActuel, ";" );
-            if (strcmp(caractereActuel,nom) == 0)
-            {
-              nombre = *strtok ( NULL, ";" );
-              score = atoi(&nombre);  
-            }
-        }
-        printf("%d", score);
-        fclose(fichier);
-    }
-    return score;
-}
-
-void changer_score(int ajout, char *nom)
-{
-  FILE* fichier = NULL;
-  char *caractereActuel;
-  char ligneActuel[50] ;
-  char nombre;
-  int score;
-  fichier = fopen("tab_score", "r");
-  if (fichier != NULL)
-   {
-      while(fgets(ligneActuel, 50, fichier))
-      {
-          caractereActuel = strtok ( ligneActuel, ";" );
-          if (strcmp(caractereActuel,nom) == 0)
-          {
-            nombre = *strtok ( NULL, ";" );
-            score = atoi(&nombre)+ajout;
-            fprintf(fichier, "nom;score");
-          }
-      }
-      fclose(fichier);
-  }
-}
-
-
-void demande_nom_joueur(int mode)
-{
-  int i;
-  char nom;
-  for(i = 0;i < mode;i++)
-  {
-    printf("Quel est le nom du joueur %d ?",i);
-    scanf("%s", &nom);
-    renter_nom_score(0, nom);
-  }
-}
 
 
 // les fonctions sur la mise ne place du jeu:
@@ -205,9 +107,10 @@ int regarde_qui_commence(int nbJoueurs)  //////////////A FAIRE -> THOMAS S'EN OC
 	return position;
 }
 
-LISTE * cree_plateau()
+PLATEAU * cree_plateau()
 {
 	PLATEAU *plateau = (PLATEAU*) malloc(sizeof(PLATEAU));
+	plateau->premier =  NULL;
 	return plateau;
 }
 
@@ -227,6 +130,7 @@ void ajoute_plateau(PLATEAU *plateau,LISTE *liste)
 LISTE * cree_liste()
 {
 	LISTE *liste = (LISTE*) malloc(sizeof(LISTE));
+	liste->premier=NULL;
 	return liste;
 }
 
@@ -265,27 +169,24 @@ int nb_elements_liste(LISTE *liste)
 	while(tuileMain != NULL)
 	{
 		nombreElements = nombreElements +1;
-		tuileMain=tuileMain->suivant;			
+		tuileMain=tuileMain->suivant;
 	}
-	return nombreElements -1;
+	return nombreElements;
 }
 
 //EN CHANTIER
-//renvoi de est_valide le type de liste 
+//renvoi de est_valide le type de liste
 bool pose_30_points(LISTE *liste){
 	ELEMENT *tuileCourante=liste->premier;
 	ELEMENT *tuileAvant;
 	int tailleListe = nb_elements_liste(liste);
 	int pointsListe=0;
 	int i;
-	
-	//Si la premiere tuile de la suite est un joker, on se 
+	//Si la premiere tuile de la suite est un joker, on se
 	if(tuileCourante->tuile.num == 0){
-		
 	}
 	for(i=1;i<tailleListe;i++){
 		if(tuileCourante->tuile.num == 0){
-			
 		}
 		pointsListe = pointsListe + tuileCourante->tuile.num;
 		if(pointsListe >= 30){
@@ -304,10 +205,6 @@ bool pose_30_points(LISTE *liste){
 //position ici est la position à laquelle on souhaite placer la tuile dans la suite
 int placement_element_liste(LISTE *liste, TUILE tuile, int position)
 {
-	ELEMENT *tuileAvant=liste->premier;
-	ELEMENT *nouveau = malloc(sizeof(*nouveau));
-	int i;
-	
 	if(position > nb_elements_liste(liste)){
 		return 0;
 	}
@@ -316,15 +213,20 @@ int placement_element_liste(LISTE *liste, TUILE tuile, int position)
 		ajoute_liste(liste,tuile);
 	}
 	else{
+		//On créer un type MAIN pour la tuile fournie en paramètres afin de la placer dans la liste qui est composés d'éléments de type MAIN.
+		ELEMENT *tuileAvant=liste->premier;
+		ELEMENT *nouveau = malloc(sizeof(*nouveau));
+		int i;
 		nouveau->tuile=tuile;
+
 		//On parcourt la liste jusqu'à obtenir la tuile dont la position est celle qui précède la position où la tuile va être ajoutée.
 		for(i=1;i<position-1;i++){
 			tuileAvant=tuileAvant->suivant;
 		}
-		
+
 		//La nouvelle tuile pointe la tuile suivante de la tuile qui la précède dorénavant.
 		nouveau->suivant=tuileAvant->suivant;
-		
+
 		//la tuile qui la précède change son attribut suivant pour pointer la nouvelle tuile.
 		tuileAvant->suivant=nouveau;
 	}
@@ -336,19 +238,17 @@ int placement_element_liste(LISTE *liste, TUILE tuile, int position)
 //On considère ici que la position c'est l'endroit de coupe soit l'element à cette position sera le premier élément de la seconde liste, que l'on va créer
 LISTE * separer_liste_en_deux(LISTE *liste, int position){
 	ELEMENT *tuileAvant=liste->premier;
-	ELEMENT *derniereTuile = (ELEMENT*) malloc(sizeof(ELEMENT));
-	LISTE *liste2 = (LISTE*) malloc(sizeof(LISTE));
-	
 	int i;
 
 	for(i=1;i<position-1;i++){
 		tuileAvant=tuileAvant->suivant;
 	}
-	
 	//Creation nouvelle liste a partir de l element demande
+	LISTE *liste2 = (LISTE*) malloc(sizeof(LISTE));
 	liste2->premier=tuileAvant->suivant;
 
 	//Remplacer la tuile suivante de la derniere tuile de la suite 1 par la tuile vide (dont le numero et la couleur sont NULL)
+	ELEMENT *derniereTuile = (ELEMENT*) malloc(sizeof(ELEMENT));
 	derniereTuile->tuile.num = NULL;
 	derniereTuile->tuile.coul = NULL;
 	derniereTuile->suivant = NULL;
@@ -750,17 +650,7 @@ void lit_plateau()
 }
 
 
-void enleve_element_liste(LISTE * liste,int position) ///////MENERVEEEEEEEEEEEEEEEEEEE -> A FAIREEEE
-{
-	ELEMENT * courant=liste->premier;
-
-	for(position;position>0;position--)
-		courant=courant->suivant;
-
-	//courant->premier=courant->suivant->suivant;
-	//free(elem->premier);
-}
-
+/*
 void enleve_element_liste(LISTE * liste,int position){
 	ELEMENT * courant=liste->premier;
 	ELEMENT * elemASuppr;
@@ -785,8 +675,11 @@ void enleve_element_liste(LISTE * liste,int position){
 	}
 	//Ici 1 indique que la fonction a réussie à placer la tuile dans la liste.
 	return 1;
-
 }
+*/
+
+
+
 
 
 
