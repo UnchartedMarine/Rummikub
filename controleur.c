@@ -1,7 +1,7 @@
 /******************************************
  * Controleur
  ******************************************/
-#include "header.h" 
+#include "modele.h" 
 
 
 int main()
@@ -19,33 +19,34 @@ int main()
 	plateau=cree_plateau();
 	init_pioche();
 	
-	for(i=0;i<nbJoueurs;i++)      //////////// PEUT ETRE EN FAIRE UNE FONCTION D'INIT JOUEUR
+	for(i=0;i<nbJoueurs;i++)      //////////// PEUT ETRE EN FAIRE UNE FONCTION D'INIT JOUEUR ? QUEN PENSEZ VOUS ?
 	{
 		joueurs[i].main=cree_liste();
 		lit_liste(joueurs[i].main);
 		init_main(joueurs[i].main,&niveauPioche);
 		lit_liste(joueurs[i].main);
-		joueurs[i].premierCoup;
+		joueurs[i].premierCoup = false;
 	}
-	printf("------------------------------\n");
-	enleve_element_liste(joueurs[0].main,2);
-	lit_liste(joueurs[0].main);
-	printf("------------------------------\n");
 
 	tour=regarde_qui_commence(nbJoueurs);
 
-	niveauPioche=100;    ////////// PROVISOIRE -> POUR TEST
+	niveauPioche=100;    ////////// PROVISOIRE -> POUR FACILITER LES TESTS
 
 	while(!est_partie_finie(joueurs,niveauPioche,nbJoueurs,tour))
 	{
-		printf("Tour du joueur n°%d\n",tour);
-		joue_tour(joueurs[tour],choisit_tour(joueurs[i].premierCoup),&niveauPioche);
-		tour=(tour+1)%nbJoueurs;
-		niveauPioche++;
+		printf("---------Tour du joueur n°%d---------\n",tour);
 
+		printf("NIVEAU DE LA PIOCHE:%d\n\n",niveauPioche,tour);
+
+		printf("PLATEAU:\n");
 		lit_plateau();
 
-		printf("nivPioche:%d\n\n",niveauPioche,tour);
+		printf("MAIN DU JOUEUR:\n");
+		lit_liste(joueurs[tour].main);
+	
+		joue_tour(&(joueurs[tour]),&niveauPioche);
+		tour=(tour+1)%nbJoueurs;
+
 	}
 	
 

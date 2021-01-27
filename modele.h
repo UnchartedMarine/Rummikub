@@ -76,7 +76,7 @@ void lit_plateau();
 
 //Les fonctions pour que le joueur joue son tour
 int choisit_tour(bool premierCoup);
-void joue_tour(JOUEUR joueur, int choix, int *niveauPioche);
+void joue_tour(JOUEUR * joueur, int *niveauPioche);
 void saisit_combinaison(LISTE *main);
 
 //les fonctions de détection de fin de partie et calcul de points
@@ -91,11 +91,14 @@ int calcule_points_gagnant(JOUEUR *joueurs,int nbJoueurs,int gagnant,int aVOIR);
 int calcule_points_perdant(JOUEUR *joueurs,int gagnant,int perdant,int aVOIR);
 
 
-
 void lit_tuile_liste(LISTE *liste, int position);
 TUILE renvoie_tuile_via_position(LISTE *liste,int position);
-void enleve_element_liste(LISTE * liste,int position);
+int enleve_element_liste(LISTE * liste,int position);
+LISTE * renvoie_liste_via_position(int position);
+int nb_elements_plateau();
 
 
 bool pose_30_points(LISTE *liste);
+
+
 

@@ -168,7 +168,7 @@ int nb_elements_liste(LISTE *liste)
 
 	while(tuileMain != NULL)
 	{
-		nombreElements = nombreElements +1;
+		nombreElements += 1;
 		tuileMain=tuileMain->suivant;
 	}
 	return nombreElements;
@@ -565,7 +565,6 @@ int choisit_tour(bool premierCoup)
 {
 	int choix;
 
-	/////////EN ATTENDANT LA SDL ON SAISIE POUR JOUER (oui le code est degueuxxxx)
 	if(!premierCoup)
 		printf("1-Piocher\n2-Créer une combinaison d'au moins 30 points\nSaisie:");
 	else
@@ -581,23 +580,33 @@ int choisit_tour(bool premierCoup)
 }
 
 
-void joue_tour(JOUEUR joueur, int choix,int *niveauPioche)
+void joue_tour(JOUEUR * joueur,int *niveauPioche)
 {
-	switch(choix)
+	int position;
+	LISTE * combinaison;
+
+	switch(choisit_tour(joueur->premierCoup))
 	{
 	case 1:
 		printf("1 (pioche)\n");
-		pioche_tuile(joueur.main,niveauPioche);
+		pioche_tuile(joueur->main,niveauPioche);
 		break;
 	case 2:
 		printf("2 (crée combi)\n");
+		saisit_combinaison(joueur->main);
 		break;
 	case 3:
 		printf("3 (complète combi)\n");
+		printf("Saisir la combinaison à compléter:\n");
+		scanf("%d",&position);
+		combinaison = renvoie_liste_via_position(position);
+		lit_liste(combinaison);
+		//complete_combinaison(combinaison(joueur->main));
 		break;
 	case 4:
 		printf("4 (30pts à mettre)\n");
-		saisit_combinaison(joueur.main);
+		saisit_combinaison(joueur->main);
+		joueur->premierCoup = true;
 		break;
 	}
 
@@ -615,9 +624,49 @@ void saisit_combinaison(LISTE *main)
 		printf("Saisir le n° de la tuile à jouer\n0 pour valider sa combinaison:\n");
 		scanf("%d",&choix);
 		if(choix!=0)
-			ajoute_liste(combinaison,renvoie_tuile_via_position(main,choix-1));
+		{
+			ajoute_liste(combinaison,renvoie_tuile_via_position(main,choix));
+			enleve_element_liste(main,choix);
+		}
 	}
 	ajoute_plateau(plateau,combinaison);
+}
+
+
+void complete_combinaison(LISTE combinaison)
+{
+	printf("Saisir le n° de la tuile à jouer\n0 pour valider sa combinaison:\n");
+}
+
+
+
+LISTE * renvoie_liste_via_position(int position)
+{
+	ELEMENT_PLATEAU *element=plateau->premier;
+
+	if((position>0) && (position<=nb_elements_plateau())) ////////////////////////////////PROBLEME AVEC CAAAAAAA
+	{
+		while(element != NULL)
+		{
+			if(position==1)
+				return element->liste;
+			element=element->suivant;
+			position-=1;
+		}
+	}
+}
+
+int nb_elements_plateau()
+{
+	ELEMENT_PLATEAU *element=plateau->premier;
+	int nombreElements=0;
+
+	while(element != NULL)
+	{
+		nombreElements += 1;
+		element=element->suivant;
+	}
+	return nombreElements;
 }
 
 
@@ -626,37 +675,40 @@ TUILE renvoie_tuile_via_position(LISTE *liste,int position)
 {
 	ELEMENT *element=liste->premier;
 
-	while(element != NULL)
+	if((position>0) && (position<=nb_elements_liste(liste))) ////////////////////////////////PROBLEME AVEC CAAAAAAA
 	{
-		if(position==0)
-			return element->tuile;
-		element=element->suivant;
-		position-=1;
+		while(element != NULL)
+		{
+			if(position==1) //position est à 1 quand on se trouve sur la tuile cherchée
+				return element->tuile;
+			element=element->suivant;
+			position-=1;
+		}
 	}
-
-	return element->tuile;	////////////////// GERER LE CAS OU MAUVAISE POSITION (déjà faire un encadrement de position)
 }
 
 
 void lit_plateau()
 {
 	ELEMENT_PLATEAU *element=plateau->premier;
+	int indiceElement=1;
 
 	while(element != NULL)
 	{
+		printf("%d:\n",indiceElement);	
 		lit_liste(element->liste);
 		element=element->suivant;
+		indiceElement+=1;
 	}
 }
 
 
-/*
-void enleve_element_liste(LISTE * liste,int position){
+int enleve_element_liste(LISTE * liste,int position){
 	ELEMENT * courant=liste->premier;
 	ELEMENT * elemASuppr;
 	int i;
 	
-	if(position > nb_elements_liste(liste)){
+	if((position > nb_elements_liste(liste)) || (position <= 0)){
 		return 0;
 	}
 
@@ -676,7 +728,7 @@ void enleve_element_liste(LISTE * liste,int position){
 	//Ici 1 indique que la fonction a réussie à placer la tuile dans la liste.
 	return 1;
 }
-*/
+
 
 
 
