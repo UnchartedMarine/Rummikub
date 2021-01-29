@@ -87,24 +87,30 @@ void init_main(LISTE *liste,int *niveauPioche)
 		pioche_tuile(liste,niveauPioche);
 }
 
-
-int regarde_qui_commence(int nbJoueurs)  //////////////A FAIRE -> THOMAS S'EN OCCUPE
-/*****si 2 piochent le max le premier commence ? ou il faut retirer ? + problème c'est que ça aide car on peut deviner comment est la pioche et on peut connaître des tuiles de la main des autres*****/
+int regarde_qui_commence(int nbJoueurs)
 {
-	int max=-1;	
-	int i,position;
+	int borneInferieur = -1;
+	return regarde_qui_commence_aux(nbJoueurs-1,borneInferieur,borneInferieur);
+}
 
-	for(i=0;i<nbJoueurs;i++)
-	{
-		printf("Joueur %d pioche %d\n",i,pioche[i]);
-		
-		if(pioche[i].num>max)
-		{
-			max=pioche[i].num;
-			position=i;		
-		}			
-	}
-	return position;
+
+
+int regarde_qui_commence_aux(int nbJoueurs,int valeurMax,int positionMax)
+{
+	int valeur;
+
+	if(nbJoueurs<0)
+		return positionMax;
+
+	valeur=pioche[rand()%106].num;
+	printf("Joueur n°%d pioche %d\n",nbJoueurs,valeur);
+
+	if(valeur > valeurMax)
+		return regarde_qui_commence_aux(nbJoueurs-1,valeur,nbJoueurs);
+	if(valeur == valeurMax)
+		return regarde_qui_commence_aux(nbJoueurs,valeurMax,positionMax);
+	else
+		return regarde_qui_commence_aux(nbJoueurs-1,valeurMax,positionMax);
 }
 
 PLATEAU * cree_plateau()
@@ -582,8 +588,7 @@ int choisit_tour(bool premierCoup)
 
 void joue_tour(JOUEUR * joueur,int *niveauPioche)
 {
-	int position;
-	LISTE * combinaison;
+	int a = 0;
 
 	switch(choisit_tour(joueur->premierCoup))
 	{
@@ -597,11 +602,25 @@ void joue_tour(JOUEUR * joueur,int *niveauPioche)
 		break;
 	case 3:
 		printf("3 (complète combi)\n");
-		printf("Saisir la combinaison à compléter:\n");
-		scanf("%d",&position);
-		combinaison = renvoie_liste_via_position(position);
-		lit_liste(combinaison);
-		//complete_combinaison(combinaison(joueur->main));
+/*
+		while(a!=5)
+		{
+			printf("1 - Ajouter à la combinaison\n2 - Récupérer une tuile\n3 - Remplacer une tuile\n4 - Diviser une combinaison\n5 - Finir tour\n");
+			scanf("%d",&a);	
+
+
+			if(a==1)
+				complete_combinaison();
+			else if(a==2)
+				recupere_tuile_combinaison(combinaison);
+			else if(a==3)
+			else if(a==4)
+				separer_liste_en_deux(combinaison,?????);
+			else if(a!=5)
+				printf("inutile\n");
+		}*/
+
+		//lit_liste(combinaison);
 		break;
 	case 4:
 		printf("4 (30pts à mettre)\n");
@@ -611,6 +630,28 @@ void joue_tour(JOUEUR * joueur,int *niveauPioche)
 	}
 
 }
+
+
+/*
+void complete_combinaison(LISTE combinaison)
+{
+	int position;
+	LISTE * combinaison;
+	
+	lit_plateau();
+	printf("Saisir la combinaison à compléter:\n");
+	scanf("%d",&position);
+	combinaison = renvoie_liste_via_position(position);
+
+	lit_liste(combinaison);
+	printf("1 - Compléter au début\n2 - Compléter à la fin\n");
+	scanf("%d",&a);
+	if(a==1)
+	else
+
+}
+*/
+
 
 
 void saisit_combinaison(LISTE *main)
@@ -630,12 +671,6 @@ void saisit_combinaison(LISTE *main)
 		}
 	}
 	ajoute_plateau(plateau,combinaison);
-}
-
-
-void complete_combinaison(LISTE combinaison)
-{
-	printf("Saisir le n° de la tuile à jouer\n0 pour valider sa combinaison:\n");
 }
 
 

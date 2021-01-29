@@ -59,6 +59,7 @@ void lit_pioche(TUILE* pioche);
 void piocher_tuile(LISTE *liste,int *niveauPioche);
 void init_main(LISTE *liste,int *niveauPioche);
 int regarde_qui_commence(int nbJoueurs);
+int regarde_qui_commence_aux(int nbJoueurs,int valeurMax,int positionMax);
 
 //Les fonctions de manipulation de liste
 LISTE * cree_liste();
