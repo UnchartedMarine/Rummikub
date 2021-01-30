@@ -30,7 +30,7 @@ int main()
 
 	tour=regarde_qui_commence(nbJoueurs);
 	printf("%d COMMENCE\n",tour);
-/*
+
 	niveauPioche=100;    ////////// PROVISOIRE -> POUR FACILITER LES TESTS
 
 	while(!est_partie_finie(joueurs,niveauPioche,nbJoueurs,tour))
@@ -70,7 +70,7 @@ int main()
 
 	printf("gagnant:%d ; 0:%d ; 1:%d ; 2:%d\n",gagnant,joueurs[0].points,joueurs[1].points,joueurs[2].points);
 	
-*/
+
 	return 0;
 }
 

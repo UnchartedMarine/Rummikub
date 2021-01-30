@@ -152,6 +152,14 @@ void ajoute_liste(LISTE *liste,TUILE tuile)
 }
 
 
+void ajoute_liste_position_donnee(LISTE *liste,TUILE tuile, int position)
+{
+
+	
+
+}
+
+
 void lit_liste(LISTE *liste)
 {
 	ELEMENT *tuileMain=liste->premier;
@@ -352,7 +360,7 @@ bool est_valide(LISTE *liste){ //Penser à intégrer le joker à cette vérifica
 					tuileVerifSuivante = tuileVerifSuivante->suivant;
 				}
 			}
-			//Si la tuile suiavnte de la tuile courante est un joker
+			//Si la tuile suivante de la tuile courante est un joker
 			if(tuileVerifSuivante->tuile.num==0){
 				tuileJoker=tuileJoker+1;
 				if(tuileJoker>1){
@@ -578,7 +586,7 @@ int choisit_tour(bool premierCoup)
 	
 	scanf("%d",&choix);
 
-	if(!premierCoup && choix==2) ////////////////////// PROVISOIRE MAIS BERKKKKKKKKKKKKKKK
+	if(!premierCoup && choix==2)
 		choix=4;
 
 
@@ -593,37 +601,39 @@ void joue_tour(JOUEUR * joueur,int *niveauPioche)
 	switch(choisit_tour(joueur->premierCoup))
 	{
 	case 1:
-		printf("1 (pioche)\n");
+		printf("VOUS PIOCHEZ\n");
 		pioche_tuile(joueur->main,niveauPioche);
 		break;
 	case 2:
-		printf("2 (crée combi)\n");
+		printf("VOUS CREEZ UNE COMBINAISON\n");
 		saisit_combinaison(joueur->main);
 		break;
 	case 3:
-		printf("3 (complète combi)\n");
-/*
+		printf("VOUS COMPLETEZ UNE COMBINAISON\n");
+
 		while(a!=5)
 		{
-			printf("1 - Ajouter à la combinaison\n2 - Récupérer une tuile\n3 - Remplacer une tuile\n4 - Diviser une combinaison\n5 - Finir tour\n");
+			printf("1 - Ajouter à la combinaison\n2 - Récupérer une tuile\n3 - Diviser une combinaison\n4 - Valider la combinaison\n");
 			scanf("%d",&a);	
-
+			
+			lit_plateau();
+			printf("MAIN:\n");
+			lit_liste(joueur->main);
 
 			if(a==1)
-				complete_combinaison();
+				complete_combinaison(joueur->main);
 			else if(a==2)
-				recupere_tuile_combinaison(combinaison);
+				recupere_tuile_combinaison(joueur->main);
 			else if(a==3)
-			else if(a==4)
-				separer_liste_en_deux(combinaison,?????);
-			else if(a!=5)
-				printf("inutile\n");
-		}*/
+				separe_combinaison();
+			else if(a!=4)
+				printf("inutile -> reboucle\n");
+		}
 
 		//lit_liste(combinaison);
 		break;
 	case 4:
-		printf("4 (30pts à mettre)\n");
+		printf("VOUS DEVEZ CREER UNE COMBINAISON D'AU MOINS 30 PTS\n");
 		saisit_combinaison(joueur->main);
 		joueur->premierCoup = true;
 		break;
@@ -632,26 +642,70 @@ void joue_tour(JOUEUR * joueur,int *niveauPioche)
 }
 
 
-/*
-void complete_combinaison(LISTE combinaison)
+
+void complete_combinaison(LISTE * main)
 {
-	int position;
+	int positionCombinaison,positionInsertion,positionTuile;
 	LISTE * combinaison;
-	
-	lit_plateau();
+	TUILE tuile;
+
 	printf("Saisir la combinaison à compléter:\n");
-	scanf("%d",&position);
-	combinaison = renvoie_liste_via_position(position);
-
+	scanf("%d",&positionCombinaison);
+	combinaison = renvoie_liste_via_position(positionCombinaison);
+	
+	printf("LA COMBINAISON:\n");
 	lit_liste(combinaison);
-	printf("1 - Compléter au début\n2 - Compléter à la fin\n");
-	scanf("%d",&a);
-	if(a==1)
-	else
 
+	printf("Position à laquelle insérer:\n");
+	scanf("%d",&positionInsertion);
+
+	printf("Position de la tuile à insérer:\n");
+	scanf("%d",&positionTuile);
+	tuile=renvoie_tuile_via_position(combinaison,positionTuile);
+
+	//ajoute_liste_position_donnee(combinaison,tuile,position)
+	//enleve_element_liste(main,positionTuile);
 }
-*/
 
+
+void recupere_tuile_combinaison(LISTE * main)
+{	
+	int positionCombinaison,positionTuile;
+	LISTE * combinaison;
+	TUILE tuile;
+
+	printf("Saisir la combinaison dans laquelle récupérer une tuile:\n");
+	scanf("%d",&positionCombinaison);
+	combinaison = renvoie_liste_via_position(positionCombinaison);
+
+	printf("LA COMBINAISON CHOISIE:\n");
+	lit_liste(combinaison);
+
+	printf("Saisir la position de la tuile à récupérer:\n");
+	scanf("%d",&positionTuile);
+	tuile = renvoie_tuile_via_position(combinaison,positionTuile);
+
+	enleve_element_liste(combinaison,positionTuile);
+	ajoute_liste(main,tuile);
+}
+
+
+void separe_combinaison()
+{
+	int positionCombinaison,positionSeparation;
+	LISTE * combinaison;
+
+	printf("Saisir la combinaison à diviser:\n");
+	scanf("%d",&positionCombinaison);
+	combinaison = renvoie_liste_via_position(positionCombinaison);
+	
+	printf("LA COMBINAISON CHOISIE:\n");
+	lit_liste(combinaison);
+
+	printf("Saisir la position à laquelle séparer la combinaison:\n");
+	scanf("%d",&positionCombinaison);
+	separer_liste_en_deux(combinaison,positionSeparation);
+}
 
 
 void saisit_combinaison(LISTE *main)
