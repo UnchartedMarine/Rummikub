@@ -66,12 +66,14 @@ LISTE * cree_liste();
 void ajoute_liste(LISTE *liste,TUILE tuile);
 void ajoute_liste_position_donnee(LISTE *liste,TUILE tuile, int position);
 void lit_liste(LISTE *liste);
+void lit_liste_aux(ELEMENT * element,int indiceTuile);
 int nb_elements_liste(LISTE *liste);
 int placement_element_liste(LISTE *liste, TUILE tuile, int position);
 LISTE * separer_liste_en_deux(LISTE *liste, int position);
 bool est_valide(LISTE *liste);
 int enleve_element_liste(LISTE * liste,int position);
 TUILE renvoie_tuile_via_position(LISTE *liste,int position);
+void echange_tuiles_listes(LISTE * liste1,LISTE * liste2,int positionListe1,int positionListe2);
 
 //les fonctions liées au plateau
 PLATEAU * cree_plateau();
@@ -85,6 +87,7 @@ void complete_combinaison(LISTE * main);
 void saisit_combinaison(LISTE * main);
 void recupere_tuile_combinaison(LISTE * main);
 void separe_combinaison();
+void remplace_joker(LISTE * main);
 
 //les fonctions de détection de fin de partie et calcul de points
 bool pioche_finie(int niveauPioche);
@@ -101,7 +104,7 @@ int calcule_points_perdant(JOUEUR *joueurs,int gagnant,int perdant,int aVOIR);
 void lit_tuile_liste(LISTE *liste, int position);
 LISTE * renvoie_liste_via_position(int position);
 int nb_elements_plateau();
-
+void init_joueurs(JOUEUR * joueurs,int nbJoueurs,int * niveauPioche);
 bool pose_30_points(LISTE *liste);
 
 

@@ -55,6 +55,21 @@ void melange_pioche(TUILE* pioche) // 100 mélanges ça me paraît pas mal
 }
 
 
+void init_joueurs(JOUEUR * joueurs,int nbJoueurs,int * niveauPioche)
+{
+	int i;
+
+	for(i=0;i<nbJoueurs;i++)
+	{
+		joueurs[i].main=cree_liste();
+		lit_liste(joueurs[i].main);
+		init_main(joueurs[i].main,niveauPioche);
+		lit_liste(joueurs[i].main);	
+		joueurs[i].premierCoup = false;
+	}
+}
+
+
 void lit_tuile(TUILE tuile)
 {
 	printf("Num:%d ; Coul:%d\n",tuile.num,tuile.coul);
@@ -152,27 +167,26 @@ void ajoute_liste(LISTE *liste,TUILE tuile)
 }
 
 
-void ajoute_liste_position_donnee(LISTE *liste,TUILE tuile, int position)
-{
-
-	
-
-}
-
-
 void lit_liste(LISTE *liste)
 {
-	ELEMENT *tuileMain=liste->premier;
-	int indiceTuile=1;
+	ELEMENT * element=liste->premier;
+	int indiceTuile=nb_elements_liste(liste);
 	
-	while(tuileMain != NULL)
-	{
-		printf("(%d) %d;%d\n",indiceTuile,tuileMain->tuile.num,tuileMain->tuile.coul);	
-		tuileMain=tuileMain->suivant;
-		indiceTuile = indiceTuile + 1;
-	}
-	printf("\n");
+	lit_liste_aux(element,indiceTuile);
 }
+
+
+void lit_liste_aux(ELEMENT * element,int indiceTuile)
+{
+	if(element == NULL)
+		printf("\n");
+	else
+	{
+		lit_liste_aux(element->suivant,indiceTuile-1);
+		printf("(%d) %d;%d\n",indiceTuile,element->tuile.num,element->tuile.coul);
+	}
+}
+
 
 //Renvoie la taille d'une liste ou suite dans le jeu, en faisant abstraction de la tuile de fin dont la couleur et le numéro vallent NULL.
 int nb_elements_liste(LISTE *liste)
@@ -554,7 +568,7 @@ void joue_tour(JOUEUR * joueur,int *niveauPioche)
 
 		while(a!=5)
 		{
-			printf("1 - Ajouter à la combinaison\n2 - Récupérer une tuile\n3 - Diviser une combinaison\n4 - Valider la combinaison\n");
+			printf("1 - Ajouter à la combinaison\n2 - Récupérer une tuile\n3 - Séparer une combinaison\n4 - Remplacer un joker\n5 - Valider la combinaison\n");
 			scanf("%d",&a);	
 			
 			lit_plateau();
@@ -567,10 +581,11 @@ void joue_tour(JOUEUR * joueur,int *niveauPioche)
 				recupere_tuile_combinaison(joueur->main);
 			else if(a==3)
 				separe_combinaison();
-			else if(a!=4)
+			else if(a==4)
+				remplace_joker(joueur->main);
+			else if(a!=5)
 				printf("inutile -> reboucle\n");
 		}
-
 		//lit_liste(combinaison);
 		break;
 	case 4:
@@ -583,10 +598,10 @@ void joue_tour(JOUEUR * joueur,int *niveauPioche)
 }
 
 
-
 void complete_combinaison(LISTE * main)
 {
-	int positionCombinaison,positionInsertion,positionTuile;
+	int positionCombinaison,positionTuile;
+	int positionInsertion=-1;
 	LISTE * combinaison;
 	TUILE tuile;
 
@@ -597,15 +612,19 @@ void complete_combinaison(LISTE * main)
 	printf("LA COMBINAISON:\n");
 	lit_liste(combinaison);
 
-	printf("Position à laquelle insérer:\n");
+	printf("1-Ajouter à la fin de la combinaison\n2-Ajouter au début de la combinaison\n");
 	scanf("%d",&positionInsertion);
 
 	printf("Position de la tuile à insérer:\n");
 	scanf("%d",&positionTuile);
 	tuile=renvoie_tuile_via_position(combinaison,positionTuile);
 
-	//ajoute_liste_position_donnee(combinaison,tuile,position)
-	//enleve_element_liste(main,positionTuile);
+	if(positionInsertion==1)
+		ajoute_liste(combinaison,tuile);
+	else if(positionInsertion==2)
+		placement_element_liste(combinaison,tuile,0);
+
+	enleve_element_liste(main,positionTuile);
 }
 
 
@@ -645,7 +664,50 @@ void separe_combinaison()
 
 	printf("Saisir la position à laquelle séparer la combinaison:\n");
 	scanf("%d",&positionCombinaison);
+
 	separer_liste_en_deux(combinaison,positionSeparation);
+}
+
+
+void echange_tuiles_listes(LISTE * liste1,LISTE * liste2,int positionListe1,int positionListe2)
+{
+	ELEMENT * element1=liste1->premier;
+	ELEMENT * element2=liste2->premier;
+	TUILE tuileTmp;
+	int i,j;
+
+	for(i=1;i<positionListe1;i++)
+		element1=element1->suivant;
+
+	for(j=1;j<positionListe2;j++)
+		element2=element2->suivant;
+
+	tuileTmp=element1->tuile;
+	element1->tuile=element2->tuile;
+	element2->tuile=tuileTmp;
+}
+
+
+void remplace_joker(LISTE * main)
+{	
+	int positionCombinaison,positionJokerCombinaison,positionTuileMain;
+	LISTE * combinaison;
+
+	printf("Saisir la combinaison dans laquelle remplacer une tuile:\n");
+	scanf("%d",&positionCombinaison);
+	combinaison = renvoie_liste_via_position(positionCombinaison);
+
+	printf("LA COMBINAISON CHOISIE:\n");
+	lit_liste(combinaison);
+
+	printf("Saisir la position de la tuile à remplacer:\n");
+	scanf("%d",&positionJokerCombinaison);
+
+	lit_liste(main);
+	printf("Saisir par quelle tuile remplacer ce joker:\n");
+	scanf("%d",&positionTuileMain);
+
+	echange_tuiles_listes(combinaison,main,positionJokerCombinaison,positionTuileMain);
 }
 
 

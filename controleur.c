@@ -18,15 +18,8 @@ int main()
 	
 	plateau=cree_plateau();
 	init_pioche();
-	
-	for(i=0;i<nbJoueurs;i++)      //////////// PEUT ETRE EN FAIRE UNE FONCTION D'INIT JOUEUR ? QUEN PENSEZ VOUS ?
-	{
-		joueurs[i].main=cree_liste();
-		lit_liste(joueurs[i].main);
-		init_main(joueurs[i].main,&niveauPioche);
-		lit_liste(joueurs[i].main);
-		joueurs[i].premierCoup = false;
-	}
+	init_joueurs(joueurs,nbJoueurs,&niveauPioche);
+
 
 	tour=regarde_qui_commence(nbJoueurs);
 	printf("%d COMMENCE\n",tour);
