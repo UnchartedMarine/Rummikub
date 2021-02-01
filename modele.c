@@ -61,6 +61,7 @@ void init_joueurs(JOUEUR * joueurs,int nbJoueurs,int * niveauPioche)
 
 	for(i=0;i<nbJoueurs;i++)
 	{
+		demande_pseudo(&(joueurs[i]));
 		joueurs[i].main=cree_liste();
 		lit_liste(joueurs[i].main);
 		init_main(joueurs[i].main,niveauPioche);
@@ -102,15 +103,15 @@ void init_main(LISTE *liste,int *niveauPioche)
 		pioche_tuile(liste,niveauPioche);
 }
 
-int regarde_qui_commence(int nbJoueurs)
+int regarde_qui_commence(int nbJoueurs,JOUEUR * joueurs)
 {
 	int borneInferieur = -1;
-	return regarde_qui_commence_aux(nbJoueurs-1,borneInferieur,borneInferieur);
+	return regarde_qui_commence_aux(nbJoueurs-1,borneInferieur,borneInferieur,joueurs);
 }
 
 
 
-int regarde_qui_commence_aux(int nbJoueurs,int valeurMax,int positionMax)
+int regarde_qui_commence_aux(int nbJoueurs,int valeurMax,int positionMax,JOUEUR * joueurs)
 {
 	int valeur;
 
@@ -118,14 +119,14 @@ int regarde_qui_commence_aux(int nbJoueurs,int valeurMax,int positionMax)
 		return positionMax;
 
 	valeur=pioche[rand()%106].num;
-	printf("Joueur n°%d pioche %d\n",nbJoueurs,valeur);
+	printf("%s pioche %d\n",joueurs[nbJoueurs].pseudo,valeur);
 
 	if(valeur > valeurMax)
-		return regarde_qui_commence_aux(nbJoueurs-1,valeur,nbJoueurs);
+		return regarde_qui_commence_aux(nbJoueurs-1,valeur,nbJoueurs,joueurs);
 	if(valeur == valeurMax)
-		return regarde_qui_commence_aux(nbJoueurs,valeurMax,positionMax);
+		return regarde_qui_commence_aux(nbJoueurs,valeurMax,positionMax,joueurs);
 	else
-		return regarde_qui_commence_aux(nbJoueurs-1,valeurMax,positionMax);
+		return regarde_qui_commence_aux(nbJoueurs-1,valeurMax,positionMax,joueurs);
 }
 
 PLATEAU * cree_plateau()
@@ -135,7 +136,7 @@ PLATEAU * cree_plateau()
 	return plateau;
 }
 
-void ajoute_plateau(PLATEAU *plateau,LISTE *liste)
+void ajoute_plateau(LISTE *liste)
 {
 	ELEMENT_PLATEAU *nouveau = malloc(sizeof(*nouveau));
 
@@ -173,14 +174,13 @@ void lit_liste(LISTE *liste)
 	int indiceTuile=nb_elements_liste(liste);
 	
 	lit_liste_aux(element,indiceTuile);
+	printf("\n");
 }
 
 
 void lit_liste_aux(ELEMENT * element,int indiceTuile)
 {
-	if(element == NULL)
-		printf("\n");
-	else
+	if(element != NULL)
 	{
 		lit_liste_aux(element->suivant,indiceTuile-1);
 		printf("(%d) %d;%d\n",indiceTuile,element->tuile.num,element->tuile.coul);
@@ -253,9 +253,6 @@ LISTE * separer_liste_en_deux(LISTE *liste, int position){
 
 	//Remplacer la tuile suivante de la derniere tuile de la suite 1 par la tuile vide (dont le numero et la couleur sont NULL)
 	ELEMENT *derniereTuile = (ELEMENT*) malloc(sizeof(ELEMENT));
-	derniereTuile->tuile.num = NULL;
-	derniereTuile->tuile.coul = NULL;
-	derniereTuile->suivant = NULL;
 	tuileAvant->suivant=derniereTuile;
 
 	return liste2;
@@ -328,7 +325,7 @@ int est_liste_meme_nb(LISTE *liste){
 				return 1;
 			}
 			for(j=0;j<4;j++){//pas sur de cette boucle
-				if(elemVerif->tuile.coul = coulElem[j]){
+				if(elemVerif->tuile.coul == coulElem[j]){
 					return 1;
 				}
 			}
@@ -379,7 +376,7 @@ void lit_tuile_liste(LISTE *liste, int position)  //fonction pour lire la tuile 
 	if(position>=0 && position<=nb_elements_liste(liste))  //vérifie que position soit bien une position de la liste
 	{
 		ELEMENT *premiereTuile = liste->premier;
-		for(position;position>0;position--) //boucle qui met à position à 0 afin de savoir quand la position est bonne
+		for(;position>0;position--) //boucle qui met à position à 0 afin de savoir quand la position est bonne
 		{
 			premiereTuile = premiereTuile->suivant;
 		}
@@ -413,9 +410,11 @@ int additionne_points(LISTE *main, int fin) //Jonathan j'ai enlevé main à la f
 				}
 			}
 		else  //sinon les points correspondent au numéro de chaque tuile
+		{
 			points += tuileMain->tuile.num;
 			valTuilePrecedente = tuileMain->tuile.num;
-			tuileMain=tuileMain->suivant;			
+			tuileMain=tuileMain->suivant;	
+		}		
 	}
 	return points;
 }
@@ -663,9 +662,9 @@ void separe_combinaison()
 	lit_liste(combinaison);
 
 	printf("Saisir la position à laquelle séparer la combinaison:\n");
-	scanf("%d",&positionCombinaison);
+	scanf("%d",&positionSeparation);
 
-	separer_liste_en_deux(combinaison,positionSeparation);
+	ajoute_plateau(separer_liste_en_deux(combinaison,positionSeparation));
 }
 
 
@@ -727,7 +726,7 @@ void saisit_combinaison(LISTE *main)
 			enleve_element_liste(main,choix);
 		}
 	}
-	ajoute_plateau(plateau,combinaison);
+	ajoute_plateau(combinaison);
 }
 
 
@@ -736,16 +735,15 @@ LISTE * renvoie_liste_via_position(int position)
 {
 	ELEMENT_PLATEAU *element=plateau->premier;
 
-	if((position>0) && (position<=nb_elements_plateau())) ////////////////////////////////PROBLEME AVEC CAAAAAAA
+	while(element != NULL)
 	{
-		while(element != NULL)
-		{
-			if(position==1)
-				return element->liste;
-			element=element->suivant;
-			position-=1;
-		}
+		if(position==1)
+			return element->liste;
+		element=element->suivant;
+		position-=1;
 	}
+	
+	return cree_liste();
 }
 
 int nb_elements_plateau()
@@ -766,17 +764,18 @@ int nb_elements_plateau()
 TUILE renvoie_tuile_via_position(LISTE *liste,int position)
 {
 	ELEMENT *element=liste->premier;
+	TUILE tuileErreur;
 
-	if((position>0) && (position<=nb_elements_liste(liste))) ////////////////////////////////PROBLEME AVEC CAAAAAAA
+	while(element != NULL)
 	{
-		while(element != NULL)
-		{
-			if(position==1) //position est à 1 quand on se trouve sur la tuile cherchée
-				return element->tuile;
-			element=element->suivant;
-			position-=1;
-		}
+		if(position==1) //position est à 1 quand on se trouve sur la tuile cherchée
+			return element->tuile;
+		element=element->suivant;
+		position-=1;
 	}
+	tuileErreur.num=-1;
+	tuileErreur.coul=-1;
+	return tuileErreur;
 }
 
 
@@ -787,11 +786,12 @@ void lit_plateau()
 
 	while(element != NULL)
 	{
-		printf("%d:\n",indiceElement);	
+		printf("%d:",indiceElement);	
 		lit_liste(element->liste);
 		element=element->suivant;
 		indiceElement+=1;
 	}
+	printf("\n");
 }
 
 
@@ -822,6 +822,11 @@ int enleve_element_liste(LISTE * liste,int position){
 }
 
 
+void demande_pseudo(JOUEUR * joueur)
+{
+	printf("Choisissez votre pseudo:");
+	scanf("%s",joueur->pseudo);
+}
 
 
 

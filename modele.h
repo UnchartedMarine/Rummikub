@@ -41,8 +41,9 @@ typedef struct PLATEAU
 
 typedef struct JOUEUR 
 {	
+	char pseudo[21];
 	LISTE * main;
-	int points; //mettre NULL de base ? c'est inutile en vrai, mais pour la clarté ?
+	int points;
 	bool premierCoup;
 } JOUEUR;
 
@@ -58,8 +59,8 @@ void lit_tuile(TUILE tuile);
 void lit_pioche(TUILE* pioche);
 void piocher_tuile(LISTE *liste,int *niveauPioche);
 void init_main(LISTE *liste,int *niveauPioche);
-int regarde_qui_commence(int nbJoueurs);
-int regarde_qui_commence_aux(int nbJoueurs,int valeurMax,int positionMax);
+int regarde_qui_commence(int nbJoueurs,JOUEUR * joueurs);
+int regarde_qui_commence_aux(int nbJoueurs,int valeurMax,int positionMax,JOUEUR * joueurs);
 
 //Les fonctions de manipulation de liste
 LISTE * cree_liste();
@@ -77,7 +78,7 @@ void echange_tuiles_listes(LISTE * liste1,LISTE * liste2,int positionListe1,int 
 
 //les fonctions liées au plateau
 PLATEAU * cree_plateau();
-void ajoute_plateau(PLATEAU *plateau,LISTE *liste);
+void ajoute_plateau(LISTE *liste);
 void lit_plateau();
 
 //Les fonctions pour que le joueur joue son tour
@@ -106,6 +107,6 @@ LISTE * renvoie_liste_via_position(int position);
 int nb_elements_plateau();
 void init_joueurs(JOUEUR * joueurs,int nbJoueurs,int * niveauPioche);
 bool pose_30_points(LISTE *liste);
-
+void demande_pseudo(JOUEUR * joueur);
 
 

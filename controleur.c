@@ -21,16 +21,16 @@ int main()
 	init_joueurs(joueurs,nbJoueurs,&niveauPioche);
 
 
-	tour=regarde_qui_commence(nbJoueurs);
-	printf("%d COMMENCE\n",tour);
+	tour=regarde_qui_commence(nbJoueurs,joueurs);
+	printf("%s COMMENCE\n\n",joueurs[tour].pseudo);
 
 	niveauPioche=100;    ////////// PROVISOIRE -> POUR FACILITER LES TESTS
 
 	while(!est_partie_finie(joueurs,niveauPioche,nbJoueurs,tour))
 	{
-		printf("---------Tour du joueur n°%d---------\n",tour);
+		printf("---------Tour du joueur %s---------\n",joueurs[tour].pseudo);
 
-		printf("NIVEAU DE LA PIOCHE:%d\n\n",niveauPioche,tour);
+		printf("NIVEAU DE LA PIOCHE:%d/106\n\n",niveauPioche);
 
 		printf("PLATEAU:\n");
 		lit_plateau();
