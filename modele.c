@@ -386,7 +386,7 @@ void lit_tuile_liste(LISTE *liste, int position)  //fonction pour lire la tuile 
 
 
 
-int additionne_points(LISTE *main, int fin) //Jonathan j'ai enlevé main à la fin de l'intitulé de la fonction car pour eviter une redondance de code j'utilise cette fonction pour compter les points d'une suite
+int additionne_points(LISTE *main, int fin)
 {
 	ELEMENT *tuileMain=main->premier;
 	int points=0;
@@ -410,22 +410,20 @@ int additionne_points(LISTE *main, int fin) //Jonathan j'ai enlevé main à la f
 				}
 			}
 		else  //sinon les points correspondent au numéro de chaque tuile
-		{
 			points += tuileMain->tuile.num;
-			valTuilePrecedente = tuileMain->tuile.num;
-			tuileMain=tuileMain->suivant;	
-		}		
-	}
+		valTuilePrecedente = tuileMain->tuile.num;
+		tuileMain=tuileMain->suivant;	
+	}		
 	return points;
 }
 
 
-int calcule_points_gagnant(JOUEUR *joueurs,int nbJoueurs,int gagnant,int aVOIR)
+int calcule_points_gagnant(JOUEUR *joueurs,int nbJoueurs,int gagnant,int typeFinDePartie)
 {
 	int i;
 	int points=0;
 
-	if(aVOIR==1)
+	if(typeFinDePartie==1)
 	{
 		for(i=0;i<nbJoueurs;i++)
 		{
@@ -443,11 +441,11 @@ int calcule_points_gagnant(JOUEUR *joueurs,int nbJoueurs,int gagnant,int aVOIR)
 }
 
 
-int calcule_points_perdant(JOUEUR *joueurs,int gagnant,int perdant,int aVOIR)
+int calcule_points_perdant(JOUEUR *joueurs,int gagnant,int perdant,int typeFinDePartie)
 {
 	int points=0;
 	
-	if(aVOIR==1)
+	if(typeFinDePartie==1)
 		points=additionne_points(joueurs[gagnant].main,1)-additionne_points(joueurs[perdant].main,1);
 	else
 		points-=additionne_points(joueurs[perdant].main,1);
@@ -462,7 +460,6 @@ int plus_petite_main(JOUEUR *joueurs, int nbJoueurs)
 	int tmp;
 	int min=10000;  //valeur qui ne sera pas dépassée
 	int gagnant;
-
 	for(i=0;i<nbJoueurs;i++) 
 	{
 		tmp=additionne_points(joueurs[i].main,1);
@@ -473,7 +470,6 @@ int plus_petite_main(JOUEUR *joueurs, int nbJoueurs)
 			gagnant=i;
 		}
 	}
-
 	return gagnant;
 }
 
@@ -489,11 +485,11 @@ int trouve_joueur_precedent(int nbJoueurs, int tour) /***Est-ce que je crée une
 }
 
 
-int detecte_gagnant(JOUEUR *joueurs,int nbJoueurs,int tour,int aVOIR)
+int detecte_gagnant(JOUEUR *joueurs,int nbJoueurs,int tour,int typeFinDePartie)
 {
 	int gagnant;
 
-	if(aVOIR==1)
+	if(typeFinDePartie==1)
 		gagnant=plus_petite_main(joueurs,nbJoueurs);
 	else
 		gagnant=trouve_joueur_precedent(nbJoueurs,tour);
@@ -533,16 +529,18 @@ int choisit_tour(bool premierCoup)
 {
 	int choix;
 
-	if(!premierCoup)
-		printf("1-Piocher\n2-Créer une combinaison d'au moins 30 points\nSaisie:");
-	else
-		printf("1-Piocher\n2-Créer une combinaison (jsais plus si y'a cette option)\n3-Compléter une combinaison\nSaisie:");
+	do
+	{
+		if(!premierCoup)
+			printf("1-Piocher\n2-Créer une combinaison d'au moins 30 points\nSaisie:");
+		else
+			printf("1-Piocher\n2-Créer une combinaison (jsais plus si y'a cette option)\n3-Compléter une combinaison\nSaisie:");
 	
-	scanf("%d",&choix);
+		scanf("%d",&choix);
+	}while((!premierCoup && (choix<1 || choix>2)) || (premierCoup && (choix<1 || choix>3)));
 
 	if(!premierCoup && choix==2)
 		choix=4;
-
 
 	return choix;
 }
@@ -550,7 +548,7 @@ int choisit_tour(bool premierCoup)
 
 void joue_tour(JOUEUR * joueur,int *niveauPioche)
 {
-	int a = 0;
+	int typeDeCoup = 0;
 
 	switch(choisit_tour(joueur->premierCoup))
 	{
@@ -565,27 +563,34 @@ void joue_tour(JOUEUR * joueur,int *niveauPioche)
 	case 3:
 		printf("VOUS COMPLETEZ UNE COMBINAISON\n");
 
-		while(a!=5)
+
+		do
 		{
-			printf("1 - Ajouter à la combinaison\n2 - Récupérer une tuile\n3 - Séparer une combinaison\n4 - Remplacer un joker\n5 - Valider la combinaison\n");
-			scanf("%d",&a);	
+			printf("1 - Ajouter à la combinaison\n2 - Récupérer une tuile\n3 - Séparer une combinaison\n4 - Remplacer un joker\n5 - Valider le tour\nSaisie:");
+			scanf("%d",&typeDeCoup);	
 			
 			lit_plateau();
 			printf("MAIN:\n");
 			lit_liste(joueur->main);
 
-			if(a==1)
+			switch(typeDeCoup)
+			{
+			case 1:
 				complete_combinaison(joueur->main);
-			else if(a==2)
+				break;
+			case 2:
 				recupere_tuile_combinaison(joueur->main);
-			else if(a==3)
+				break;
+			case 3:
 				separe_combinaison();
-			else if(a==4)
+				break;
+			case 4:
 				remplace_joker(joueur->main);
-			else if(a!=5)
-				printf("inutile -> reboucle\n");
-		}
-		//lit_liste(combinaison);
+				break;
+			}
+
+		}while(typeDeCoup!=5);
+
 		break;
 	case 4:
 		printf("VOUS DEVEZ CREER UNE COMBINAISON D'AU MOINS 30 PTS\n");
@@ -604,18 +609,25 @@ void complete_combinaison(LISTE * main)
 	LISTE * combinaison;
 	TUILE tuile;
 
-	printf("Saisir la combinaison à compléter:\n");
-	scanf("%d",&positionCombinaison);
-	combinaison = renvoie_liste_via_position(positionCombinaison);
+	do{
+		printf("Saisir la combinaison à compléter:");
+		scanf("%d",&positionCombinaison);
+	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau());
 	
+	combinaison = renvoie_liste_via_position(positionCombinaison);
 	printf("LA COMBINAISON:\n");
 	lit_liste(combinaison);
 
-	printf("1-Ajouter à la fin de la combinaison\n2-Ajouter au début de la combinaison\n");
-	scanf("%d",&positionInsertion);
+	do{
+		printf("1-Ajouter à la fin de la combinaison\n2-Ajouter au début de la combinaison\n");
+		scanf("%d",&positionInsertion);
+	}while(positionInsertion<1 || positionInsertion>2);
 
-	printf("Position de la tuile à insérer:\n");
-	scanf("%d",&positionTuile);
+	do{
+		printf("Position de la tuile à insérer:\n");
+		scanf("%d",&positionTuile);
+	}while(positionTuile<1 || positionTuile>nb_elements_liste(main));
+	
 	tuile=renvoie_tuile_via_position(combinaison,positionTuile);
 
 	if(positionInsertion==1)
@@ -633,17 +645,21 @@ void recupere_tuile_combinaison(LISTE * main)
 	LISTE * combinaison;
 	TUILE tuile;
 
-	printf("Saisir la combinaison dans laquelle récupérer une tuile:\n");
-	scanf("%d",&positionCombinaison);
+	do{
+		printf("Saisir la combinaison à compléter:");
+		scanf("%d",&positionCombinaison);
+	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau());
+	
 	combinaison = renvoie_liste_via_position(positionCombinaison);
-
 	printf("LA COMBINAISON CHOISIE:\n");
 	lit_liste(combinaison);
 
-	printf("Saisir la position de la tuile à récupérer:\n");
-	scanf("%d",&positionTuile);
+	do{
+		printf("Saisir la position de la tuile à récupérer:");
+		scanf("%d",&positionTuile);
+	}while(positionTuile<1 || positionTuile>nb_elements_liste(combinaison));
+	
 	tuile = renvoie_tuile_via_position(combinaison,positionTuile);
-
 	enleve_element_liste(combinaison,positionTuile);
 	ajoute_liste(main,tuile);
 }
@@ -654,15 +670,19 @@ void separe_combinaison()
 	int positionCombinaison,positionSeparation;
 	LISTE * combinaison;
 
-	printf("Saisir la combinaison à diviser:\n");
-	scanf("%d",&positionCombinaison);
-	combinaison = renvoie_liste_via_position(positionCombinaison);
+	do{
+		printf("Saisir la combinaison à compléter:");
+		scanf("%d",&positionCombinaison);
+	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau());
 	
-	printf("LA COMBINAISON CHOISIE:\n");
+	combinaison = renvoie_liste_via_position(positionCombinaison);
+	printf("LA COMBINAISON CHOISIE:");
 	lit_liste(combinaison);
 
-	printf("Saisir la position à laquelle séparer la combinaison:\n");
-	scanf("%d",&positionSeparation);
+	do{
+		printf("Saisir la position à laquelle séparer la combinaison:");
+		scanf("%d",&positionSeparation);
+	}while(positionSeparation<1 || positionSeparation>nb_elements_liste(combinaison));
 
 	ajoute_plateau(separer_liste_en_deux(combinaison,positionSeparation));
 }
@@ -692,19 +712,25 @@ void remplace_joker(LISTE * main)
 	int positionCombinaison,positionJokerCombinaison,positionTuileMain;
 	LISTE * combinaison;
 
-	printf("Saisir la combinaison dans laquelle remplacer une tuile:\n");
-	scanf("%d",&positionCombinaison);
+	do{
+		printf("Saisir la combinaison à compléter:");
+		scanf("%d",&positionCombinaison);
+	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau());
+	
 	combinaison = renvoie_liste_via_position(positionCombinaison);
-
 	printf("LA COMBINAISON CHOISIE:\n");
 	lit_liste(combinaison);
 
-	printf("Saisir la position de la tuile à remplacer:\n");
-	scanf("%d",&positionJokerCombinaison);
+	do{
+		printf("Saisir la position de la tuile à remplacer:");
+		scanf("%d",&positionJokerCombinaison);
+	}while(positionJokerCombinaison<1 || positionJokerCombinaison>nb_elements_liste(combinaison));
 
-	lit_liste(main);
-	printf("Saisir par quelle tuile remplacer ce joker:\n");
-	scanf("%d",&positionTuileMain);
+	do{
+		lit_liste(main);
+		printf("Saisir par quelle tuile remplacer ce joker:");
+		scanf("%d",&positionTuileMain);
+	}while(positionTuileMain<1 || positionTuileMain>nb_elements_liste(main));
 
 	echange_tuiles_listes(combinaison,main,positionJokerCombinaison,positionTuileMain);
 }
@@ -715,17 +741,20 @@ void saisit_combinaison(LISTE *main)
 	int choix=1;
 	LISTE *combinaison=cree_liste();
 
-	while(choix!=0)
-	{
+	do{
 		lit_liste(main);
-		printf("Saisir le n° de la tuile à jouer\n0 pour valider sa combinaison:\n");
-		scanf("%d",&choix);
+		
+		do{	
+			printf("Saisir le n° de la tuile à jouer\n0 pour valider sa combinaison:");	
+			scanf("%d",&choix);
+		}while(choix<0 || choix>nb_elements_liste(main));
+
 		if(choix!=0)
 		{
 			ajoute_liste(combinaison,renvoie_tuile_via_position(main,choix));
 			enleve_element_liste(main,choix);
 		}
-	}
+	}while(choix!=0);
 	ajoute_plateau(combinaison);
 }
 
@@ -786,12 +815,11 @@ void lit_plateau()
 
 	while(element != NULL)
 	{
-		printf("%d:",indiceElement);	
+		printf("%d:\n",indiceElement);	
 		lit_liste(element->liste);
 		element=element->suivant;
 		indiceElement+=1;
 	}
-	printf("\n");
 }
 
 
@@ -829,6 +857,17 @@ void demande_pseudo(JOUEUR * joueur)
 }
 
 
+void rentrer_nom_score(int score, char * nom)
+{
+	FILE * fichier = NULL;
+	fichier=fopen("scores.csv", "ayyi");
+	
+	if(fichier == NULL)
+		exit(1); 
+
+	fprintf(fichier,"%s %d\n",nom,score);
+	fclose(fichier);
+}
 
 
 

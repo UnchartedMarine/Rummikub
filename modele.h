@@ -93,13 +93,13 @@ void remplace_joker(LISTE * main);
 //les fonctions de détection de fin de partie et calcul de points
 bool pioche_finie(int niveauPioche);
 bool main_finie(JOUEUR * joueurs, int nbJoueurs, int tour);
-int detecte_gagnant(JOUEUR * joueurs,int nbJoueurs,int tour,int aVOIR);
+int detecte_gagnant(JOUEUR * joueurs,int nbJoueurs,int tour,int typeFinDePartie);
 int trouve_joueur_precedent(int nbJoueurs, int tour);
 int plus_petite_main(JOUEUR * joueur, int nbJoueurs);
 bool est_partie_finie(JOUEUR * joueurs, int niveauPioche, int nbJoueurs, int tour);
 int additionne_points(LISTE * main,int fin);
-int calcule_points_gagnant(JOUEUR *joueurs,int nbJoueurs,int gagnant,int aVOIR);
-int calcule_points_perdant(JOUEUR *joueurs,int gagnant,int perdant,int aVOIR);
+int calcule_points_gagnant(JOUEUR *joueurs,int nbJoueurs,int gagnant,int typeFinDePartie);
+int calcule_points_perdant(JOUEUR *joueurs,int gagnant,int perdant,int typeFinDePartie);
 
 
 void lit_tuile_liste(LISTE *liste, int position);
@@ -108,5 +108,5 @@ int nb_elements_plateau();
 void init_joueurs(JOUEUR * joueurs,int nbJoueurs,int * niveauPioche);
 bool pose_30_points(LISTE *liste);
 void demande_pseudo(JOUEUR * joueur);
-
+void rentrer_nom_score(int score, char * nom);
 
