@@ -122,6 +122,7 @@ LISTE * scinder_inf(LISTE *l)
     TUILE x=renvoie_tuile_via_position(l,i);
     ajoute_liste(L,x);
   }
+  return L;
 }
 
 
@@ -129,9 +130,24 @@ LISTE * scinder_sup(LISTE *l)
 {
   LISTE *L=cree_liste();
   int n= nb_elements_liste(l);
-  for(n/2;n;i++)
+  for((n/2)+1;n;i++)
   {
     TUILE x=renvoie_tuile_via_position(l,i);
     ajoute_liste(L,x);
   }
+  return L;
+}
+
+LISTE * tri_couleur(LISTE *l)
+{
+  int n= nb_elements_liste(l);
+  if(n>1)
+  {
+    LISTE *a= scinder_inf(l);
+    LISTE *b=scinder_sup(l);
+    tri_couleur(a);
+    tri_couleur(b);
+    l=fusion(a,b);
+  }
+  renvoyer l;
 }
