@@ -3,24 +3,7 @@
 #include <stdbool.h>
 #include "modele.c"
 
-LISTE * separation0(LISTE L)
-{
-  LISTE * l=cree_liste();
-  int n= nb_elements_liste(L);
-  int i;
-  TUILE t;
-  for(1;n;i++)
-  {
-    t= renvoie_tuile_via_position(L,i);
-    if(t.coul==0)
-    {
-      ajoute_liste(l1,t);
-    }
-  }
-  return l ;
-}
-
-LISTE * separation1(LISTE L)
+LISTE * separation1(LISTE *L)
 {
   LISTE * l=cree_liste();
   int n= nb_elements_liste(L);
@@ -31,12 +14,13 @@ LISTE * separation1(LISTE L)
     t= renvoie_tuile_via_position(L,i);
     if(t.coul==1)
     {
-      ajoute_liste(l,t);
+      ajoute_liste(l1,t);
     }
   }
   return l ;
 }
-LISTE * separation2(LISTE L)
+
+LISTE * separation2(LISTE *L)
 {
   LISTE * l=cree_liste();
   int n= nb_elements_liste(L);
@@ -52,8 +36,7 @@ LISTE * separation2(LISTE L)
   }
   return l ;
 }
-
-LISTE * separation3(LISTE L)
+LISTE * separation3(LISTE *L)
 {
   LISTE * l=cree_liste();
   int n= nb_elements_liste(L);
@@ -63,6 +46,23 @@ LISTE * separation3(LISTE L)
   {
     t= renvoie_tuile_via_position(L,i);
     if(t.coul==3)
+    {
+      ajoute_liste(l,t);
+    }
+  }
+  return l ;
+}
+
+LISTE * separation4(LISTE *L)
+{
+  LISTE * l=cree_liste();
+  int n= nb_elements_liste(L);
+  int i;
+  TUILE t;
+  for(1;n;i++)
+  {
+    t= renvoie_tuile_via_position(L,i);
+    if(t.coul==4)
     {
       ajoute_liste(l,t);
     }
@@ -138,16 +138,65 @@ LISTE * scinder_sup(LISTE *l)
   return L;
 }
 
-LISTE * tri_couleur(LISTE *l)
+LISTE * tri(LISTE *l)
 {
   int n= nb_elements_liste(l);
   if(n>1)
   {
     LISTE *a= scinder_inf(l);
     LISTE *b=scinder_sup(l);
-    tri_couleur(a);
-    tri_couleur(b);
+    tri(a);
+    tri(b);
     l=fusion(a,b);
   }
   renvoyer l;
+}
+
+LISTE * tri_couleur(LISTE *L)
+{
+  int i;
+  LISTE *l=cree_liste();
+  LISTE *l1=separation1(L);
+  LISTE *l2=separation2(L);
+  LISTE *l3=separation3(L);
+  LISTE *l4=separation4(L);
+  LISTE *L1=tri(l1);
+  LISTE *L2=tri(l2);
+  LISTE *L3=tri(l3);
+  LISTE *L4=tri(l4);
+  int n=nb_elements_liste(L);
+  int n1=nb_elements_liste(L1);
+  int n2=nb_elements_liste(L2);
+  int n3=nb_elements_liste(L3);
+  int n4=nb_elements_liste(L4);
+  for(1;n;i++)
+  {
+    if(i<=n1)
+    {
+      TUILE x=renvoie_tuile_via_position(l1,i);
+      ajoute_liste(l,x);
+    }
+    else
+    {
+      if((i>n1)&((i-n1)<n2))
+      {
+        TUILE x=renvoie_tuile_via_position(l2,i-n1);
+        ajoute_liste(l,x);
+      }
+      else
+      {
+        if(((i-n1)>n2)&((i-n1-n2)<n3))
+        {
+          TUILE x=renvoie_tuile_via_position(l3,i-n1-n2);
+          ajoute_liste(l,x);
+        }
+        else
+        {
+          TUILE x=renvoie_tuile_via_position(l4,i-n1-n2-n3);
+          ajoute_liste(l,x);
+        }
+      }
+    }
+  }
+  return l;
 }
