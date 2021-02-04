@@ -241,18 +241,18 @@ void liste_suite_possible(LISTE *L, PLATEAU coup_valide1)
 LISTE renvoie_element_plateau(PLATEAU p, int pos)
 {
 	ELEMENT_PLATEAU *element=p->premier;
-  LISTE *erreur=cree_liste;
+ 	LISTE *erreur=cree_liste;
 
 	while(element != NULL)
 	{
-    if(pos==1)
-    {
-      return element->liste;
-    }
-    element=element->suivant;
-		pos= pos-1;
+		if(pos==1)
+    		{
+      			return element->liste;
+    		}
+    		element=element->suivant;
+    		pos= pos-1;
 	}
-  return erreur;
+  	return erreur;
 }
 
 int nb_elements_plateau(PLATEAU p)
@@ -268,10 +268,33 @@ int nb_elements_plateau(PLATEAU p)
 	return nombreElements;
 }
 
-LISTE supprime_tuile_a_jouer(LISTE L, PLATEAU k)
+LISTE * supprime_tuile_a_jouer(LISTE *L, PLATEAU p)
 {
-  
+  	int n=nb_elements_liste(L);
+	int m=nb_elements_plateau(p);
+	int i;
+	int j;
+	int k;
+	for(1;n;i++)
+	{
+		for(1;m;j++)
+		{
+			LISTE *l=renvoie_element_plateau(p, pos);
+			int a= int n=nb_elements_liste(l);
+			for(0;a;k++)
+			{
+				TUILE x=renvoie_tuile_via_position(L,i);
+				TUILE y=renvoie_tuile_via_position(l,k);
+				if(x==y)
+				{
+					enleve_element_liste(LISTE * liste,int position);
+				}
+			}
+		}
+	}
+	return L;
 }
   
-  
-  
+
+
+
