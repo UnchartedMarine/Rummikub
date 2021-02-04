@@ -767,9 +767,7 @@ void complete_combinaison(LISTE * main)
 	int positionCombinaison,positionTuile;
 	int positionInsertion=-1;
 	int nbElemsPlateau = nb_elements_plateau(copiePlateau);
-	int posCombi;
-	int nbElemsMain;
-	int posMain;
+	LISTE *quelleListe;
 	LISTE * combinaison;
 	TUILE tuile;
 
@@ -778,8 +776,8 @@ void complete_combinaison(LISTE * main)
 		scanf("%d",&positionCombinaison);
 	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau(copiePlateau));
 	
-	posCombi= nbElemsPlateau+1-positionCombinaison;
-	combinaison = renvoie_liste_via_position(copiePlateau,posCombi);
+
+	combinaison = renvoie_liste_via_position(copiePlateau,positionCombinaison);
 	printf("LA COMBINAISON:\n");
 	lit_liste(combinaison);
 
@@ -790,17 +788,18 @@ void complete_combinaison(LISTE * main)
 
 	if(nb_elements_liste(listeTuilesRecup)<1){
 		positionTuile=choisirTuile(copieMain);
+		quelleListe=main;
 	}
 	else if(choisir_main_ou_recupTuile()==1){
 		positionTuile=choisirTuile(copieMain);
+		quelleListe=main;
 	}
 	else{
 		positionTuile=choisirTuile(listeTuilesRecup);
+		quelleListe=listeTuilesRecup;
 	}
 	
-	nbElemsMain=nb_elements_liste(main);
-	posMain=nbElemsMain+1-positionTuile;
-	tuile=renvoie_tuile_via_position(main,posMain);
+	tuile=renvoie_tuile_via_position(quelleListe,positionTuile);
 
 	if(positionInsertion==1){
 		ajoute_liste(combinaison,tuile);
@@ -808,7 +807,7 @@ void complete_combinaison(LISTE * main)
 	else if(positionInsertion==2){
 		placement_element_liste(combinaison,tuile,nb_elements_liste(combinaison)+1);
 	}
-	enleve_element_liste(main,posMain);
+	enleve_element_liste(quelleListe,positionTuile);
 }
 
 
@@ -817,7 +816,6 @@ void recupere_tuile_combinaison(LISTE * main)
 	int positionCombinaison,positionTuile;
 	int nbElemsCombi;
 	int nbElemsPlateau = nb_elements_plateau(copiePlateau);
-	int posCombi;
 	int posDansCombi;
 	int choixCombi;
 	LISTE * combinaison;
@@ -828,11 +826,12 @@ void recupere_tuile_combinaison(LISTE * main)
 		scanf("%d",&positionCombinaison);
 	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau(copiePlateau));
 	
-	posCombi= nbElemsPlateau+1-positionCombinaison;
-	combinaison = renvoie_liste_via_position(copiePlateau,posCombi);
+	combinaison = renvoie_liste_via_position(copiePlateau,positionCombinaison);
 	nbElemsCombi=nb_elements_liste(combinaison);
-	if(nbElemsCombi<4)
+	if(nbElemsCombi<4){
 		printf("LA COMBINAISON CONTIENT MOINS DE 4 TUILES, C'EST UN COUP IMPOSSIBLE");
+		return 0;
+	}
 
 
 	printf("LA COMBINAISON CHOISIE:\n");
@@ -844,9 +843,9 @@ void recupere_tuile_combinaison(LISTE * main)
 	}while(positionTuile<1 || positionTuile>nb_elements_liste(combinaison));
 	
 
-	posDansCombi=nbElemsCombi+1-positionTuile;
 
-	tuile = renvoie_tuile_via_position(combinaison,posDansCombi);
+
+	tuile = renvoie_tuile_via_position(combinaison,positionTuile);
 	enleve_element_liste(combinaison,posDansCombi);
 	ajoute_liste(main,tuile);
 
@@ -871,11 +870,10 @@ int complete_recup_combinaison(LISTE * main)
 	int positionCombinaison,positionTuile;
 	int positionInsertion=-1;
 	int nbElemsCombi;
-	int nbElemsMain;
-	int posMain;
 	int nbElemsPlateau = nb_elements_plateau(copiePlateau);
-	int posCombi;
+
 	LISTE * combinaison;
+	LISTE *quelleListe;
 	TUILE tuile;
 
 	do{
@@ -883,8 +881,7 @@ int complete_recup_combinaison(LISTE * main)
 		scanf("%d",&positionCombinaison);
 	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau(copiePlateau));
 	
-	posCombi= nbElemsPlateau+1-positionCombinaison;
-	combinaison = renvoie_liste_via_position(copiePlateau,posCombi);
+	combinaison = renvoie_liste_via_position(copiePlateau,positionCombinaison);
 	
 	if(joker_est_dans_liste(combinaison)==true){
 		printf("ON NE PEUT PAS FAIRE CE COUP S'IL Y A UN JOKER DANS LA COMBINAISON");
@@ -905,34 +902,35 @@ int complete_recup_combinaison(LISTE * main)
 
 	if(nb_elements_liste(listeTuilesRecup)<1){
 		positionTuile=choisirTuile(copieMain);
+		quelleListe=main;
 	}
 	else if(choisir_main_ou_recupTuile()==1){
 		positionTuile=choisirTuile(copieMain);
+		quelleListe=main;
 	}
 	else{
 		positionTuile=choisirTuile(listeTuilesRecup);
+		quelleListe=listeTuilesRecup;
 	}
 	
-	nbElemsMain=nb_elements_liste(main);
-	posMain=nbElemsMain+1-positionTuile;
-	tuile=renvoie_tuile_via_position(main,posMain);
+	tuile=renvoie_tuile_via_position(quelleListe,positionTuile);
 
 	if(positionInsertion==1){
 		ajoute_liste(combinaison,tuile);
-		enleve_element_liste(main,posMain);
+		enleve_element_liste(quelleListe,positionTuile);
 
 		nbElemsCombi = nb_elements_liste(combinaison);
 		tuile = renvoie_tuile_via_position(combinaison,nbElemsCombi);
 		enleve_element_liste(combinaison,nbElemsCombi);
-		ajoute_liste(main,tuile);
+		ajoute_liste(listeTuilesRecup,tuile);
 	}
 	else if(positionInsertion==2){
 		placement_element_liste(combinaison,tuile,nb_elements_liste(combinaison)+1);
-		enleve_element_liste(main,posMain);
+		enleve_element_liste(quelleListe,positionTuile);
 
 		tuile = renvoie_tuile_via_position(combinaison,1);
 		enleve_element_liste(combinaison,1);
-		ajoute_liste(main,tuile);
+		ajoute_liste(listeTuilesRecup,tuile);
 	}
 	return 1;
 	
@@ -955,8 +953,7 @@ bool joker_est_dans_liste(LISTE * liste)
 int separe_combinaison()
 {
 	int positionCombinaison,positionSeparation;
-	int nbElemsCombi;
-	int posCombi;
+
 	int posSepa;
 	int nbElemsDansCombi;
 	LISTE * combinaison;
@@ -966,9 +963,7 @@ int separe_combinaison()
 		scanf("%d",&positionCombinaison);
 	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau(copiePlateau));
 	
-	nbElemsCombi=nb_elements_plateau(copiePlateau);
-	posCombi=nbElemsCombi+1-positionCombinaison;
-	combinaison = renvoie_liste_via_position(copiePlateau,posCombi);
+	combinaison = renvoie_liste_via_position(copiePlateau,positionCombinaison);
 
 	if(joker_est_dans_liste(combinaison)==true){
 		return 0;
@@ -1013,8 +1008,9 @@ void echange_tuiles_listes(LISTE * liste1,LISTE * liste2,int positionListe1,int 
 }
 
 
-void remplace_joker(LISTE * main)
+int remplace_joker(LISTE * main)
 {	
+	TUILR tuile;
 	int positionCombinaison,positionJokerCombinaison,positionTuile;
 	LISTE * combinaison;
 
@@ -1032,6 +1028,11 @@ void remplace_joker(LISTE * main)
 		scanf("%d",&positionJokerCombinaison);
 	}while(positionJokerCombinaison<1 || positionJokerCombinaison>nb_elements_liste(combinaison));
 
+	tuile=renvoie_tuile_via_position(combinaison,positionJoker);
+	if(tuile.num!=0){
+		return 0;
+	}
+	
 	//choix de la tuile dans la main ou la liste des tuiles à jouer obligatoirement
 	if(nb_elements_liste(listeTuilesRecup)<1){
 		positionTuile=choisirTuile(copieMain);
@@ -1069,27 +1070,32 @@ int saisit_combinaison(LISTE *main, int typeSuite, JOUEUR * joueur)
 	int choix=1;
 	LISTE *combinaison=cree_liste();
 	int nbElems;
+	LISTE *quelleListe;
 
 	do{
 		printf("MAIN\n");
 		lit_liste(main);
-			printf("LA COMBINAISON EN TRAIN D'ETRE CREEE:\n");		
+			printf("LA COMBINAISON EN TRAIN D'ETRE CREEE:\n");
+		lit_liste(listeTuilesRecup);
 		lit_liste(combinaison);
 		
 		if(nb_elements_liste(listeTuilesRecup)<1){
 			choix=choisirTuile(copieMain);
+			quelleListe=main;
 		}
 		else if(choisir_main_ou_recupTuile()==1){
-			choix=choisirTuile(copieMain);
+			choix=choisirTuile(main);
+			quelleListe=main;
 		}
 		else{
 			choix=choisirTuile(listeTuilesRecup);
-		}
+			quelleListe=listeTuilesRecup;
+		}	
 
 		if(choix!=0)
 		{
-			ajoute_liste(combinaison,renvoie_tuile_via_position(main,choix));
-			enleve_element_liste(main,choix);
+			ajoute_liste(combinaison,renvoie_tuile_via_position(quelleListe,choix));
+			enleve_element_liste(quelleListe,choix);
 		}
 	}while(choix!=0);
 
