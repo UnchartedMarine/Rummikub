@@ -15,7 +15,8 @@ int main()
 	int i;
 	int tourPasValide=1;//ajout
 
-	int nbJoueurs = 3;
+	int modeJeu = demande_mode_jeu();
+	int nbJoueurs = demande_nb_joueurs();
 	JOUEUR joueurs[nbJoueurs];
 	int gagnant;
 	int typeTour;
@@ -24,20 +25,19 @@ int main()
 
 	plateau=cree_plateau();
 	init_pioche();
-	init_joueurs(joueurs,nbJoueurs,&niveauPioche);
+	init_joueurs(joueurs,modeJeu,nbJoueurs,&niveauPioche);
 
 
 	tour=regarde_qui_commence(nbJoueurs,joueurs);
 	printf("%s COMMENCE\n\n",joueurs[tour].pseudo);
 
-	niveauPioche=100;    ////////// PROVISOIRE -> POUR FACILITER LES TESTS
 
 	while(!est_partie_finie(joueurs,niveauPioche,nbJoueurs,tour))
 	{
 
 		printf("---------Tour du joueur %s---------\n",joueurs[tour].pseudo);
 
-		printf("NIVEAU DE LA PIOCHE:%d/106\n\n",niveauPioche+1);
+		printf("IL RESTE %d TUILE(S) DANS LA PIOCHE\n\n",NOMBRE_TUILES-niveauPioche);
 
 		printf("PLATEAU:\n");
 		lit_plateau(plateau);
@@ -68,7 +68,7 @@ int main()
 					tourPasValide=0;
 				}
 				else{
-					printf("VOULEZ-VOUS EFFECTUER UNE AUTRE ACTION");
+					printf("VOULEZ-VOUS EFFECTUER UNE AUTRE ACTION ?\n");
 					printf("1 - OUI\n0 - NON, J'AI TERMINÉ\nSaisie:");
 					scanf("%d",&tourPasValide);
 					if(tourPasValide==1){
@@ -88,7 +88,7 @@ int main()
 				tourPasValide=1;
 				tourMultiTemps=0;
 				if(estPremierTour==1){
-					joueur->premierCoup=false;
+					joueurs[i].premierCoup=false;
 				}
 			}
 

@@ -9,6 +9,7 @@
 
 #define NOMBRE_TUILES 106
 
+enum coul{JOKER,BLEU,ROUGE,JAUNE,VERT};
 
 typedef struct TUILE 
 {	
@@ -57,7 +58,6 @@ LISTE *copieMain;
 void init_pioche();
 void init_tuiles();
 void melange_pioche(TUILE* pioche);
-void lit_tuile(TUILE tuile);
 void lit_pioche(TUILE* pioche);
 void piocher_tuile(LISTE *liste,int *niveauPioche);
 void init_main(LISTE *liste,int *niveauPioche);
@@ -95,7 +95,7 @@ void lit_plateau();
 //Les fonctions pour que le joueur joue son tour
 int choisit_tour(bool premierCoup,int tourMultiTemps);
 int joue_tour(JOUEUR * joueur, int *niveauPioche,int tourMultiTemps);
-int complete_combinaison(LISTE * main);
+void complete_combinaison(LISTE * main);
 int saisit_combinaison(LISTE * main, int typeSuite, JOUEUR * joueur);
 void recupere_tuile_combinaison(LISTE * main);
 int separe_combinaison();
@@ -115,7 +115,16 @@ int calcule_points_perdant(JOUEUR *joueurs,int gagnant,int perdant,int typeFinDe
 
 void lit_tuile_liste(LISTE *liste, int position);
 LISTE * renvoie_liste_via_position(PLATEAU *plato,int position);
-void init_joueurs(JOUEUR * joueurs,int nbJoueurs,int * niveauPioche);
+void init_joueurs(JOUEUR * joueurs,int modeJeu, int nbJoueurs,int * niveauPioche);
 bool pose_30_points(LISTE *liste);
 void demande_pseudo(JOUEUR * joueur);
 void rentrer_nom_score(int score, char * nom);
+int complete_recup_combinaison(LISTE * main);
+int demande_mode_jeu();
+int demande_nb_joueurs();
+
+
+
+
+
+

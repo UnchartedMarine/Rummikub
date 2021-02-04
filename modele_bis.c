@@ -5,12 +5,36 @@
 
 
 
-// les fonctions sur la mise ne place du jeu:
+
+int demande_mode_jeu()
+{
+	int mode;
+	do{
+		printf("1 - Joueurs contre joueurs\n2 - Joueurs contre IA\nSaisie:");
+		scanf("%d",&mode);
+	}while(mode<1 || mode>2);
+	
+	return mode;
+}
+
+
+
+int demande_nb_joueurs()
+{
+	int nbJoueurs;
+	do{
+		printf("\nChoisir le nombre de joueurs (2 à 4)\nSaisie:");
+		scanf("%d",&nbJoueurs);
+	}while(nbJoueurs<2 || nbJoueurs>4);
+	
+	return nbJoueurs;
+}
+
+
 void init_pioche()
 {
 	init_tuiles();
 	melange_pioche(pioche);
-	//lit_pioche(pioche);
 }
 
 
@@ -55,25 +79,50 @@ void melange_pioche(TUILE* pioche) // 100 mélanges ça me paraît pas mal
 }
 
 
-void init_joueurs(JOUEUR * joueurs,int nbJoueurs,int * niveauPioche)
+void init_joueurs(JOUEUR * joueurs,int modeJeu, int nbJoueurs,int * niveauPioche)
 {
 	int i;
 
 	for(i=0;i<nbJoueurs;i++)
 	{
-		demande_pseudo(&(joueurs[i]));
-		joueurs[i].main=cree_liste();
-		lit_liste(joueurs[i].main);
-		init_main(joueurs[i].main,niveauPioche);
-		lit_liste(joueurs[i].main);	
-		joueurs[i].premierCoup = false;
+		if(modeJeu==2 && i>0)  //si le joueur est l'IA, lui donne un pseudo défini
+			sprintf(joueurs[i].pseudo,"ORDI n°%d",i);
+		else
+		{
+			printf("Choisissez votre pseudo:");
+			scanf("%s",joueurs[i].pseudo);
+		}
+		joueurs[i].main=cree_liste();  //crée la liste de la main du joueur
+		init_main(joueurs[i].main,niveauPioche);  //distribue au joueur les tuiles de début de partie
+		joueurs[i].premierCoup = false;  //pour dire que le joueur n'a pas encore créé de combinaison de 30pts
 	}
 }
 
 
 void lit_tuile(TUILE tuile)
 {
-	printf("Num:%d ; Coul:%d\n",tuile.num,tuile.coul);
+	char couleur[10];
+
+	switch(tuile.coul)
+	{
+	case 0:
+		sprintf(couleur,"JOKER");
+		break;
+	case 1:
+		sprintf(couleur,"ROUGE");
+		break;
+	case 2:
+		sprintf(couleur,"BLEU");
+		break;
+	case 3:
+		sprintf(couleur,"JAUNE");
+		break;
+	case 4:
+		sprintf(couleur,"NOIR");
+		break;
+	}
+
+	printf("%3d ; %1s\n",tuile.num,couleur);
 }
 
 
@@ -98,7 +147,7 @@ void init_main(LISTE *liste,int *niveauPioche)
 {
 	int i;
 
-	for(i=0;i<6;i++)
+	for(i=0;i<35;i++)
 		pioche_tuile(liste,niveauPioche);
 }
 
@@ -238,7 +287,8 @@ void lit_liste_aux(ELEMENT * element,int indiceTuile)
 	if(element != NULL)
 	{
 		lit_liste_aux(element->suivant,indiceTuile-1);
-		printf("(%d) %d;%d\n",indiceTuile,element->tuile.num,element->tuile.coul);
+		printf(" (%2d)",indiceTuile);		
+		lit_tuile(element->tuile);
 	}
 }
 
@@ -523,7 +573,7 @@ int plus_petite_main(JOUEUR *joueurs, int nbJoueurs)
 	int i;
 	int tmp;
 	int min=10000;  //valeur qui ne sera pas dépassée
-	int gagnant;
+	int gagnant=-1;
 	for(i=0;i<nbJoueurs;i++) 
 	{
 		tmp=additionne_points(joueurs[i].main,1);
@@ -551,7 +601,7 @@ int trouve_joueur_precedent(int nbJoueurs, int tour) /***Est-ce que je crée une
 
 int detecte_gagnant(JOUEUR *joueurs,int nbJoueurs,int tour,int typeFinDePartie)
 {
-	int gagnant;
+	int gagnant=-1;
 
 	if(typeFinDePartie==1)
 		gagnant=plus_petite_main(joueurs,nbJoueurs);
@@ -574,7 +624,7 @@ bool main_finie(JOUEUR *joueurs, int nbJoueurs, int tour)
 
 bool pioche_finie(int niveauPioche)
 {
-	if(niveauPioche==NOMBRE_TUILES-1)
+	if(niveauPioche==NOMBRE_TUILES)
 		return true;
 	return false;
 }
@@ -596,12 +646,12 @@ int choisit_tour(bool premierCoup,int tourMultiTemps)
 	do
 	{
 		if(!premierCoup)
-			printf("1-Piocher\n2-Créer une combinaison d'au moins 30 points\nSaisie:");
+			printf("1 - Piocher\n2 - Créer une combinaison d'au moins 30 points\nSaisie:");
 		else if(tourMultiTemps == 1){
-			printf("2-Créer une combinaison\n3-Compléter une combinaison\n4-Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5-\n6-Séparer une suite en deux\nSaisie:");
+			printf("2 - Créer une combinaison\n3 - Compléter une combinaison\n4 - Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5-\n6-Séparer une suite en deux\nSaisie:");
 		}
 		else{
-			printf("1-Piocher\n2-Créer une combinaison\n3-Compléter une combinaison\n4-Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5-\n6-Séparer une suite en deux\nS\nSaisie:");
+			printf("1 - Piocher\n2 - Créer une combinaison\n3 - Compléter une combinaison\n4 - Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5 - PK YA CE 5 ???POUR LES JOKERS ??\n6 - Séparer une suite en deux\nS\nSaisie:");
 		}
 	
 		scanf("%d",&choix);
@@ -708,7 +758,7 @@ int joue_tour(JOUEUR * joueur,int *niveauPioche,int tourMultiTemps)
 
 		break;
 	return 0;
-
+	}
 }
 
 
@@ -734,7 +784,7 @@ void complete_combinaison(LISTE * main)
 	lit_liste(combinaison);
 
 	do{
-		printf("1-Ajouter à la fin de la combinaison\n2-Ajouter au début de la combinaison\n");
+		printf("1 - Ajouter à la fin de la combinaison\n2 - Ajouter au début de la combinaison\n");
 		scanf("%d",&positionInsertion);
 	}while(positionInsertion<1 || positionInsertion>2);
 
@@ -776,10 +826,9 @@ void recupere_tuile_combinaison(LISTE * main)
 	posCombi= nbElemsPlateau+1-positionCombinaison;
 	combinaison = renvoie_liste_via_position(copiePlateau,posCombi);
 	nbElemsCombi=nb_elements_liste(combinaison);
-	if(nbElemsCombi<4){
+	if(nbElemsCombi<4)
 		printf("LA COMBINAISON CONTIENT MOINS DE 4 TUILES, C'EST UN COUP IMPOSSIBLE");
-		return 0;
-	}
+
 
 	printf("LA COMBINAISON CHOISIE:\n");
 	lit_liste(combinaison);
@@ -799,7 +848,7 @@ void recupere_tuile_combinaison(LISTE * main)
 	do{
 		printf("Où voulez-vous jouer la tuile récupérée ?\n");
 		printf("1 - Dans une combinaison sur le plateau\n2 - Créer une combinaison avec cette tuile\nSAISIE:");
-		scanf("%d",&choixSuite);
+		scanf("%d",&choixCombi);
 	}while(choixCombi<1 || choixCombi>2);
 
 	if(choixCombi==1){
@@ -907,7 +956,7 @@ int separe_combinaison()
 		scanf("%d",&positionCombinaison);
 	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau(copiePlateau));
 	
-	nbElemsCombi=nb_elements_liste(copiePlateau);
+	nbElemsCombi=nb_elements_plateau(copiePlateau);
 	posCombi=nbElemsCombi+1-positionCombinaison;
 	combinaison = renvoie_liste_via_position(copiePlateau,posCombi);
 
@@ -987,14 +1036,12 @@ int saisit_combinaison(LISTE *main, int typeSuite, JOUEUR * joueur)
 	do{
 		printf("MAIN\n");
 		lit_liste(main);
-		
+			printf("LA COMBINAISON EN TRAIN D'ETRE CREEE:\n");		
+		lit_liste(combinaison);
 		do{	
 			printf("Saisir le n° de la tuile à jouer\n0 pour valider sa combinaison:");	
 			scanf("%d",&choix);
 			nbElems=nb_elements_liste(main);
-			if(choix!=0){
-				choix=nbElems+1-choix;
-			}
 		}while(choix<0 || choix>nbElems);
 
 		if(choix!=0)
@@ -1054,6 +1101,7 @@ TUILE renvoie_tuile_via_position(LISTE *liste,int position)
 {
 	ELEMENT *element=liste->premier;
 	TUILE tuileErreur;
+	position = nb_elements_liste(liste)+1 - position;    //équilibrage vu qu'on a pris nos fonctions à l'envers
 
 	while(element != NULL)
 	{
