@@ -96,8 +96,10 @@ bool verif_plateau(PLATEAU * plato);
 
 //Les fonctions pour que le joueur joue son tour
 int choisit_tour(bool premierCoup,int tourMultiTemps);
+int choisirTuile(LISTE *liste);
+int choisir_main_ou_recupTuile();
 int joue_tour(JOUEUR * joueur, int *niveauPioche,int tourMultiTemps);
-int complete_combinaison(LISTE * main);
+void complete_combinaison(LISTE * main);
 int saisit_combinaison(LISTE * main, int typeSuite, JOUEUR * joueur);
 int recupere_tuile_combinaison(LISTE * main);
 int separe_combinaison();
