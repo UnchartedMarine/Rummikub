@@ -115,7 +115,7 @@ int main()
 					copieMain = copie_liste(joueurs[tour].main);
 					tourMultiTemps=0;
 					if(estPremierTour==1){
-						joueur->premierCoup=false;
+						joueurs[tour].premierCoup=false;
 						estPremierTour=0;
 					}
 				}
