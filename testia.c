@@ -238,7 +238,7 @@ void suite_possible(LISTE *L, PLATEAU coup_valide1)
   }
 }
 
-LISTE renvoie_element_plateau(PLATEAU p, int pos)
+LISTE * renvoie_element_plateau(PLATEAU *p, int pos)
 {
 	ELEMENT_PLATEAU *element=p->premier;
  	LISTE *erreur=cree_liste;
@@ -255,7 +255,7 @@ LISTE renvoie_element_plateau(PLATEAU p, int pos)
   	return erreur;
 }
 
-int nb_elements_plateau(PLATEAU p)
+int nb_elements_plateau(PLATEAU *p)
 {
 	ELEMENT_PLATEAU *element=p->premier;
 	int nombreElements=0;
@@ -268,7 +268,7 @@ int nb_elements_plateau(PLATEAU p)
 	return nombreElements;
 }
 
-LISTE * supprime_tuile_a_jouer(LISTE *L, PLATEAU p)
+LISTE * supprime_tuile_a_jouer(LISTE *L, PLATEAU *p)
 {
   	int n=nb_elements_liste(L);
 	int m=nb_elements_plateau(p);
@@ -503,7 +503,7 @@ LISTE * tri_triplet_13(LISTE *L)
 	return l;
 }
 
-void regroupement(LISTE *l, PLATEAU triplet1)
+void regroupement(LISTE *l, PLATEAU *triplet1)
 {
 	LISTE *l1=tri_triplet_1(L);
 	LISTE *l2=tri_triplet_2(L);
@@ -535,7 +535,7 @@ void regroupement(LISTE *l, PLATEAU triplet1)
 }
 
 
-void triplet_possible(PLATEAU triplet1, PLATEAU coup_valide1)
+void triplet_possible(PLATEAU *triplet1, PLATEAU *coup_valide1)
 {
 	int n=nb_element_plateau(triplet1);
 	int i,j;
@@ -593,7 +593,7 @@ void triplet_possible(PLATEAU triplet1, PLATEAU coup_valide1)
 
 
 
-int decompte_point(PLATEAU p)
+int decompte_point(PLATEAU *p)
 {
 	int n=nb_elements_plateau(p);
 	int s=0;
@@ -605,33 +605,66 @@ int decompte_point(PLATEAU p)
 		for(1;m;j++)
 		{
 			TUILE y=renvoie_elements_liste(l,j);
-			s=s+y;
+			s=s+y.num;
 		}
 	}
 	return s;
 }
 	
 
-void remplissage_méthode1(LISTE *L, PLATEAU  coup_valide1)
+void remplissage_methode1(LISTE *L, PLATEAU  *coup_valide1)
 {
 	LISTE *l=tri_couleur(L);
 	suite_possible(l, coup_valide1);
 	l=supprime_tuile_a_jouer(l, coup_valide1);
-	
+	PLATEAU *triplet1=cree_plateau();
+	regroupements(l,triplet1);
+	triplet_possible(triplet1,coup_valide1);
 }
 
-void choix_de_depot(PLATEAU coup_valide1, PLATEAU coup_valide2, PLATEAU coup_final)
+void remplissage_methode2(LISTE *L, PLATEAU  *coup_valide2)
+{
+	PLATEAU *triplet1=cree_plateau();
+	regroupements(l,triplet1);
+	triplet_possible(triplet1,coup_valide1);
+	l=supprime_tuile_a_jouer(l, coup_valide1);
+	LISTE *l=tri_couleur(L);
+	suite_possible(l, coup_valide1);
+}
+
+int choix_de_depot(PLATEAU *coup_valide1, PLATEAU *coup_valide2, PLATEAU *coup_final)
 {
 	int x=decompte_point(coup_valide1);
 	int y=decompte_point(coup_valide2);
 	if(x>y)
 	{
 		coup_final=coup_valide1;
+		return x;
 	}
 	else
 	{
 		coup_final=coup_valide2;
+		return y;
 	}
 }
 
-
+void ia(JOUEUR *j)
+{
+	int score;
+	LISTE *L=j.main;
+	BOOL b=j.premierCoup;
+	PLATEAU *coup_final;
+	PLATEAU *coup_valide1=cree_plateau();
+	PLATEAU *coup_valide2=cree_plateau();
+	remplissage_methode1(L,coup_valide1);
+	remplissage_methode2(L,coup_valide2);
+	score= choix_de_depot(coup_valide1,coup_valide2,coup_final);
+	if(b & (score>=30))
+	{
+		int n=nb_elements_plateau(coup_valide
+	}
+	else
+	{
+		
+	}
+}
