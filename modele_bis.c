@@ -653,6 +653,8 @@ bool est_partie_finie(JOUEUR *joueurs, int niveauPioche, int nbJoueurs, int tour
 }
 
 int choisirTuile(LISTE *liste){
+	int choix;
+	int nbElems;
 	do{	
 		printf("Saisir le n° de la tuile à jouer\n(Si vous créez une combinaison, 0 pour valider sa combinaison):");	
 		scanf("%d",&choix);
@@ -662,6 +664,7 @@ int choisirTuile(LISTE *liste){
 }
 
 int choisir_main_ou_recupTuile(){
+	int choix;
 	do{	
 		printf("Choisir une tuile de la main ou de la liste des tuiles obligatoires à jouer ?");
 		printf("1-main\n2-liste des tuiles obligatoires");
@@ -1058,15 +1061,15 @@ int remplace_joker(LISTE * main)
 	//choix de la tuile dans la main ou la liste des tuiles à jouer obligatoirement
 	if(nb_elements_liste(listeTuilesRecup)<1){
 		positionTuile=choisirTuile(copieMain);
-		echange_tuiles_listes(combinaison,main,positionJokerCombinaison,positionTuile);
+		echange_tuiles_listes_via_main(combinaison,main,positionJokerCombinaison,positionTuile);
 	}
 	else if(choisir_main_ou_recupTuile()==1){
 		positionTuile=choisirTuile(copieMain);
-		echange_tuiles_listes(combinaison,main,positionJokerCombinaison,positionTuile);
+		echange_tuiles_listes_via_main(combinaison,main,positionJokerCombinaison,positionTuile);
 	}
 	else{
 		positionTuile=choisirTuile(listeTuilesRecup);
-		echange_tuiles_listes(combinaison,listeTuilesRecup,positionJokerCombinaison,positionTuile);
+		echange_tuiles_listes_via_recup(combinaison,listeTuilesRecup,positionJokerCombinaison,positionTuile);
 	}
 
 	
@@ -1077,7 +1080,6 @@ int saisit_combinaison(LISTE *main, int typeSuite, JOUEUR * joueur)
 {
 	int choix=1;
 	LISTE *combinaison=cree_liste();
-	int nbElems;
 	LISTE *quelleListe;
 
 	do{
