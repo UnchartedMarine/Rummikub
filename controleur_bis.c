@@ -13,14 +13,14 @@ int main()
 	int tour;
 	int typeFinDePartie;
 	int i;
-	int tourPasValide=1;//ajout
+	int tourPasValide;
 
 	int modeJeu = demande_mode_jeu();
 	int nbJoueurs = demande_nb_joueurs();
 	JOUEUR joueurs[nbJoueurs];
 	int gagnant;
 	int typeTour;
-	int tourMultiTemps=0;
+	int tourMultiTemps;
 	int estPremierTour;
 
 	plateau=cree_plateau();
@@ -49,6 +49,8 @@ int main()
 		copieMain = copie_liste(joueurs[tour].main);
 	
 		estPremierTour=0;
+		tourMultiTemps=0;
+		tourPasValide=1;
 
 		while(tourPasValide){
 	
@@ -92,13 +94,32 @@ int main()
 				}
 			}
 
-
-			//if((verif_plateau_bon(plateau_copie)!=1) || (tourPasValide==1)){tourPasValide=1}else{plateau=copie_plateau(copiePlateau);joueurs[tour].main=copie_liste(copieMain);}
-
-
-			//if((tourPasValide == 0)){
-				//if(plateau_valide(plateauCopie)==1) {plateau=copie_plateau(copiePlateau);joueurs[tour].main=copie_liste(copieMain);}
-				//else{copiePlateau=copie_plateau(plateau);copieMain = copie_liste(joueurs[tour].main);tourMultiTemps=0;if(estPremierTour==1){joueur->premierCoup=false;estPremierTour=0;}}
+			if(tourPasValide == 0){
+				if(nb_elementsliste(listeTuilesRecup)<1){
+					if(verif_plateau(plateauCopie)==true){
+						plateau=copie_plateau(copiePlateau);
+						joueurs[tour].main=copie_liste(copieMain);
+					}
+					else{
+						copiePlateau=copie_plateau(plateau);
+						copieMain = copie_liste(joueurs[tour].main);
+						tourMultiTemps=0;
+						if(estPremierTour==1){
+							joueur->premierCoup=false;
+							estPremierTour=0;
+						}
+					}
+				}
+				else{
+					copiePlateau=copie_plateau(plateau);
+					copieMain = copie_liste(joueurs[tour].main);
+					tourMultiTemps=0;
+					if(estPremierTour==1){
+						joueur->premierCoup=false;
+						estPremierTour=0;
+					}
+				}
+			}
 
 
 
@@ -110,7 +131,7 @@ int main()
 		tour=(tour+1)%nbJoueurs;
 		tourPasValide=1;
 		tourMultiTemps=0;
-
+		estPremierTour=0;
 	}
 
 
@@ -157,20 +178,8 @@ int main()
 		//si joker annuler
 	//prendre un joker d'une liste et le remplacer
 	//changer le num des case
-
-//a la fin d'une action réussie demander si veux jouer autre chose, du coup le while va reboucler 
-
-	//multi prise: verifier chaque coup s'il peut le faire sans verifier les suites posées qui seront verifiees a la toute fin
-
-	//verifier suites qu'apres le while dans une boucle qui parcourt le plateau
-
-	//remplacer les ajoute plateau en donnant en parametre la copie du plateau
-
-	//regler probleme du choix du num inversé par rapport a l'affichage (notamment dans remplacement joker ou alors dans ajout combinaison ...)
-
 	
 	//spécifier a l'utilisateur de créer sa suite de nombre dans l'ordre decroissant
 	
-	//à chaque fois qu'il choisit dans sa main je dois regler la position par rapport a l'affichage
 
 	//enlever possibilité de créer une suite de moins de 2 tuiles
