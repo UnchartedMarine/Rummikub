@@ -348,9 +348,8 @@ int scinder()
 			{
 				nb_liste_manipulation++;
 				liste_manipulation[nb_liste_manipulation-1] = separer_liste_en_deux(liste_manipulation[liste_actuelle],tuileSelect.x);
-				int taille;
-				SDL_Texture** data = lie_liste_graphique(liste_manipulation[liste_actuelle],&taille);
-				lie_select_graphique(data,taille,0);
+				affiche_liste_zoom(liste_manipulation[liste_actuelle],0,0);
+
 				quit =1;
 			}
 			quit =1;
