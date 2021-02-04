@@ -648,10 +648,10 @@ int choisit_tour(bool premierCoup,int tourMultiTemps)
 		if(!premierCoup)
 			printf("1 - Piocher\n2 - Créer une combinaison d'au moins 30 points\nSaisie:");
 		else if(tourMultiTemps == 1){
-			printf("2 - Créer une combinaison\n3 - Compléter une combinaison\n4 - Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5-\n6-Séparer une suite en deux\nSaisie:");
+			printf("2 - Créer une combinaison\n3 - Compléter une combinaison\n4 - Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5-Séparer une suite en deux\n6-Récupérer un joker dans une combinaison du plateau\nSaisie:");
 		}
 		else{
-			printf("1 - Piocher\n2 - Créer une combinaison\n3 - Compléter une combinaison\n4 - Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5 - PK YA CE 5 ???POUR LES JOKERS ??\n6 - Séparer une suite en deux\nS\nSaisie:");
+			printf("1 - Piocher\n2 - Créer une combinaison\n3 - Compléter une combinaison\n4 - Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5-Séparer une suite en deux\n6-Récupérer un joker dans une combinaison du plateau\nSaisie:");
 		}
 	
 		scanf("%d",&choix);
@@ -746,16 +746,14 @@ int joue_tour(JOUEUR * joueur,int *niveauPioche,int tourMultiTemps)
 		break;
 	
 	case 5:
-
-
-
+		if(recupere_tuile_combinaison()==1){
+			return 1;
+		}
 		break;
 	case 6:
 		if(separe_combinaison()==1){
 			return 1;	
 		}
-
-
 		break;
 	return 0;
 	}
@@ -811,7 +809,7 @@ void complete_combinaison(LISTE * main)
 }
 
 
-void recupere_tuile_combinaison(LISTE * main)
+int recupere_tuile_combinaison(LISTE * main)
 {	
 	int positionCombinaison,positionTuile;
 	int nbElemsCombi;
@@ -827,6 +825,10 @@ void recupere_tuile_combinaison(LISTE * main)
 	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau(copiePlateau));
 	
 	combinaison = renvoie_liste_via_position(copiePlateau,positionCombinaison);
+	if(joker_est_dans_liste(combinaison)==true){
+		printf("ON NE PEUT PAS FAIRE CE COUP S'IL Y A UN JOKER DANS LA COMBINAISON,");
+		return 0;
+	}
 	nbElemsCombi=nb_elements_liste(combinaison);
 	if(nbElemsCombi<4){
 		printf("LA COMBINAISON CONTIENT MOINS DE 4 TUILES, C'EST UN COUP IMPOSSIBLE");
@@ -862,7 +864,8 @@ void recupere_tuile_combinaison(LISTE * main)
 		
 	}
 
-	
+
+	return 1;
 }
 
 int complete_recup_combinaison(LISTE * main)
@@ -884,14 +887,15 @@ int complete_recup_combinaison(LISTE * main)
 	combinaison = renvoie_liste_via_position(copiePlateau,positionCombinaison);
 	
 	if(joker_est_dans_liste(combinaison)==true){
-		printf("ON NE PEUT PAS FAIRE CE COUP S'IL Y A UN JOKER DANS LA COMBINAISON");
+		printf("ON NE PEUT PAS FAIRE CE COUP S'IL Y A UN JOKER DANS LA COMBINAISON, VOUS POUVEZ JUSTE COMPLETER");
 		return 0;
 	}
 	nbElemsCombi = nb_elements_liste(combinaison);
 	if(nbElemsCombi<3){
 		printf("IMPOSSIBLE DE REALISER CETTE ACTION SUR UNE COMBINAISON DE MOINS DE 3 ELEMENTS");
 		return 0;
-	}
+	}	
+	
 	printf("LA COMBINAISON:\n");
 	lit_liste(combinaison);
 
@@ -899,7 +903,7 @@ int complete_recup_combinaison(LISTE * main)
 		printf("1-Ajouter à la fin de la combinaison\n2-Ajouter au début de la combinaison\n");
 		scanf("%d",&positionInsertion);
 	}while(positionInsertion<1 || positionInsertion>2);
-
+	
 	if(nb_elements_liste(listeTuilesRecup)<1){
 		positionTuile=choisirTuile(copieMain);
 		quelleListe=main;
@@ -981,6 +985,7 @@ int separe_combinaison()
 	posSepa=nbElemsDansCombi+1-positionSeparation;
 
 	ajoute_plateau(separer_liste_en_deux(combinaison,posSepa),copiePlateau);
+	return 1;
 }
 
 
