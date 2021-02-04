@@ -652,6 +652,23 @@ bool est_partie_finie(JOUEUR *joueurs, int niveauPioche, int nbJoueurs, int tour
 	return false;
 }
 
+int choisirTuile(LISTE *liste){
+	do{	
+		printf("Saisir le n° de la tuile à jouer\n(Si vous créez une combinaison, 0 pour valider sa combinaison):");	
+		scanf("%d",&choix);
+		nbElems=nb_elements_liste(liste);
+	}while(choix<0 || choix>nbElems);
+	return choix;
+}
+
+int choisir_main_ou_recupTuile(){
+	do{	
+		printf("Choisir une tuile de la main ou de la liste des tuiles obligatoires à jouer ?");
+		printf("1-main\n2-liste des tuiles obligatoires");
+		scanf("%d",&choix);
+	}while(choix<0 || choix>2);
+	return choix;
+}
 
 int choisit_tour(bool premierCoup,int tourMultiTemps)
 {
@@ -1015,7 +1032,7 @@ void echange_tuiles_listes_via_recup(LISTE * liste1,LISTE * liste2,int positionL
 
 int remplace_joker(LISTE * main)
 {	
-	TUILR tuile;
+	TUILE tuile;
 	int positionCombinaison,positionJokerCombinaison,positionTuile;
 	LISTE * combinaison;
 
@@ -1033,7 +1050,7 @@ int remplace_joker(LISTE * main)
 		scanf("%d",&positionJokerCombinaison);
 	}while(positionJokerCombinaison<1 || positionJokerCombinaison>nb_elements_liste(combinaison));
 
-	tuile=renvoie_tuile_via_position(combinaison,positionJoker);
+	tuile=renvoie_tuile_via_position(combinaison,positionJokerCombinaison);
 	if(tuile.num!=0){
 		return 0;
 	}
@@ -1054,24 +1071,6 @@ int remplace_joker(LISTE * main)
 
 	
 	return 1;
-}
-
-int choisirTuile(LISTE *liste){
-	do{	
-		printf("Saisir le n° de la tuile à jouer\n(Si vous créez une combinaison, 0 pour valider sa combinaison):");	
-		scanf("%d",&choix);
-		nbElems=nb_elements_liste(liste);
-	}while(choix<0 || choix>nbElems);
-	return choix;
-}
-
-int choisir_main_ou_recupTuile(){
-	do{	
-		printf("Choisir une tuile de la main ou de la liste des tuiles obligatoires à jouer ?");
-		printf("1-main\n2-liste des tuiles obligatoires");
-		scanf("%d",&choix);
-	}while(choix<0 || choix>2);
-	return choix;
 }
 
 int saisit_combinaison(LISTE *main, int typeSuite, JOUEUR * joueur)
