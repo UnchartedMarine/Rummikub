@@ -788,10 +788,15 @@ void complete_combinaison(LISTE * main)
 		scanf("%d",&positionInsertion);
 	}while(positionInsertion<1 || positionInsertion>2);
 
-	do{
-		printf("Position de la tuile de la main à insérer:\n");
-		scanf("%d",&positionTuile);
-	}while(positionTuile<1 || positionTuile>nb_elements_liste(main));
+	if(nb_elements_liste(listeTuilesRecup)<1){
+		positionTuile=choisirTuile(copieMain);
+	}
+	else if(choisir_main_ou_recupTuile()==1){
+		positionTuile=choisirTuile(copieMain);
+	}
+	else{
+		positionTuile=choisirTuile(listeTuilesRecup);
+	}
 	
 	nbElemsMain=nb_elements_liste(main);
 	posMain=nbElemsMain+1-positionTuile;
@@ -898,10 +903,15 @@ int complete_recup_combinaison(LISTE * main)
 		scanf("%d",&positionInsertion);
 	}while(positionInsertion<1 || positionInsertion>2);
 
-	do{
-		printf("Position de la tuile de la main à insérer dans la combinaison:\n");
-		scanf("%d",&positionTuile);
-	}while(positionTuile<1 || positionTuile>nb_elements_liste(main));
+	if(nb_elements_liste(listeTuilesRecup)<1){
+		positionTuile=choisirTuile(copieMain);
+	}
+	else if(choisir_main_ou_recupTuile()==1){
+		positionTuile=choisirTuile(copieMain);
+	}
+	else{
+		positionTuile=choisirTuile(listeTuilesRecup);
+	}
 	
 	nbElemsMain=nb_elements_liste(main);
 	posMain=nbElemsMain+1-positionTuile;
@@ -995,12 +1005,17 @@ void echange_tuiles_listes(LISTE * liste1,LISTE * liste2,int positionListe1,int 
 	tuileTmp=element1->tuile;
 	element1->tuile=element2->tuile;
 	element2->tuile=tuileTmp;
+	
+	//ajoute la tuile a listeTuilesRecup pour que le joueur soit obligé de la rejouer
+	ajoute_liste(listeTuilesRecup,element2->tuile);
+	//enleve cet element de la main car il est dans listeTuilesRecup
+	enleve_elements_liste(liste2,positionListe2);
 }
 
 
 void remplace_joker(LISTE * main)
 {	
-	int positionCombinaison,positionJokerCombinaison,positionTuileMain;
+	int positionCombinaison,positionJokerCombinaison,positionTuile;
 	LISTE * combinaison;
 
 	do{
@@ -1013,19 +1028,41 @@ void remplace_joker(LISTE * main)
 	lit_liste(combinaison);
 
 	do{
-		printf("Saisir la position de la tuile à remplacer:");
+		printf("Saisir la position du joker:");
 		scanf("%d",&positionJokerCombinaison);
 	}while(positionJokerCombinaison<1 || positionJokerCombinaison>nb_elements_liste(combinaison));
 
-	do{
-		lit_liste(main);
-		printf("Saisir par quelle tuile remplacer ce joker:");
-		scanf("%d",&positionTuileMain);
-	}while(positionTuileMain<1 || positionTuileMain>nb_elements_liste(main));
+	//choix de la tuile dans la main ou la liste des tuiles à jouer obligatoirement
+	if(nb_elements_liste(listeTuilesRecup)<1){
+		positionTuile=choisirTuile(copieMain);
+	}
+	else if(choisir_main_ou_recupTuile()==1){
+		positionTuile=choisirTuile(copieMain);
+	}
+	else{
+		positionTuile=choisirTuile(listeTuilesRecup);
+	}
 
-	echange_tuiles_listes(combinaison,main,positionJokerCombinaison,positionTuileMain);
+	echange_tuiles_listes(combinaison,main,positionJokerCombinaison,positionTuile);
 }
 
+int choisirTuile(LISTE *liste){
+	do{	
+		printf("Saisir le n° de la tuile à jouer\n(Si vous créez une combinaison, 0 pour valider sa combinaison):");	
+		scanf("%d",&choix);
+		nbElems=nb_elements_liste(liste);
+	}while(choix<0 || choix>nbElems);
+	return choix;
+}
+
+int choisir_main_ou_recupTuile(){
+	do{	
+		printf("Choisir une tuile de la main ou de la liste des tuiles obligatoires à jouer ?");
+		printf("1-main\n2-liste des tuiles obligatoires");
+		scanf("%d",&choix);
+	}while(choix<0 || choix>2);
+	return choix;
+}
 
 int saisit_combinaison(LISTE *main, int typeSuite, JOUEUR * joueur)
 {
@@ -1038,11 +1075,16 @@ int saisit_combinaison(LISTE *main, int typeSuite, JOUEUR * joueur)
 		lit_liste(main);
 			printf("LA COMBINAISON EN TRAIN D'ETRE CREEE:\n");		
 		lit_liste(combinaison);
-		do{	
-			printf("Saisir le n° de la tuile à jouer\n0 pour valider sa combinaison:");	
-			scanf("%d",&choix);
-			nbElems=nb_elements_liste(main);
-		}while(choix<0 || choix>nbElems);
+		
+		if(nb_elements_liste(listeTuilesRecup)<1){
+			choix=choisirTuile(copieMain);
+		}
+		else if(choisir_main_ou_recupTuile()==1){
+			choix=choisirTuile(copieMain);
+		}
+		else{
+			choix=choisirTuile(listeTuilesRecup);
+		}
 
 		if(choix!=0)
 		{
