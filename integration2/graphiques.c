@@ -157,7 +157,6 @@ void init_graphique(SDL_DisplayMode* DM)
 {
 	init_module(DM);
 	init_textureTuiles();
-	init_buttonState();
 }
 //Fonction qui prend un tableau des texture des tuiles de la main et l'affiche.
 void affiche_main(SDL_Texture** main,int taille, SDL_DisplayMode DM, SDL_Rect infoGrille)
@@ -279,7 +278,7 @@ Texture create_texture_from_text (TTF_Font* font, char* str, SDL_Color textColor
 /*
 * Creates a Hitbox and a ButtonTexture and adds them to bHitboxes and bTextures resp.
 */
-void create_button(int compt, int x, int y,int w, int h, char* path, SDL_Color color, TTF_Font* font, char* text) {
+void create_button(int compt, int x, int y,int w, int h,SDL_Texture* idle, SDL_Color color, TTF_Font* font, char* text) {
 	SDL_Rect box;
 	box.x = x-w/2;
 	box.y = y-h/2;
@@ -287,7 +286,7 @@ void create_button(int compt, int x, int y,int w, int h, char* path, SDL_Color c
 	box.h = h;
 	bHitboxes[compt].box = box;
 	ButtonTexture button;Texture texture;Texture textTexture;
-	texture.texture = create_texture_from_image(path);
+	texture.texture = idle;
 	texture.rect = box;
 	textTexture = create_texture_from_text(font, text, color);
 	textTexture.rect.x = x - textTexture.rect.w/2;
@@ -322,16 +321,16 @@ void init_menu_zoom()
 	create_text(nbTextures,54,10,color,font,"nom Joueur");
 	//initialize buttons
 	float Buttonsize = 0.08;
-	create_button(nbButtons,DM.w*0.92,DM.h*0.7,DM.w*0.1,DM.h*0.1,"buttons/idle.png",color,font,"Annuler");
-	create_button(nbButtons,DM.w*0.92,DM.h*UI_BAS,DM.w*0.1,DM.h*0.1,"buttons/idle.png",color,font,"Valider");
-	create_button(nbButtons,DM.w*0.20,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Ajouter au debut");
-	create_button(nbButtons,DM.w*0.3,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Ajouter a la fin");
-	create_button(nbButtons,DM.w*0.4,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Retirer au debut");
-	create_button(nbButtons,DM.w*0.5,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Retirer a la fin");
-	create_button(nbButtons,DM.w*0.6,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Scinder en deux");
-	create_button(nbButtons,DM.w*0.7,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Remplacer joker");
-	create_button(nbButtons,DM.w*0.8,DM.h*0.65,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Precedant");
-	create_button(nbButtons,DM.w*0.8,DM.h*0.75,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Suivant");
+	create_button(nbButtons,DM.w*0.92,DM.h*0.7,DM.w*0.1,DM.h*0.1,buttonStates[0],color,font,"Annuler");
+	create_button(nbButtons,DM.w*0.92,DM.h*UI_BAS,DM.w*0.1,DM.h*0.1,buttonStates[0],color,font,"Valider");
+	create_button(nbButtons,DM.w*0.20,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,buttonStates[0],color,font,"Ajouter au debut");
+	create_button(nbButtons,DM.w*0.3,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,buttonStates[0],color,font,"Ajouter a la fin");
+	create_button(nbButtons,DM.w*0.4,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,buttonStates[0],color,font,"Retirer au debut");
+	create_button(nbButtons,DM.w*0.5,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,buttonStates[0],color,font,"Retirer a la fin");
+	create_button(nbButtons,DM.w*0.6,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,buttonStates[0],color,font,"Scinder en deux");
+	create_button(nbButtons,DM.w*0.7,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,buttonStates[0],color,font,"Remplacer joker");
+	create_button(nbButtons,DM.w*0.8,DM.h*0.65,DM.w*Buttonsize,DM.h*Buttonsize,buttonStates[0],color,font,"Precedant");
+	create_button(nbButtons,DM.w*0.8,DM.h*0.75,DM.w*Buttonsize,DM.h*Buttonsize,buttonStates[0],color,font,"Suivant");
 	TTF_CloseFont(font);
 }
 void init_menu_jeu()
@@ -351,8 +350,8 @@ void init_menu_jeu()
 	create_text(nbTextures,54,10,color,font,"Nombre de tuiles dans la pioche : 15 ");
 	create_text(nbTextures,54,10,color,font,"nom Joueur");
 	//initialize buttons
-	create_button(nbButtons,DM.w*0.92,DM.h*UI_BAS,DM.w*0.1,DM.h*0.1,"buttons/idle.png",color,font,"Fin de tour");
-	create_button(nbButtons,DM.w*0.92,DM.h*0.6,DM.w*0.1,DM.h*0.1,"buttons/idle.png",color,font,"Creer une combinaison");
+	create_button(nbButtons,DM.w*0.92,DM.h*UI_BAS,DM.w*0.1,DM.h*0.1,buttonStates[0],color,font,"Fin de tour");
+	create_button(nbButtons,DM.w*0.92,DM.h*0.6,DM.w*0.1,DM.h*0.1,buttonStates[0],color,font,"Creer une combinaison");
 	//initialize hitbox tuile
 	Hitbox box = {grille.rect};
 	vHitboxes[0] = box;
@@ -513,14 +512,14 @@ void init_menu(void) {
 	create_text(0,54,10,color,font,"LACUCARACHA : ");
 	create_text(1,50,22,color,font,"The name");
 	//initialize buttons
-	create_button(0,200,200,100,40,"buttons/idle.png",color,font,"da text");
-	create_button(1,200,250,100,40,"buttons/idle.png",color,font,"da text");
-	create_button(2,200,300,100,40,"buttons/idle.png",color,font,"da text");
-	create_button(3,200,350,100,40,"buttons/idle.png",color,font,"da text");
-	create_button(4,350,200,100,40,"buttons/idle.png",color,font,"da text");
-	create_button(5,350,250,100,40,"buttons/idle.png",color,font,"da text");
-	create_button(6,350,300,100,40,"buttons/idle.png",color,font,"da text");
-	create_button(7,350,350,100,40,"buttons/idle.png",color,font,"da text");
+	create_button(0,200,200,100,40,buttonStates[0],color,font,"da text");
+	create_button(1,200,250,100,40,buttonStates[0],color,font,"da text");
+	create_button(2,200,300,100,40,buttonStates[0],color,font,"da text");
+	create_button(3,200,350,100,40,buttonStates[0],color,font,"da text");
+	create_button(4,350,200,100,40,buttonStates[0],color,font,"da text");
+	create_button(5,350,250,100,40,buttonStates[0],color,font,"da text");
+	create_button(6,350,300,100,40,buttonStates[0],color,font,"da text");
+	create_button(7,350,350,100,40,buttonStates[0],color,font,"da text");
 	TTF_CloseFont(font);
 }
 void init_textbox_menu(void) {
@@ -535,8 +534,8 @@ void init_textbox_menu(void) {
 	create_text(0,54,10,color,font,"LACUCARACHA : ");
 	create_text(1,50,22,color,font,"The name");
 	//initialize buttons
-	create_button(0,200,200,100,40,"buttons/idle.png",color,font,"confirm");
-	create_button(1,350,200,100,40,"buttons/idle.png",color,font,"cancel");
+	create_button(0,200,200,100,40,buttonStates[0],color,font,"confirm");
+	create_button(1,350,200,100,40,buttonStates[0],color,font,"cancel");
 	TTF_CloseFont(font);
 
 }

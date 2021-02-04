@@ -86,7 +86,7 @@ void quit(erreur err);
 //fonction pour la gestion des interactions avec le joueur
 void create_text(int , int , int , SDL_Color , TTF_Font* , char* );
 Texture create_texture_from_text (TTF_Font* , char* , SDL_Color );
-void create_button(int , int , int ,int , int , char* , SDL_Color , TTF_Font* , char* );
+void create_button(int , int , int ,int , int , SDL_Texture* , SDL_Color , TTF_Font* , char* );
 void init_buttonState(void);
 void init_menu_zoom(void);
 void init_menu_jeu(void);
