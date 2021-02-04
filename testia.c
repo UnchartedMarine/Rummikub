@@ -200,3 +200,78 @@ LISTE * tri_couleur(LISTE *L)
   }
   return l;
 }
+
+
+void liste_suite_possible(LISTE *L, PLATEAU coup_valide1)
+{
+  int i;
+  int n = nb_elements_liste(L);
+  LISTE *aux=cree_liste();
+  for(1;n;i++)
+  {
+    if(nb-elements_liste(aux)==0)
+    {
+      TUILE x=renvoie_tuile_via_position(L,i);
+      ajout_liste(aux,x);
+    }
+    else 
+    {
+      if(((renvoie_tuile_via_position(L,i).num) != (renvoie_tuile_via_position(L,i-1).num+1))|| (i=n) || ((renvoie_tuile_via_position(L,i).coul) != (renvoie_tuile_via_position(L,i-1).coul)))
+      {
+        if(nb_elements_liste(aux)>= 3)
+        {
+          ajoute_plateau(aux, coup_valide1);
+          aux= cree_liste();
+        }
+        else
+        {
+          aux= cree_liste();
+        }
+      }
+      
+      else
+      {
+        TUILE x=renvoie_tuile_via_position(L,i);
+        ajout_liste(aux,x);
+      }
+    }
+  }
+}
+
+LISTE renvoie_element_plateau(PLATEAU p, int pos)
+{
+	ELEMENT_PLATEAU *element=p->premier;
+  LISTE *erreur=cree_liste;
+
+	while(element != NULL)
+	{
+    if(pos==1)
+    {
+      return element->liste;
+    }
+    element=element->suivant;
+		pos= pos-1;
+	}
+  return erreur;
+}
+
+int nb_elements_plateau(PLATEAU p)
+{
+	ELEMENT_PLATEAU *element=p->premier;
+	int nombreElements=0;
+
+	while(element != NULL)
+	{
+		nombreElements += 1;
+		element=element->suivant;
+	}
+	return nombreElements;
+}
+
+LISTE supprime_tuile_a_jouer(LISTE L, PLATEAU k)
+{
+  
+}
+  
+  
+  
