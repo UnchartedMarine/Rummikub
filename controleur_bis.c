@@ -54,7 +54,7 @@ int main()
 
 		while(tourPasValide){
 	
-			if(nb_elements_plateau(copiePlateau)-1 != 0){
+			if(nb_elements_plateau(copiePlateau)!= 0){
 				printf("---------Tour du joueur %s---------\n",joueurs[tour].pseudo);
 
 				printf("PLATEAU:\n");
