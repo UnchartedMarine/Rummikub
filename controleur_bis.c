@@ -90,7 +90,7 @@ int main()
 				tourPasValide=1;
 				tourMultiTemps=0;
 				if(estPremierTour==1){
-					joueurs[i].premierCoup=false;
+					joueurs[tour].premierCoup=false;
 				}
 			}
 
