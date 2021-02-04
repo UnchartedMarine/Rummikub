@@ -92,6 +92,7 @@ PLATEAU * copie_plateau(PLATEAU* original);
 int nb_elements_plateau(PLATEAU *plato);
 void ajoute_plateau(LISTE *liste, PLATEAU *plato);
 void lit_plateau();
+bool verif_plateau(PLATEAU * plato);
 
 //Les fonctions pour que le joueur joue son tour
 int choisit_tour(bool premierCoup,int tourMultiTemps);
