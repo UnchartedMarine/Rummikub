@@ -126,9 +126,3 @@ void rentrer_nom_score(int score, char * nom);
 int complete_recup_combinaison(LISTE * main);
 int demande_mode_jeu();
 int demande_nb_joueurs();
-
-
-
-
-
-
