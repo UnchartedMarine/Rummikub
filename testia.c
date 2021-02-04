@@ -212,7 +212,7 @@ void liste_suite_possible(LISTE *L, PLATEAU coup_valide1)
     if(nb-elements_liste(aux)==0)
     {
       TUILE x=renvoie_tuile_via_position(L,i);
-      ajout_liste(aux,x);
+      ajoute_liste(aux,x);
     }
     else 
     {
@@ -232,7 +232,7 @@ void liste_suite_possible(LISTE *L, PLATEAU coup_valide1)
       else
       {
         TUILE x=renvoie_tuile_via_position(L,i);
-        ajout_liste(aux,x);
+        ajoute_liste(aux,x);
       }
     }
   }
@@ -279,7 +279,7 @@ LISTE * supprime_tuile_a_jouer(LISTE *L, PLATEAU p)
 	{
 		for(1;m;j++)
 		{
-			LISTE *l=renvoie_element_plateau(p, pos);
+			LISTE *l=renvoie_element_plateau(p, j);
 			int a= int n=nb_elements_liste(l);
 			for(0;a;k++)
 			{
@@ -295,6 +295,210 @@ LISTE * supprime_tuile_a_jouer(LISTE *L, PLATEAU p)
 	return L;
 }
   
+LISTE * tri_triplet_1(LISTE *L)
+{
+	LISTE *l=cree_liste();
+	int n=nb_elements_liste(L);
+	int i;
+	for(1;n;i++)
+	{
+		TUILE t=renvoie_elements_liste(L,i)
+		if(t.num==1)
+		{
+			ajoute_liste(l,x);
+		}
+	}
+	return l;
+}
 
+LISTE * tri_triplet_2(LISTE *L)
+{
+	LISTE *l=cree_liste();
+	int n=nb_elements_liste(L);
+	int i;
+	for(1;n;i++)
+	{
+		TUILE t=renvoie_elements_liste(L,i)
+		if(t.num==2)
+		{
+			ajoute_liste(l,x);
+		}
+	}
+	return l;
+}
 
+LISTE * tri_triplet_3(LISTE *L)
+{
+	LISTE *l=cree_liste();
+	int n=nb_elements_liste(L);
+	int i;
+	for(1;n;i++)
+	{
+		TUILE t=renvoie_elements_liste(L,i)
+		if(t.num==3)
+		{
+			ajoute_liste(l,x);
+		}
+	}
+	return l;
+}
 
+LISTE * tri_triplet_4(LISTE *L)
+{
+	LISTE *l=cree_liste();
+	int n=nb_elements_liste(L);
+	int i;
+	for(1;n;i++)
+	{
+		TUILE t=renvoie_elements_liste(L,i)
+		if(t.num==4)
+		{
+			ajoute_liste(l,x);
+		}
+	}
+	return l;
+}
+
+LISTE * tri_triplet_5(LISTE *L)
+{
+	LISTE *l=cree_liste();
+	int n=nb_elements_liste(L);
+	int i;
+	for(1;n;i++)
+	{
+		TUILE t=renvoie_elements_liste(L,i)
+		if(t.num==5)
+		{
+			ajoute_liste(l,x);
+		}
+	}
+	return l;
+}
+
+LISTE * tri_triplet_6(LISTE *L)
+{
+	LISTE *l=cree_liste();
+	int n=nb_elements_liste(L);
+	int i;
+	for(1;n;i++)
+	{
+		TUILE t=renvoie_elements_liste(L,i)
+		if(t.num==6)
+		{
+			ajoute_liste(l,x);
+		}
+	}
+	return l;
+}
+
+LISTE * tri_triplet_7(LISTE *L)
+{
+	LISTE *l=cree_liste();
+	int n=nb_elements_liste(L);
+	int i;
+	for(1;n;i++)
+	{
+		TUILE t=renvoie_elements_liste(L,i)
+		if(t.num==7)
+		{
+			ajoute_liste(l,x);
+		}
+	}
+	return l;
+}
+
+LISTE * tri_triplet_8(LISTE *L)
+{
+	LISTE *l=cree_liste();
+	int n=nb_elements_liste(L);
+	int i;
+	for(1;n;i++)
+	{
+		TUILE t=renvoie_elements_liste(L,i)
+		if(t.num==8)
+		{
+			ajoute_liste(l,x);
+		}
+	}
+	return l;
+}
+
+LISTE * tri_triplet_9(LISTE *L)
+{
+	LISTE *l=cree_liste();
+	int n=nb_elements_liste(L);
+	int i;
+	for(1;n;i++)
+	{
+		TUILE t=renvoie_elements_liste(L,i)
+		if(t.num==9)
+		{
+			ajoute_liste(l,x);
+		}
+	}
+	return l;
+}
+
+LISTE * tri_triplet_10(LISTE *L)
+{
+	LISTE *l=cree_liste();
+	int n=nb_elements_liste(L);
+	int i;
+	for(1;n;i++)
+	{
+		TUILE t=renvoie_elements_liste(L,i)
+		if(t.num==10)
+		{
+			ajoute_liste(l,x);
+		}
+	}
+	return l;
+}
+
+LISTE * tri_triplet_11(LISTE *L)
+{
+	LISTE *l=cree_liste();
+	int n=nb_elements_liste(L);
+	int i;
+	for(1;n;i++)
+	{
+		TUILE t=renvoie_elements_liste(L,i)
+		if(t.num==11)
+		{
+			ajoute_liste(l,x);
+		}
+	}
+	return l;
+}
+
+LISTE * tri_triplet_12(LISTE *L)
+{
+	LISTE *l=cree_liste();
+	int n=nb_elements_liste(L);
+	int i;
+	for(1;n;i++)
+	{
+		TUILE t=renvoie_elements_liste(L,i)
+		if(t.num==12)
+		{
+			ajoute_liste(l,x);
+		}
+	}
+	return l;
+}
+
+LISTE * tri_triplet_13(LISTE *L)
+{
+	LISTE *l=cree_liste();
+	int n=nb_elements_liste(L);
+	int i;
+	for(1;n;i++)
+	{
+		TUILE t=renvoie_elements_liste(L,i)
+		if(t.num==13)
+		{
+			ajoute_liste(l,x);
+		}
+	}
+	return l;
+}
