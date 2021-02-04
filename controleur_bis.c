@@ -183,3 +183,5 @@ int main()
 	
 
 	//enlever possibilité de créer une suite de moins de 2 tuiles
+	//remettre la pioche au bon nombre par joueur
+	//enlever les copieMain et copiePlateau des parametres des fonctions
