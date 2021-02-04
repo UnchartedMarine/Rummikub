@@ -590,3 +590,24 @@ void triplet_possible(PLATEAU triplet1, PLATEAU coup_valide1)
 		}
 	}
 }
+
+
+
+int decompte_point(PLATEAU p)
+{
+	int n=nb_elements_plateau(p);
+	int s=0;
+	int i,j;
+	for(1;n;i++)
+	{
+		LISTE *l=renvoie_element_plateau(triplet1, i);
+		int m=nb_element_liste(l);
+		for(1;m;j++)
+		{
+			TUILE y=renvoie_elements_liste(l,j);
+			s=s+y;
+		}
+	}
+	return s;
+}
+	
