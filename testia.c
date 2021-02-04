@@ -651,6 +651,7 @@ int choix_de_depot(PLATEAU *coup_valide1, PLATEAU *coup_valide2, PLATEAU *coup_f
 void ia(JOUEUR *j)
 {
 	int score;
+	int i;
 	LISTE *L=j.main;
 	BOOL b=j.premierCoup;
 	PLATEAU *coup_final;
@@ -661,10 +662,15 @@ void ia(JOUEUR *j)
 	score= choix_de_depot(coup_valide1,coup_valide2,coup_final);
 	if(b & (score>=30))
 	{
-		int n=nb_elements_plateau(coup_valide
+		int n=nb_elements_plateau(coup_final);
+		for(1;n;i++)
+		{
+			LISTE *l=renvoi_elements_plateau(coup_final,i);
+			ajout_plateau(l,plateau);
+		}
 	}
 	else
 	{
-		
+		pioche 
 	}
 }
