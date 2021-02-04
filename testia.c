@@ -81,7 +81,7 @@ LISTE * fusion(LISTE *l, LISTE *k)
   int u=0;
   for(1;n+m;i++)
   {
-    if((j<=n) & (k<=m))
+    if((j<=n) & (u<=m))
     {
       TUILE a=renvoie_tuile_via_position(l,j);
       TUILE b=renvoie_tuile_via_position(k,u);
