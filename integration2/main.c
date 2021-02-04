@@ -406,7 +406,7 @@ int ajouter(int position,int ajoutFin)
 					}
 					else
 						placement_element_liste(liste_manipulation[liste_actuelle],tuile,position);
-					affiche_liste_zoom(reserve,1,0);
+					affiche_liste_zoom(main_actuelle,2,0);
 					affiche_liste_zoom(liste_manipulation[liste_actuelle],0,0);
 				}
 				return 1;

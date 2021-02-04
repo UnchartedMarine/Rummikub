@@ -330,7 +330,7 @@ void init_menu_zoom()
 	create_button(nbButtons,DM.w*0.5,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Retirer a la fin");
 	create_button(nbButtons,DM.w*0.6,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Scinder en deux");
 	create_button(nbButtons,DM.w*0.7,DM.h*0.70,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Remplacer joker");
-	create_button(nbButtons,DM.w*0.8,DM.h*0.65,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Precedent");
+	create_button(nbButtons,DM.w*0.8,DM.h*0.65,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Precedant");
 	create_button(nbButtons,DM.w*0.8,DM.h*0.75,DM.w*Buttonsize,DM.h*Buttonsize,"buttons/idle.png",color,font,"Suivant");
 	TTF_CloseFont(font);
 }
