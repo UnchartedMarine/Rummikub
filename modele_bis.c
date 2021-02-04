@@ -230,6 +230,20 @@ void ajoute_plateau(LISTE *liste,PLATEAU *plato)
 	plato->premier=nouveau;
 }
 
+bool verif_plateau(PLATEAU * plato)
+{
+	ELEMENT_PLATEAU* element =  plato->premier;
+
+	while(element != NULL)
+	{
+		if(!est_suite(element->liste) && !est_liste_meme_nb(element->liste))
+			return false;
+		element=element->suivant;
+	}
+
+	return true;
+}
+
 
 // les fonctions sur les listes:
 LISTE * cree_liste()
