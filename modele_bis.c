@@ -767,8 +767,8 @@ int joue_tour(JOUEUR * joueur,int *niveauPioche,int tourMultiTemps)
 		}
 		break;
 	
-	return 0;
 	}
+	return 0;
 }
 
 
@@ -776,7 +776,6 @@ void complete_combinaison(LISTE * main)
 {
 	int positionCombinaison,positionTuile;
 	int positionInsertion=-1;
-	int nbElemsPlateau = nb_elements_plateau(copiePlateau);
 	LISTE *quelleListe;
 	LISTE * combinaison;
 	TUILE tuile;
@@ -825,9 +824,6 @@ int recupere_tuile_combinaison(LISTE * main)
 {	
 	int positionCombinaison,positionTuile;
 	int nbElemsCombi;
-	int nbElemsPlateau = nb_elements_plateau(copiePlateau);
-	int posDansCombi;
-	int choixCombi;
 	LISTE * combinaison;
 	TUILE tuile;
 
@@ -874,7 +870,6 @@ int complete_recup_combinaison(LISTE * main)
 	int positionCombinaison,positionTuile;
 	int positionInsertion=-1;
 	int nbElemsCombi;
-	int nbElemsPlateau = nb_elements_plateau(copiePlateau);
 
 	LISTE * combinaison;
 	LISTE *quelleListe;
@@ -1010,7 +1005,7 @@ void echange_tuiles_listes_via_main(LISTE * liste1,LISTE * liste2,int positionLi
 	//ajoute la tuile a listeTuilesRecup pour que le joueur soit obligé de la rejouer
 	ajoute_liste(listeTuilesRecup,element2->tuile);
 	//enleve cet element de la main car il est dans listeTuilesRecup
-	enleve_elements_liste(liste2,positionListe2);
+	enleve_element_liste(liste2,positionListe2);
 }
 
 
