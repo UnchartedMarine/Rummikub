@@ -186,24 +186,24 @@ PLATEAU * cree_plateau()
 
 PLATEAU * copie_plateau(PLATEAU* original)
 {
-    PLATEAU* copie= cree_plateau();
-    ELEMENT_PLATEAU* copie_element = malloc(sizeof(*copie_element));
-    copie_element->suivant = NULL;
-    copie->premier = copie_element;
-    ELEMENT_PLATEAU* element =  original->premier;
-    while (element != NULL)
-    {
-        copie_element->liste = copie_liste(element->liste);
-        copie_element->suivant = NULL;
-        if (element->suivant != NULL)
-        {
-            ELEMENT_PLATEAU *nouveau = malloc(sizeof(*nouveau));
-            copie_element->suivant=nouveau;
-            copie_element = copie_element->suivant;
-        }
-        element = element->suivant;
-    }
-    return copie;
+	PLATEAU* copie= cree_plateau();
+	ELEMENT_PLATEAU* copie_element = malloc(sizeof(*copie_element));
+	copie_element->suivant = NULL;
+	ELEMENT_PLATEAU* element =  original->premier;
+	copie->premier = element;
+	while (element != NULL)
+	{
+		copie_element->liste = copie_liste(element->liste);
+		copie_element->suivant = NULL;
+		if (element->suivant != NULL)
+		{
+			ELEMENT_PLATEAU *nouveau = malloc(sizeof(*nouveau));
+			copie_element->suivant=nouveau;
+			copie_element = copie_element->suivant;
+		}
+		element = element->suivant;
+	}
+	return copie;
 }
 
 int nb_elements_plateau(PLATEAU *plato){
@@ -255,22 +255,22 @@ LISTE * cree_liste()
 
 LISTE * copie_liste(LISTE* original)
 {
-    LISTE* copie= cree_liste();
-    ELEMENT* copie_element = malloc(sizeof(*copie_element));
-    copie_element->suivant = NULL;
-    copie->premier = copie_element;
-    ELEMENT* element =  original->premier;
+	LISTE* copie= cree_liste();
+	ELEMENT* copie_element = malloc(sizeof(*copie_element));
+	copie_element->suivant = NULL;
+	ELEMENT* element =  original->premier;
+	copie->premier = element;
     while (element != NULL)
     {
-        copie_element->tuile = element->tuile;
-        copie_element->suivant = NULL;
-        if (element->suivant != NULL)
-        {
-            ELEMENT *nouveau = malloc(sizeof(*nouveau));
-            copie_element->suivant=nouveau;
-            copie_element = copie_element->suivant;
-        }
-        element = element->suivant;
+	copie_element->tuile = element->tuile;
+	copie_element->suivant = NULL;
+	if (element->suivant != NULL)
+	{
+		ELEMENT *nouveau = malloc(sizeof(*nouveau));
+		copie_element->suivant=nouveau;
+		copie_element = copie_element->suivant;
+	}
+	element = element->suivant;
     }
     return copie;
 }
