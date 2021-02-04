@@ -611,3 +611,27 @@ int decompte_point(PLATEAU p)
 	return s;
 }
 	
+
+void remplissage_méthode1(LISTE *L, PLATEAU  coup_valide1)
+{
+	LISTE *l=tri_couleur(L);
+	suite_possible(l, coup_valide1);
+	l=supprime_tuile_a_jouer(l, coup_valide1);
+	
+}
+
+void choix_de_depot(PLATEAU coup_valide1, PLATEAU coup_valide2, PLATEAU coup_final)
+{
+	int x=decompte_point(coup_valide1);
+	int y=decompte_point(coup_valide2);
+	if(x>y)
+	{
+		coup_final=coup_valide1;
+	}
+	else
+	{
+		coup_final=coup_valide2;
+	}
+}
+
+
