@@ -95,8 +95,8 @@ int main()
 			}
 
 			if(tourPasValide == 0){
-				if(nb_elementsliste(listeTuilesRecup)<1){
-					if(verif_plateau(plateauCopie)==true){
+				if(nb_elements_liste(listeTuilesRecup)<1){
+					if(verif_plateau(copiePlateau)==true){
 						plateau=copie_plateau(copiePlateau);
 						joueurs[tour].main=copie_liste(copieMain);
 					}
@@ -105,7 +105,7 @@ int main()
 						copieMain = copie_liste(joueurs[tour].main);
 						tourMultiTemps=0;
 						if(estPremierTour==1){
-							joueur->premierCoup=false;
+							joueurs[tour].premierCoup=false;
 							estPremierTour=0;
 						}
 					}
