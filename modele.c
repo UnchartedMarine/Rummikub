@@ -1801,70 +1801,8 @@ int choix_de_depot(TUILE *t1, TUILE *t2,TUILE *finall,PLATEAU *coup_valide1, PLA
 	}
 }
 
-//pour poser les joker sur le plateau 
-void poser_joker(TUILE *finall,int n,PLATEAU *plateau)
-{
-	int i,j,k;
-	LISTE *l=cree_liste();
-	int m=nb_elements_plateau(plateau);
-	for(i=1;i<=m;i++)
-	{
-		l=renvoie_element_plateau(plateau,i);
-		k=nb_elements_liste(l);
-		for(j=0;j<n;j++)
-		{
-			if(finall[j].num==0)
-			{
-				if(renvoie_tuile_via_position(l,1).num < renvoie_tuile_via_position(l,k).num)
-				{
-					if ((renvoie_tuile_via_position(l,1).num >1)&& (renvoie_tuile_via_position(l,1).num !=0))
-					{
-						ajoute_liste(l,finall[j]);
-						finall[j].num=-1;finall[j].coul=-1;
-					}
-					else
-					{
-						if ((renvoie_tuile_via_position(l,k).num <13)&& (renvoie_tuile_via_position(l,1).num !=0))
-						{
-							placement_element_liste(l, finall[j], k+1);
-							finall[j].num=-1;finall[j].coul=-1;
-						}
-					}
-				}
-				else 
-				{
-					if(renvoie_tuile_via_position(l,1).num < renvoie_tuile_via_position(l,k).num)
-					{
-						if ((renvoie_tuile_via_position(l,1).num <13)&& (renvoie_tuile_via_position(l,1).num !=0))
-						{
-							ajoute_liste(l,finall[j]);
-							finall[j].num=-1;finall[j].coul=-1;
-						}
-						else
-						{
-							if ((renvoie_tuile_via_position(l,k).num >1)&& (renvoie_tuile_via_position(l,1).num !=0))
-							{
-								placement_element_liste(l, finall[j], k+1);
-								finall[j].num=-1;finall[j].coul=-1;
-							}
-						}
-					}
-					else 
-					{
-						if(k<4)
-						{
-							ajoute_liste(l,finall[j]);
-							finall[j].num=-1;finall[j].coul=-1;
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
 // L'ia le bloc
-void pose_ia(JOUEUR *j, PLATEAU *plateau,int *niveauPioche)
+void pose_ia(JOUEUR *j, PLATEAU *plateau)
 {
 	int score;
 	int i=1;
@@ -1897,8 +1835,6 @@ void pose_ia(JOUEUR *j, PLATEAU *plateau,int *niveauPioche)
 				j->premierCoup=true;
 			}
 		}
-		poser_joker(finall,n,plateau);
-		j->main=F;
 	}
 	else 
 	{
