@@ -99,11 +99,11 @@ int choisit_tour(bool premierCoup,int tourMultiTemps);
 int choisirTuile(LISTE *liste);
 int choisir_main_ou_recupTuile();
 int joue_tour(JOUEUR * joueur, int *niveauPioche,int tourMultiTemps);
-void complete_combinaison(LISTE * main);
-int saisit_combinaison(LISTE * main, int typeSuite, JOUEUR * joueur);
-int recupere_tuile_combinaison(LISTE * main);
+void complete_combinaison();
+int saisit_combinaison(int typeSuite, JOUEUR * joueur);
+int recupere_tuile_combinaison();
 int separe_combinaison();
-int remplace_joker(LISTE * main);
+int remplace_joker();
 
 //les fonctions de détection de fin de partie et calcul de points
 bool pioche_finie(int niveauPioche);
@@ -123,6 +123,6 @@ void init_joueurs(JOUEUR * joueurs,int modeJeu, int nbJoueurs,int * niveauPioche
 bool pose_30_points(LISTE *liste);
 void demande_pseudo(JOUEUR * joueur);
 void rentrer_nom_score(int score, char * nom);
-int complete_recup_combinaison(LISTE * main);
+int complete_recup_combinaison();
 int demande_mode_jeu();
 int demande_nb_joueurs();
