@@ -60,7 +60,7 @@ int main()
 
 
 		if(modeJeu==2 && tour>0)
-			pose_ia(&(joueurs[tour]),plateau);
+			pose_ia(&(joueurs[tour]),plateau,&niveauPioche);
 
 		else
 		{
@@ -143,6 +143,7 @@ int main()
 					if(nb_elements_liste(listeTuilesRecup)<1){
 						//Si la vérification de chaque combinaison présente sur la copie du plateau de jeu retourne true (donc chaque combinaison est bonne)
 						if(verif_plateau(copiePlateau)==true){
+							printf("\nFIN DE VOTRE TOUR");
 							//alors le plateau de jeu recoit la copie de la copie du plateau de jeu du début du tour sur laquelle le joueur à effectué des changements par ses coups
 							plateau=copie_plateau(copiePlateau);
 
@@ -153,11 +154,8 @@ int main()
 						}
 						//Sinon les combinaisons présentes sur la copie du plateau quand le joueur décide de trerminer sdon tour sont fausses
 						else{
-							lit_plateau(copiePlateau);
-							lit_plateau(plateau);
-							lit_liste(copieMain);
-							lit_liste(joueurs[tour].main);
-	
+							printf("\nUNE OU PLUSIEURS COMBINAISONS PRESENTES SUR LE PLATEAU NE SONT PAS VALIDES");
+							printf("VOUS DEVEZ RECOMMENCER L'ENTIERETE DE VOTRE TOUR");
 							//On lui redonne sa main et le plateau,tels qu'ils étaient au début de son tour dans une copie sur laquelle il va refaire ses coups
 							copiePlateau=copie_plateau(plateau);
 							copieMain = copie_liste(joueurs[tour].main);
@@ -173,6 +171,8 @@ int main()
 					}
 					//Sinon il n'a pas joué toutes les tuiles obligatoires à jouer durant ce tour et il va devoir recommencer l'entièreté de ce tour
 					else{
+						printf("\nUNE OU PLUSIEURS TUILES QUE VOUS DEVIEZ JOUER OBLIGATOIREMENT CE TOUR N'ONT PAS ETE JOUEES");
+						printf("VOUS DEVEZ RECOMMENCER L'ENTIERETE DE VOTRE TOUR");
 						//On lui redonne sa main et le plateau,tels qu'ils étaient au début de son tour dans une copie sur laquelle il va refaire ses coups
 						copiePlateau=copie_plateau(plateau);
 						copieMain = copie_liste(joueurs[tour].main);
@@ -229,37 +229,7 @@ int main()
 
 	return 0;
 }
-
-
-
-	//poser combi
-		//poser suite
-		//poser mm nb
-
-
-	//completer une combi
-		//juste ajouter
-		//recuperer tuile à l'autre bout si pas de joker dans combi
-
-
-
-	//recup tuile pour la reposer si combi > 4 elems
-		//reposer sur suite existante
-		//fairte nouvelle suite avec main
-	//diviser suite et ajouter tuile
-		//si joker annuler
-	//prendre un joker d'une liste et le remplacer
-	//changer le num des case
 	
-	//spécifier a l'utilisateur de créer sa suite de nombre dans l'ordre decroissant
-	
-
-	//enlever possibilité de créer une suite de moins de 2 tuiles
-	//remettre la pioche au bon nombre par joueur
-	//enlever les copieMain et copiePlateau des parametres des fonctions
-
 	//faire des message en fin de tour
 	//rajouter des \n et des
 	//rajouter print dans switch modele
-	//peut etre ajouter un nb minimum delement de la combi choisie dans separe combi
-	//remettre listeTuilsRecup a zero quand tour pas valide
