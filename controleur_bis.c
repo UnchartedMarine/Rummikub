@@ -99,6 +99,7 @@ int main()
 				tourMultiTemps=0;
 				if(estPremierTour==1){
 					joueurs[tour].premierCoup=false;
+					estPremierTour=0;
 				}
 			}
 
@@ -106,7 +107,9 @@ int main()
 				if(nb_elements_liste(listeTuilesRecup)<1){
 					if(verif_plateau(copiePlateau)==true){
 						plateau=copie_plateau(copiePlateau);
-						joueurs[tour].main=copie_liste(copieMain);
+						if(typeTour!=2){
+							joueurs[tour].main=copie_liste(copieMain);
+						}
 					}
 					else{
 						lit_plateau(copiePlateau);
@@ -206,3 +209,4 @@ int main()
 	//faire des message en fin de tour
 	//rajouter des \n et des
 	//rajouter print dans switch modele
+	//peut etre ajouter un nb minimum delement de la combi choisie dans separe combi
