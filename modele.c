@@ -730,7 +730,8 @@ int choisirTuile(LISTE *liste){
 	int choix;
 	int nbElems;
 	do{	
-		printf("\nSaisir le n° de la tuile à jouer\n(Si vous créez une combinaison, 0 pour valider sa combinaison)\nSaisie:");	
+		printf("\nSaisir le n° de la tuile à jouer\n");
+		printf("Si vous créez une combinaison,Veuillez entrer les tuiles dans l'ordre décroissant, 0 pour valider sa combinaison)\nSaisie:");
 		scanf("%d",&choix);
 		nbElems=nb_elements_liste(liste);
 	}while(choix<0 || choix>nbElems);//tant qu'il ne donne pas une position qui correspond àune tuile dans la liste
