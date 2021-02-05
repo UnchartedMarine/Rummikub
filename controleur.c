@@ -230,6 +230,3 @@ int main()
 	return 0;
 }
 	
-	//faire des message en fin de tour
-	//rajouter des \n et des
-	//rajouter print dans switch modele
