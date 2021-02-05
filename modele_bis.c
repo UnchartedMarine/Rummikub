@@ -389,8 +389,8 @@ int est_suite(LISTE *liste){
 	int coulElem = elemVerif->tuile.coul;
 	int nbJoker=0;
 
-
 	if(nbElemSuite < 3){
+
 		return 0;
 	}
 	elemVerif = elemVerif->suivant;
@@ -656,7 +656,7 @@ int choisirTuile(LISTE *liste){
 	int choix;
 	int nbElems;
 	do{	
-		printf("Saisir le n° de la tuile à jouer\n(Si vous créez une combinaison, 0 pour valider sa combinaison):");	
+		printf("\nSaisir le n° de la tuile à jouer\n(Si vous créez une combinaison, 0 pour valider sa combinaison)\nSaisie:");	
 		scanf("%d",&choix);
 		nbElems=nb_elements_liste(liste);
 	}while(choix<0 || choix>nbElems);
@@ -666,8 +666,8 @@ int choisirTuile(LISTE *liste){
 int choisir_main_ou_recupTuile(){
 	int choix;
 	do{	
-		printf("Choisir une tuile de la main ou de la liste des tuiles obligatoires à jouer ?");
-		printf("1-main\n2-liste des tuiles obligatoires");
+		printf("\nChoisir une tuile de la main ou de la liste des tuiles obligatoires à jouer ?\n");
+		printf("1-main\n2-liste des tuiles obligatoires\nSaisie:");
 		scanf("%d",&choix);
 	}while(choix<0 || choix>2);
 	return choix;
@@ -706,41 +706,41 @@ int joue_tour(JOUEUR * joueur,int *niveauPioche,int tourMultiTemps)
 	switch(choisit_tour(joueur->premierCoup,tourMultiTemps))
 	{
 	case 1:
-		printf("VOUS PIOCHEZ\n");
+		printf("\nVOUS PIOCHEZ\n");
 		pioche_tuile(joueur->main,niveauPioche);
 		return 2;
 		break;
 	case 2:
 		do{
-			printf("VOUS CREEZ UNE COMBINAISON\n");
+			printf("\nVOUS CREEZ UNE COMBINAISON\n");
 			printf("1 - Suite de nombres de meme couleur\n2 - Liste d'un meme nombre de couleurs differentes\nSAISIE:");
 			scanf("%d",&choixSuite);
 		}while(choixSuite<1 || choixSuite>2);
 
-		if(saisit_combinaison(copieMain, choixSuite,joueur)==1){
+		if(saisit_combinaison(choixSuite,joueur)==1){
 			return 4;
 		}
 		break;
 	case 3:
 		do{
-			printf("VOUS COMPLETEZ UNE COMBINAISON\n");
+			printf("\nVOUS COMPLETEZ UNE COMBINAISON\n");
 			printf("1 - Ajouter une tuile à une combinaison\n2 - Ajouter une tuile à un bout d'une combinaison et récupérer la tuile à l'autre bout\nSaisie:");
 			scanf("%d",&typeDeCoup);
 		}while(typeDeCoup<1 || typeDeCoup>2);
 
 		if(typeDeCoup==1){
-			complete_combinaison(copieMain);
+			complete_combinaison();
 			return 1;
 		}
 		else if(typeDeCoup==2){
-			if(complete_recup_combinaison(copieMain)==1){
+			if(complete_recup_combinaison()==1){
 				return 1;
 			}
 		}
 		break;
 
 	case 4:
-		if(recupere_tuile_combinaison(copieMain)==1){
+		if(recupere_tuile_combinaison()==1){
 			return 1;
 		}
 		break;
@@ -750,18 +750,18 @@ int joue_tour(JOUEUR * joueur,int *niveauPioche,int tourMultiTemps)
 		}
 		break;
 	case 6:
-		if(remplace_joker(copieMain)==1){
+		if(remplace_joker()==1){
 			return 1;	
 		}
 		break;
 	case 7:
 		do{
-			printf("VOUS DEVEZ CREER UNE COMBINAISON D'AU MOINS 30 PTS\n");
+			printf("\nVOUS DEVEZ CREER UNE COMBINAISON D'AU MOINS 30 PTS\n");
 			printf("1 - Suite de nombres de meme couleur\n2 - Liste d'un meme nombre de couleurs differentes\nSAISIE:");
 			scanf("%d",&choixSuite);
 		}while(choixSuite<1 || choixSuite>2);
 
-		if(saisit_combinaison(copieMain, choixSuite,joueur)==1){
+		if(saisit_combinaison(choixSuite,joueur)==1){
 			joueur->premierCoup = true;
 			return 3;
 		}
@@ -772,7 +772,7 @@ int joue_tour(JOUEUR * joueur,int *niveauPioche,int tourMultiTemps)
 }
 
 
-void complete_combinaison(LISTE * main)
+void complete_combinaison()
 {
 	int positionCombinaison,positionTuile;
 	int positionInsertion=-1;
@@ -781,7 +781,7 @@ void complete_combinaison(LISTE * main)
 	TUILE tuile;
 
 	do{
-		printf("Saisir la combinaison à compléter:");
+		printf("Saisir le numéro de la combinaison du plateau à compléter:");
 		scanf("%d",&positionCombinaison);
 	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau(copiePlateau));
 	
@@ -791,17 +791,22 @@ void complete_combinaison(LISTE * main)
 	lit_liste(combinaison);
 
 	do{
-		printf("1 - Ajouter à la fin de la combinaison\n2 - Ajouter au début de la combinaison\n");
+		printf("1 - Ajouter à la fin de la combinaison\n2 - Ajouter au début de la combinaison (début = position 0 et fin = apres la dernière tuile de la combinaison)\nSaisie:");
 		scanf("%d",&positionInsertion);
 	}while(positionInsertion<1 || positionInsertion>2);
 
+	printf("MAIN");
+	lit_liste(copieMain);
+	printf("TUILES A JOUER OBLIGATOIREMENT CE TOUR\n");
+	lit_liste(listeTuilesRecup);
+
 	if(nb_elements_liste(listeTuilesRecup)<1){
 		positionTuile=choisirTuile(copieMain);
-		quelleListe=main;
+		quelleListe=copieMain;
 	}
 	else if(choisir_main_ou_recupTuile()==1){
 		positionTuile=choisirTuile(copieMain);
-		quelleListe=main;
+		quelleListe=copieMain;
 	}
 	else{
 		positionTuile=choisirTuile(listeTuilesRecup);
@@ -820,7 +825,7 @@ void complete_combinaison(LISTE * main)
 }
 
 
-int recupere_tuile_combinaison(LISTE * main)
+int recupere_tuile_combinaison()
 {	
 	int positionCombinaison,positionTuile;
 	int nbElemsCombi;
@@ -865,7 +870,7 @@ int recupere_tuile_combinaison(LISTE * main)
 	return 1;
 }
 
-int complete_recup_combinaison(LISTE * main)
+int complete_recup_combinaison()
 {	
 	int positionCombinaison,positionTuile;
 	int positionInsertion=-1;
@@ -900,13 +905,18 @@ int complete_recup_combinaison(LISTE * main)
 		scanf("%d",&positionInsertion);
 	}while(positionInsertion<1 || positionInsertion>2);
 	
+	printf("MAIN");
+	lit_liste(copieMain);
+	printf("TUILES A JOUER OBLIGATOIREMENT CE TOUR\n");
+	lit_liste(listeTuilesRecup);
+
 	if(nb_elements_liste(listeTuilesRecup)<1){
 		positionTuile=choisirTuile(copieMain);
-		quelleListe=main;
+		quelleListe=copieMain;
 	}
 	else if(choisir_main_ou_recupTuile()==1){
 		positionTuile=choisirTuile(copieMain);
-		quelleListe=main;
+		quelleListe=copieMain;
 	}
 	else{
 		positionTuile=choisirTuile(listeTuilesRecup);
@@ -919,17 +929,17 @@ int complete_recup_combinaison(LISTE * main)
 		ajoute_liste(combinaison,tuile);
 		enleve_element_liste(quelleListe,positionTuile);
 
-		nbElemsCombi = nb_elements_liste(combinaison);
-		tuile = renvoie_tuile_via_position(combinaison,nbElemsCombi);
-		enleve_element_liste(combinaison,nbElemsCombi);
+		tuile = renvoie_tuile_via_position(combinaison,1);
+		enleve_element_liste(combinaison,1);
 		ajoute_liste(listeTuilesRecup,tuile);
 	}
 	else if(positionInsertion==2){
 		placement_element_liste(combinaison,tuile,nb_elements_liste(combinaison)+1);
 		enleve_element_liste(quelleListe,positionTuile);
 
-		tuile = renvoie_tuile_via_position(combinaison,1);
-		enleve_element_liste(combinaison,1);
+		nbElemsCombi = nb_elements_liste(combinaison);
+		tuile = renvoie_tuile_via_position(combinaison,nbElemsCombi);
+		enleve_element_liste(combinaison,nbElemsCombi);
 		ajoute_liste(listeTuilesRecup,tuile);
 	}
 	return 1;
@@ -1028,7 +1038,7 @@ void echange_tuiles_listes_via_recup(LISTE * liste1,LISTE * liste2,int positionL
 }
 
 
-int remplace_joker(LISTE * main)
+int remplace_joker()
 {	
 	TUILE tuile;
 	int positionCombinaison,positionJokerCombinaison,positionTuile;
@@ -1053,14 +1063,19 @@ int remplace_joker(LISTE * main)
 		return 0;
 	}
 	
+	printf("MAIN");
+	lit_liste(copieMain);
+	printf("TUILES A JOUER OBLIGATOIREMENT CE TOUR\n");
+	lit_liste(listeTuilesRecup);
+
 	//choix de la tuile dans la main ou la liste des tuiles à jouer obligatoirement
 	if(nb_elements_liste(listeTuilesRecup)<1){
 		positionTuile=choisirTuile(copieMain);
-		echange_tuiles_listes_via_main(combinaison,main,positionJokerCombinaison,positionTuile);
+		echange_tuiles_listes_via_main(combinaison,copieMain,positionJokerCombinaison,positionTuile);
 	}
 	else if(choisir_main_ou_recupTuile()==1){
 		positionTuile=choisirTuile(copieMain);
-		echange_tuiles_listes_via_main(combinaison,main,positionJokerCombinaison,positionTuile);
+		echange_tuiles_listes_via_main(combinaison,copieMain,positionJokerCombinaison,positionTuile);
 	}
 	else{
 		positionTuile=choisirTuile(listeTuilesRecup);
@@ -1071,31 +1086,32 @@ int remplace_joker(LISTE * main)
 	return 1;
 }
 
-int saisit_combinaison(LISTE *main, int typeSuite, JOUEUR * joueur)
+int saisit_combinaison(int typeSuite, JOUEUR * joueur)
 {
 	int choix=1;
 	LISTE *combinaison=cree_liste();
 	LISTE *quelleListe;
+	int nbElemsCombi;
 
 	do{
 		printf("MAIN\n");
-		lit_liste(main);
-			printf("LA COMBINAISON EN TRAIN D'ETRE CREEE:\n");
+		lit_liste(copieMain);
+		printf("TUILES A JOUER OBLIGATOIREMENT CE TOUR\n");
 		lit_liste(listeTuilesRecup);
+		printf("LA COMBINAISON EN TRAIN D'ETRE CREEE:\n");
 		lit_liste(combinaison);
-		
 		if(nb_elements_liste(listeTuilesRecup)<1){
 			choix=choisirTuile(copieMain);
-			quelleListe=main;
+			quelleListe=copieMain;
 		}
 		else if(choisir_main_ou_recupTuile()==1){
-			choix=choisirTuile(main);
-			quelleListe=main;
+			choix=choisirTuile(copieMain);
+			quelleListe=copieMain;
 		}
 		else{
 			choix=choisirTuile(listeTuilesRecup);
 			quelleListe=listeTuilesRecup;
-		}	
+		}
 
 		if(choix!=0)
 		{
@@ -1104,28 +1120,32 @@ int saisit_combinaison(LISTE *main, int typeSuite, JOUEUR * joueur)
 		}
 	}while(choix!=0);
 
-	if(typeSuite==1){
-		if(est_suite(combinaison)==1){
+	nbElemsCombi=nb_elements_liste(combinaison);
+	
+	if(nbElemsCombi>2){
+		if(typeSuite==1){
+			if(est_suite(combinaison)==1){
 			
-			if((joueur->premierCoup == false) && (nb_points_suite(combinaison)<30)){
-				printf("CETTE SUITE FAIT MOINS DE 30 POINTS\n");
-				return 0;
+				if((joueur->premierCoup == false) && (nb_points_suite(combinaison)<30)){
+					printf("CETTE SUITE FAIT MOINS DE 30 POINTS\n");
+					return 0;
+				}
+				ajoute_plateau(combinaison,copiePlateau);
+				return 1;
 			}
-			ajoute_plateau(combinaison,copiePlateau);
-			return 1;
+			printf("CE N'EST PAS UNE SUITE DE NOMBRE DE MEME COULEUR\n");
 		}
-		printf("CE N'EST PAS UNE SUITE DE NOMBRE DE MEME COULEUR\n");
-	}
-	else if(typeSuite==2){
-		if(est_liste_meme_nb(combinaison)==1){
-			if((joueur->premierCoup == false) && (nb_points_liste_mnombre(combinaison)<30)){
-				printf("CETTE SUITE FAIT MOINS DE 30 POINTS\n");
-				return 0;
+		else if(typeSuite==2){
+			if(est_liste_meme_nb(combinaison)==1){
+				if((joueur->premierCoup == false) && (nb_points_liste_mnombre(combinaison)<30)){
+					printf("CETTE SUITE FAIT MOINS DE 30 POINTS\n");
+					return 0;
+				}
+				ajoute_plateau(combinaison,copiePlateau);
+				return 1;
 			}
-			ajoute_plateau(combinaison,copiePlateau);
-			return 1;
+			printf("CE N'EST PAS UNE SUITE D'UN MEME NOMBRE DE COULEURS DIFFERENTES\n");
 		}
-		printf("CE N'EST PAS UNE SUITE D'UN MEME NOMBRE DE COULEURS DIFFERENTES\n");
 	}
 	
 	
