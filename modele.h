@@ -130,3 +130,23 @@ void rentrer_nom_score(int score, char * nom);
 int complete_recup_combinaison();
 int demande_mode_jeu();
 int demande_nb_joueurs();
+
+
+//IA
+void affiche_tab(TUILE *t,int n);
+void initialise_tab(TUILE *t,int n);
+void init_tab(TUILE *t,int n,LISTE *l);
+void tri_par_couleur(TUILE *t, int n);
+void tri_couleur_croissant(TUILE *t, int n);
+void suite_valide(TUILE *t, int n, PLATEAU *p);
+void tri_triple_croissant(TUILE *t, int n);
+void triple_valide(TUILE *t,int n,PLATEAU *p);
+LISTE * renvoie_element_plateau(PLATEAU *p, int pos);
+void remplissage_methode1(TUILE *t,int n, PLATEAU  *coup_valide);
+void remplissage_methode2(TUILE *t, int n, PLATEAU  *coup_valide);
+int decompte_point(PLATEAU *p);
+int choix_de_depot(TUILE *t1, TUILE *t2,TUILE *finall,PLATEAU *coup_valide1, PLATEAU *coup_valide2, PLATEAU *coup_final);
+void poser_joker(TUILE *finall,int n,PLATEAU *plateau);
+void pose_ia(JOUEUR *j, PLATEAU *plateau,int *niveauPioche);
+
+

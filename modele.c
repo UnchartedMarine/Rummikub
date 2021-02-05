@@ -147,7 +147,7 @@ void init_main(LISTE *liste,int *niveauPioche)
 {
 	int i;
 
-	for(i=0;i<35;i++)
+	for(i=0;i<14;i++)
 		pioche_tuile(liste,niveauPioche);
 }
 
@@ -185,35 +185,38 @@ PLATEAU * cree_plateau()
 	return plateau;
 }
 
-//Créer une copie du plateau donné afin que les modifications faites sur la copie ne soient pas faite sur le plateau original
+
 PLATEAU * copie_plateau(PLATEAU* original)
 {
 	PLATEAU* copie= cree_plateau();
+	if(original->premier == NULL)
+		return copie;
 	ELEMENT_PLATEAU* copie_element = malloc(sizeof(*copie_element));
 	copie_element->suivant = NULL;
+
+
+
+	copie->premier = copie_element;
 	ELEMENT_PLATEAU* element =  original->premier;
-	copie->premier = element;
-	//Tant qu'il y a un élément plateau dans le plateau parcouru
+
 	while (element != NULL)
 	{
-		//on copie la liste courante du plateau parcouru dans la copie du plateau
 		copie_element->liste = copie_liste(element->liste);
+		printf("BAB\n");
+		lit_liste(element->liste);
+		lit_liste(copie_element->liste);
 		copie_element->suivant = NULL;
-		//s'il y a un autre element plateau apres l'element courant
 		if (element->suivant != NULL)
 		{
-			//On créer un nouvel element plateau pour la copie
 			ELEMENT_PLATEAU *nouveau = malloc(sizeof(*nouveau));
-			//on l'affecte au suivant de l'element du plateau copié
 			copie_element->suivant=nouveau;
-			//On passe à l'element suivant dans le parcourt du plateau copié
 			copie_element = copie_element->suivant;
 		}
-		//On passe à l'element suivant du plateau original pour le parcourt
 		element = element->suivant;
 	}
-	return copie;//retourne le plateau copié
+	return copie;
 }
+
 
 //Retourne nb d'elements dans le plateau donné
 int nb_elements_plateau(PLATEAU *plato){
@@ -272,34 +275,29 @@ LISTE * cree_liste()
 	return liste;
 }
 
-//Créer une copie de la liste donnée afin que les modifications faites sur la copie ne soient pas faite sur la liste originale
-LISTE * copie_liste(LISTE* original)
+
+LISTE* copie_liste(LISTE* original)
 {
 	LISTE* copie= cree_liste();
+	if(original->premier == NULL)
+		return copie;
 	ELEMENT* copie_element = malloc(sizeof(*copie_element));
 	copie_element->suivant = NULL;
+	copie->premier = copie_element;
 	ELEMENT* element =  original->premier;
-	copie->premier = element;
-	//tant qu'il y a un element dans la liste
 	while (element != NULL)
 	{
-		//on copie la tuile courante de la liste parcourue dans la copie du de la liste
-		copie_element->tuile = element->tuile;
-		copie_element->suivant = NULL;
-		//s'il y a un element apres l'element courant parcouru de la liste originale
-		if (element->suivant != NULL)
-		{
-			//On créer un nouvel element pour la copie
-			ELEMENT *nouveau = malloc(sizeof(*nouveau));
-			//on l'affecte au suivant de l'element de la liste copiée
-			copie_element->suivant=nouveau;
-			//on passe à l'element de la copie suivant pour le tour de boucle suivant
+      		copie_element->tuile = element->tuile;
+        	copie_element->suivant = NULL;
+        	if (element->suivant != NULL)
+        	{
+           		ELEMENT *nouveau = malloc(sizeof(*nouveau));
+           		copie_element->suivant=nouveau;
 			copie_element = copie_element->suivant;
 		}
-		//on passe à l'element suivant de la liste originale pour la suite de la copie pour le tour de boucle suivant
-		element = element->suivant;
-	}
-	return copie;
+		 	element = element->suivant;
+    	}
+    return copie;
 }
 
 //Renvoie la taille d'une liste ou suite dans le jeu, en faisant abstraction de la tuile de fin dont la couleur et le numéro vallent NULL.
@@ -396,19 +394,20 @@ int placement_element_liste(LISTE *liste, TUILE tuile, int position)
 //Renvoie la liste créée; la première liste en paramètres a été modifiée
 //On considère ici que la position c'est l'endroit de coupe soit l'element à cette position sera le premier élément de la seconde liste, que l'on va créer
 LISTE * separer_liste_en_deux(LISTE *liste, int position){
-	ELEMENT *tuileAvant=liste->premier;
+	ELEMENT *element=liste->premier;
 	int i;
+
 	//parcourt jusqu'à l'élément position voulue de la séparation -1
 	for(i=1;i<position-1;i++){
-		tuileAvant=tuileAvant->suivant;
+		element=element->suivant;
 	}
-	//Creation nouvelle liste a partir de l element demande
-	LISTE *liste2 = (LISTE*) malloc(sizeof(LISTE));
-	liste2->premier=tuileAvant->suivant;
 
-	//Remplacer la tuile suivante de la derniere tuile de la suite 1 par la tuile vide (dont le numero et la couleur sont NULL)
-	ELEMENT *derniereTuile = (ELEMENT*) malloc(sizeof(ELEMENT));
-	tuileAvant->suivant=derniereTuile;
+	//Creation nouvelle liste
+	LISTE *liste2 = cree_liste();
+	liste2->premier=element->suivant;
+
+	ELEMENT *derniereTuile = NULL;
+	element->suivant=derniereTuile;
 
 	return liste2;
 }
@@ -639,7 +638,6 @@ int calcule_points_gagnant(JOUEUR *joueurs,int nbJoueurs,int gagnant,int typeFin
 		for(i=0;i<nbJoueurs;i++)
 			points+=additionne_points(joueurs[i].main,1);
 	}
-	printf("ptsssss:%d\n",points);
 	return points;
 }
 
@@ -770,7 +768,7 @@ int choisit_tour(bool premierCoup,int tourMultiTemps)
 		}
 	
 		scanf("%d",&choix);
-	}while((!premierCoup && (choix<1 || choix>2)) || ((tourMultiTemps==1) && (choix<2 || choix>6))) || (premierCoup && (choix<1 || choix>6));//tant que le choix entré ne correspondent pas aux propositions
+	}while((!premierCoup && (choix<1 || choix>2)) || ((tourMultiTemps==1) && (choix<2 || choix>6)) || (premierCoup && (choix<1 || choix>6)));//tant que le choix entré ne correspondent pas aux propositions
 
 	//i le joueur choisit de poser pour la premiere fois durant la partie une combinaison son choix est modifié à 7 pour le traitement dans joue_tour;
 	if(!premierCoup && choix==2)
@@ -1358,8 +1356,6 @@ void lit_plateau(PLATEAU *plato)
 
 	while(element != NULL)
 	{
-		printf("%d:\n",indiceElement);	
-		lit_liste(element->liste);
 		element=element->suivant;
 		indiceElement+=1;
 	}
@@ -1413,3 +1409,501 @@ void rentrer_nom_score(int score, char * nom)
 	fprintf(fichier,"%s %d\n",nom,score);
 	fclose(fichier);
 }
+
+
+void affiche_tab(TUILE *t,int n)
+{
+	int i;
+	for(i=0;i<n;i++)
+	{
+		printf("%d;%d\n",t[i].num,t[i].coul);
+	}
+}
+
+void initialise_tab(TUILE *t,int n)
+{
+	int i;
+	TUILE u;
+	u.num=-1;u.coul=-1;
+	for(i=0;i<n;i++)
+	{
+		t[i]=u;
+	}
+}
+
+void init_tab(TUILE *t,int n,LISTE *l)
+{
+	int i;
+	for(i=0;i<n;i++)
+	{
+		t[i]=renvoie_tuile_via_position(l,i+1);
+	}
+}
+
+
+
+
+void tri_par_couleur(TUILE *t, int n)
+{
+	int i,j;
+	TUILE aux;
+	for(i=0;i<n;i++)
+	{
+		for(j=0;j<n-i;j++)
+		{
+			if((t[j].coul)>(t[j+1].coul))
+			{
+				aux= t[j];
+				t[j]=t[j+1];
+				t[j+1]=aux;
+			}
+		}
+	}
+}
+
+// tri croissant par couleur 
+void tri_couleur_croissant(TUILE *t, int n)
+{
+	tri_par_couleur(t, n);
+	int i,j;
+	TUILE aux;
+	for(i=0;i<n;i++)
+	{
+		for(j=0;j<n-i;j++)
+		{
+			if(t[j].coul==t[j+1].coul)
+			{
+				if(t[j+1].num < t[j].num)
+				{
+					aux= t[j];
+					t[j]=t[j+1];
+					t[j+1]=aux;
+				}
+			}
+		}
+	}
+}
+
+void suite_valide(TUILE *t, int n, PLATEAU *p)
+{
+	int i,j;
+	LISTE *aux=cree_liste();
+	TUILE u;
+	TUILE pos[n];
+	TUILE erreur[n];
+	u.num=-1;u.coul=-1;
+	initialise_tab(erreur,n);
+	initialise_tab(pos,n);
+	for(i=0;i<n;i++)
+	{
+		if(t[i].num>0)
+		{
+			if(i==n-1)
+			{
+				if(((t[i].num) == (t[i-1].num+1))&&(((t[i+1].num) == (t[i].num+1)))&&(t[i].coul==t[i-1].coul)&&(t[i].coul==t[i+1].coul))
+				{
+					ajoute_liste(aux,t[i]);
+					pos[i]=t[i];
+					ajoute_liste(aux,t[i+1]);
+					pos[i+1]=t[i+1];
+				}
+				if(nb_elements_liste(aux)>= 3)
+				{
+					ajoute_plateau(aux,p);
+					for(j=0;j<n;j++)
+					{
+						if(erreur[j].num ==-1)
+						{
+							if(pos[j].num !=-1)
+							{
+								erreur[j]=pos[j];
+							}
+						}
+					}
+					aux= cree_liste();
+					initialise_tab(pos,n);
+				}
+				else
+				{
+					aux= cree_liste();	
+					initialise_tab(pos,n);					
+				}
+			}
+			else
+			{
+				if(nb_elements_liste(aux)==0)
+				{
+				  ajoute_liste(aux,t[i]);
+				  pos[i]=t[i];
+				  
+				}
+				else 
+				{
+					if((((t[i].num) != (t[i-1].num+1))&&((t[i].num) != (t[i-1].num)))|| ((t[i].coul) != (t[i-1].coul)))
+					{	
+						if(nb_elements_liste(aux)>=3)
+						{
+						  ajoute_plateau(aux,p);
+						  for(j=0;j<n;j++)
+							{
+								if(erreur[j].num ==-1)
+								{
+									if(pos[j].num !=-1)
+									{
+										erreur[j]=pos[j];
+									}
+								}
+							}
+							aux= cree_liste();
+							initialise_tab(pos,n);
+						}
+						else
+						{
+							aux= cree_liste();
+							initialise_tab(pos,n);
+						}
+					}
+					else
+					{
+						if((t[i].num) == (t[i-1].num))
+						{
+							if(nb_elements_liste(aux)==0)
+							{
+								aux=cree_liste();
+								initialise_tab(pos,n);
+								ajoute_liste(aux,t[i]);
+								
+							}
+						}
+						else
+						{
+							ajoute_liste(aux,t[i]);
+							pos[i]=t[i];
+						}
+						
+					}
+					
+				}
+			}
+		}
+    }
+    for(i=0;i<=n;i++)
+	{
+		if (((erreur[i]).num != -1)&&((erreur[i]).coul !=-1))
+		{
+			t[i]=u;
+		}
+	}
+}
+
+
+//tri par triplé par couleur
+
+
+void tri_triple_croissant(TUILE *t, int n)
+{
+	tri_par_couleur(t,n);
+	int i,j;
+	TUILE aux;
+	for(i=0;i<n;i++)
+	{
+		for(j=0;j<n-i;j++)
+		{
+			if(t[j+1].num < t[j].num)
+			{
+				aux= t[j];
+				t[j]=t[j+1];
+				t[j+1]=aux;
+			}
+		
+		}
+	}
+}
+
+void triple_valide(TUILE *t,int n,PLATEAU *p)
+{
+	int i,j ;
+	LISTE *aux=cree_liste(); 
+	TUILE u;
+	TUILE pos[n];
+	TUILE erreur[n];
+	u.num=-1;u.coul=-1;
+	initialise_tab(erreur,n);
+	initialise_tab(pos,n);
+	
+	for(i=0;i<n;i++)
+	{
+		if(t[i].num>0)
+		{
+			if(i==n-1)
+			{
+				if(((t[i].num) == (t[i-1].num))&&(((t[i+1].num) == (t[i].num)))&&(t[i].coul !=t[i-1].coul)&&(t[i].coul!=t[i+1].coul))
+				{
+					ajoute_liste(aux,t[i]);
+					pos[i]=t[i];
+					ajoute_liste(aux,t[i+1]);
+					pos[i+1]=t[i+1];
+				}
+				if(nb_elements_liste(aux)>= 3)
+				{
+					ajoute_plateau(aux,p);
+					for(j=0;j<n;j++)
+					{
+						if(erreur[j].num ==-1)
+						{
+							if(pos[j].num !=-1)
+							{
+								erreur[j]=pos[j];
+							}
+						}
+					}
+					aux= cree_liste();
+					initialise_tab(pos,n);
+				}
+				else
+				{
+					aux= cree_liste();	
+					initialise_tab(pos,n);					
+				}
+			}
+			else
+			{
+				if(nb_elements_liste(aux)==0)
+				{
+					ajoute_liste(aux,t[i]);
+					pos[i]=t[i];
+				}
+				else
+				{
+					if(t[i].num != t[i-1].num)
+					{
+						if(nb_elements_liste(aux)>= 3)
+						{
+							ajoute_plateau(aux,p);
+							for(j=0;j<n;j++)
+							{
+								if(erreur[j].num ==-1)
+								{
+									if(pos[j].num !=-1)
+									{
+										erreur[j]=pos[j];
+									}
+								}
+							}
+							aux= cree_liste();
+							initialise_tab(pos,n);
+						}
+						else
+						{
+							aux= cree_liste();
+							initialise_tab(pos,n);
+						}
+					}
+					else
+					{
+						if(t[i].coul != t[i-1].coul)
+						{
+							ajoute_liste(aux,t[i]);
+							pos[i]=t[i];
+						}
+					}
+				}
+
+			}
+		}		
+	}
+	for(i=0;i<=n;i++)
+	{
+		if (((erreur[i]).num != -1)&&((erreur[i]).coul !=-1))
+		{
+			t[i]=u;
+		}
+	}
+}
+
+
+//quelque algo pour le choix de la combinaison posé
+
+LISTE * renvoie_element_plateau(PLATEAU *p, int pos)
+{
+	ELEMENT_PLATEAU *element=p->premier;
+ 	LISTE *erreur=cree_liste();
+
+	while(element != NULL)
+	{
+		if(pos==1)
+    		{
+      			return element->liste;
+    		}
+    		element=element->suivant;
+    		pos= pos-1;
+	}
+  	return erreur;
+}
+
+void remplissage_methode1(TUILE *t,int n, PLATEAU  *coup_valide)
+{
+	tri_couleur_croissant(t,n);
+	suite_valide(t,n,coup_valide);
+	tri_triple_croissant(t,n);
+	triple_valide(t,n,coup_valide);
+	
+}
+
+void remplissage_methode2(TUILE *t, int n, PLATEAU  *coup_valide)
+{
+	tri_triple_croissant(t,n);
+	triple_valide(t,n,coup_valide);
+	lit_plateau(coup_valide);
+	tri_couleur_croissant(t,n);
+	suite_valide(t,n,coup_valide);
+	lit_plateau(coup_valide);
+
+}
+
+int decompte_point(PLATEAU *p)
+{
+	int n=nb_elements_plateau(p);
+	int s=0;
+	int i,j;
+	LISTE *l;
+	TUILE y;
+
+	for(i=1;i<=n;i++)
+	{
+		l=renvoie_element_plateau(p, i);
+		int m=nb_elements_liste(l);
+		for(j=1;j<=m;j++)
+		{
+			y=renvoie_tuile_via_position(l,j);
+			s=s+y.num;
+		}
+	}
+	return s;
+}
+
+int choix_de_depot(TUILE *t1, TUILE *t2,TUILE *finall,PLATEAU *coup_valide1, PLATEAU *coup_valide2, PLATEAU *coup_final)
+{
+	int x=decompte_point(coup_valide1);
+	int y=decompte_point(coup_valide2);
+	if(x>y)
+	{
+		coup_final=coup_valide1;
+		finall=t1;
+		return x;
+	}
+	else
+	{
+		coup_final=coup_valide2;
+		finall=t2;
+		return y;
+	}
+}
+
+//pour poser les joker sur le plateau 
+void poser_joker(TUILE *finall,int n,PLATEAU *plateau)
+{
+	int i,j,k;
+	LISTE *l=cree_liste();
+	int m=nb_elements_plateau(plateau);
+	for(i=1;i<=m;i++)
+	{
+		l=renvoie_element_plateau(plateau,i);
+		k=nb_elements_liste(l);
+		for(j=0;j<n;j++)
+		{
+			if(finall[j].num==0)
+			{
+				if(renvoie_tuile_via_position(l,1).num < renvoie_tuile_via_position(l,k).num)
+				{
+					if ((renvoie_tuile_via_position(l,1).num >1)&& (renvoie_tuile_via_position(l,1).num !=0))
+					{
+						ajoute_liste(l,finall[j]);
+						finall[j].num=-1;finall[j].coul=-1;
+					}
+					else
+					{
+						if ((renvoie_tuile_via_position(l,k).num <13)&& (renvoie_tuile_via_position(l,1).num !=0))
+						{
+							placement_element_liste(l, finall[j], k+1);
+							finall[j].num=-1;finall[j].coul=-1;
+						}
+					}
+				}
+				else 
+				{
+					if(renvoie_tuile_via_position(l,1).num < renvoie_tuile_via_position(l,k).num)
+					{
+						if ((renvoie_tuile_via_position(l,1).num <13)&& (renvoie_tuile_via_position(l,1).num !=0))
+						{
+							ajoute_liste(l,finall[j]);
+							finall[j].num=-1;finall[j].coul=-1;
+						}
+						else
+						{
+							if ((renvoie_tuile_via_position(l,k).num >1)&& (renvoie_tuile_via_position(l,1).num !=0))
+							{
+								placement_element_liste(l, finall[j], k+1);
+								finall[j].num=-1;finall[j].coul=-1;
+							}
+						}
+					}
+					else 
+					{
+						if(k<4)
+						{
+							ajoute_liste(l,finall[j]);
+							finall[j].num=-1;finall[j].coul=-1;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+// L'ia le bloc
+void pose_ia(JOUEUR *j, PLATEAU *plateau,int *niveauPioche)
+{
+	int score;
+	int i=1;
+	LISTE *L=j->main;
+	LISTE *F=cree_liste();
+	int n=nb_elements_liste(L);
+	PLATEAU *coup_final=cree_plateau();
+	PLATEAU *coup_valide1=cree_plateau();
+	PLATEAU *coup_valide2=cree_plateau();
+	TUILE t1[n];
+	TUILE t2[n];
+	TUILE finall[n];
+	
+	
+	init_tab(t1, n, L);
+	init_tab(t2, n, L);
+	initialise_tab(finall,n);
+	remplissage_methode1(t1, n,coup_valide1);
+	remplissage_methode2(t2, n,coup_valide2);
+	score= choix_de_depot(t1, t2, finall, coup_valide1, coup_valide2, coup_final);
+	if((j->premierCoup) || (score>=30))
+	{
+		int n=nb_elements_plateau(coup_final);
+		for(i=1;i<=n;i++)
+		{
+			LISTE *l=renvoie_element_plateau(coup_final,i);
+			ajoute_plateau(l,plateau);
+			if(j->premierCoup==false)
+			{
+				j->premierCoup=true;
+			}
+		}
+		poser_joker(finall,n,plateau);
+		j->main=F;
+	}
+	else 
+	{
+		 pioche_tuile(L,niveauPioche);
+	}
+}
+
+
+

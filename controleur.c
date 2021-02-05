@@ -57,100 +57,122 @@ int main()
 	
 		//affichage des informations et instructions du tour d'un joueur dans la console	
 		printf("\n\n---------Tour du joueur %s---------\n",joueurs[tour].pseudo);
-		printf("IL RESTE %d TUILE(S) DANS LA PIOCHE\n\n",NOMBRE_TUILES-niveauPioche);
-		printf("PLATEAU:\n");
-		lit_plateau(plateau);
-		printf("MAIN DU JOUEUR:\n");
-		lit_liste(joueurs[tour].main);
 
-		//copiePlateau copie le plateau tel qu'il est avant toutes modifications dans le tour du joueur
-		copiePlateau=copie_plateau(plateau);
 
-		//copieMain copie la main telle qu'elle est avant toutes modifications dans le tour du joueur
-		copieMain = copie_liste(joueurs[tour].main);
+		if(modeJeu==2 && tour>0)
+			pose_ia(&(joueurs[tour]),plateau,&niveauPioche);
+
+		else
+		{
+			printf("IL RESTE %d TUILE(S) DANS LA PIOCHE\n\n",NOMBRE_TUILES-niveauPioche);
+			printf("PLATEAU:\n");
+			lit_plateau(plateau);
+			printf("MAIN DU JOUEUR:\n");
+			lit_liste(joueurs[tour].main);
+
+			//copiePlateau copie le plateau tel qu'il est avant toutes modifications dans le tour du joueur
+			copiePlateau=copie_plateau(plateau);
+
+			//copieMain copie la main telle qu'elle est avant toutes modifications dans le tour du joueur
+			copieMain = copie_liste(joueurs[tour].main);
 	
-		//initialisation des cas spéciaux dans un tour à 0
-		estPremierTour=0;
-		tourMultiTemps=0;
-		tourPasValide=1;
-		refaitTour=0;
+			//initialisation des cas spéciaux dans un tour à 0
+			estPremierTour=0;
+			tourMultiTemps=0;
+			tourPasValide=1;
+			refaitTour=0;
 
-		//tant que le tour du joueur lorsqu'il a décidé de terminer n'est pas valide, il recommence tout son tour
-		while(tourPasValide){
+			//tant que le tour du joueur lorsqu'il a décidé de terminer n'est pas valide, il recommence tout son tour
+			while(tourPasValide){
 	
-			//Si c'est un tour avec plusieur coup joués alors on réaffiche l'état actuel du jeu
-			if((tourMultiTemps!= 0) || (refaitTour==1)){
-				printf("---------Continuez votre tour %s---------\n",joueurs[tour].pseudo);
-				printf("PLATEAU:\n");
-				lit_plateau(copiePlateau);
-				printf("MAIN DU JOUEUR:\n");
-				lit_liste(copieMain);
-				printf("TUILES A JOUER OBLIGATOIREMENT CE TOUR:\n");
-				lit_liste(listeTuilesRecup);
-			}
-
-			//typeTour récupère un entier qui permet de savoir comment traiter le coup joué par le joueur
-			typeTour=joue_tour(&(joueurs[tour]),&niveauPioche,tourMultiTemps);
-
-			//Si typeTour !=0, alors le coup joué par le joueur est valide (cela ne veut pas dire que les combinaison jouées sur la copie du plateau sont bonnes)
-			if(typeTour!=0){
-				//Si le joueur a pioché
-				if(typeTour == 2){
-					tourPasValide=0;//le joueur ne peut pas faire d'autres actions dans le tour
+				//Si c'est un tour avec plusieur coup joués alors on réaffiche l'état actuel du jeu
+				if((tourMultiTemps!= 0) || (refaitTour==1)){
+					printf("---------Continuez votre tour %s---------\n",joueurs[tour].pseudo);
+					printf("PLATEAU:\n");
+					lit_plateau(copiePlateau);
+					printf("MAIN DU JOUEUR:\n");
+					lit_liste(copieMain);
+					printf("TUILES A JOUER OBLIGATOIREMENT CE TOUR:\n");
+					lit_liste(listeTuilesRecup);
 				}
-				else{
-					printf("\n\nVOULEZ-VOUS EFFECTUER UNE AUTRE ACTION ?\n");
-					printf("1 - OUI\n0 - NON, J'AI TERMINÉ\nSaisie:");
-					scanf("%d",&tourPasValide);
-					//Si le joueur décide de faire un autre coup dans son tour
-					if(tourPasValide==1){
-						tourMultiTemps=1;//tour multi Temps
-						//Si le coup joué par le joueur était sa première pose d'une combinaison de plus de 30 points 
-						if(typeTour==3){
-							estPremierTour=1;
-						}
+
+				//typeTour récupère un entier qui permet de savoir comment traiter le coup joué par le joueur
+				typeTour=joue_tour(&(joueurs[tour]),&niveauPioche,tourMultiTemps);
+
+				//Si typeTour !=0, alors le coup joué par le joueur est valide (cela ne veut pas dire que les combinaison jouées sur la copie du plateau sont bonnes)
+				if(typeTour!=0){
+					//Si le joueur a pioché
+					if(typeTour == 2){
+						tourPasValide=0;//le joueur ne peut pas faire d'autres actions dans le tour
 					}
-					
-				}
-			}
-			else{//Sinon le coup jouer par le joueur n'est pas valide
-				printf("\n\nL'ACTION EFFECTUEE EST IMPOSSIBLE\n");
-				printf("VOUS DEVEZ RECOMMENCER L'ENTIERETE DE VOTRE TOUR\n");
-
-				//Le joueur doit recommencer tout son tour donc on réaffecte à la copie du plateau et de la main les éléments présent au début du tour du joueur
-				copiePlateau=copie_plateau(plateau);
-				copieMain = copie_liste(joueurs[tour].main);
-				//pas de verification du plateau car le coup est pas bon
-				tourPasValide=1;
-				tourMultiTemps=0;
-				//s'il y a eu une erreur dans un coup suivant sa premiere pose de plus de 30 points qui lui debloque le reste des autres coups jouables
-				if(estPremierTour==1){
-					joueurs[tour].premierCoup=false;//il doit recommencer tout son tour et reposer sa combinaison de plus de 30 points
-					estPremierTour=0;
-				}
-			}
-
-			//Si le joueur a décidé de terminer son tour
-			if(tourPasValide == 0){
-				//si le joueur a joué toutes les tuiles qui étaient à jouer obligatoirement durant ce tour
-				if(nb_elements_liste(listeTuilesRecup)<1){
-					//Si la vérification de chaque combinaison présente sur la copie du plateau de jeu retourne true (donc chaque combinaison est bonne)
-					if(verif_plateau(copiePlateau)==true){
-						//alors le plateau de jeu recoit la copie de la copie du plateau de jeu du début du tour sur laquelle le joueur à effectué des changements par ses coups
-						plateau=copie_plateau(copiePlateau);
-
-						//Si durant le tour le joueur n'a pas pioché
-						if(typeTour!=2){
-							joueurs[tour].main=copie_liste(copieMain); //on affecte à la main du joueur la copie de la copie de la main du joueur sur laquelle les coups joués l'ont impactés
-						}
-					}
-					//Sinon les combinaisons présentes sur la copie du plateau quand le joueur décide de trerminer sdon tour sont fausses
 					else{
-						lit_plateau(copiePlateau);
-						lit_plateau(plateau);
-						lit_liste(copieMain);
-						lit_liste(joueurs[tour].main);
+						printf("\n\nVOULEZ-VOUS EFFECTUER UNE AUTRE ACTION ?\n");
+						printf("1 - OUI\n0 - NON, J'AI TERMINÉ\nSaisie:");
+						scanf("%d",&tourPasValide);
+						//Si le joueur décide de faire un autre coup dans son tour
+						if(tourPasValide==1){
+							tourMultiTemps=1;//tour multi Temps
+							//Si le coup joué par le joueur était sa première pose d'une combinaison de plus de 30 points 
+							if(typeTour==3){
+								estPremierTour=1;
+							}
+						}
+					
+					}
+				}
+				else{//Sinon le coup jouer par le joueur n'est pas valide
+					printf("\n\nL'ACTION EFFECTUEE EST IMPOSSIBLE\n");
+					printf("VOUS DEVEZ RECOMMENCER L'ENTIERETE DE VOTRE TOUR\n");
+
+					//Le joueur doit recommencer tout son tour donc on réaffecte à la copie du plateau et de la main les éléments présent au début du tour du joueur
+					copiePlateau=copie_plateau(plateau);
+					copieMain = copie_liste(joueurs[tour].main);
+					//pas de verification du plateau car le coup est pas bon
+					tourPasValide=1;
+					tourMultiTemps=0;
+					//s'il y a eu une erreur dans un coup suivant sa premiere pose de plus de 30 points qui lui debloque le reste des autres coups jouables
+					if(estPremierTour==1){
+						joueurs[tour].premierCoup=false;//il doit recommencer tout son tour et reposer sa combinaison de plus de 30 points
+						estPremierTour=0;
+					}
+				}
+
+				//Si le joueur a décidé de terminer son tour
+				if(tourPasValide == 0){
+					//si le joueur a joué toutes les tuiles qui étaient à jouer obligatoirement durant ce tour
+					if(nb_elements_liste(listeTuilesRecup)<1){
+						//Si la vérification de chaque combinaison présente sur la copie du plateau de jeu retourne true (donc chaque combinaison est bonne)
+						if(verif_plateau(copiePlateau)==true){
+							//alors le plateau de jeu recoit la copie de la copie du plateau de jeu du début du tour sur laquelle le joueur à effectué des changements par ses coups
+							plateau=copie_plateau(copiePlateau);
+
+							//Si durant le tour le joueur n'a pas pioché
+							if(typeTour!=2){
+								joueurs[tour].main=copie_liste(copieMain); //on affecte à la main du joueur la copie de la copie de la main du joueur sur laquelle les coups joués l'ont impactés
+							}
+						}
+						//Sinon les combinaisons présentes sur la copie du plateau quand le joueur décide de trerminer sdon tour sont fausses
+						else{
+							lit_plateau(copiePlateau);
+							lit_plateau(plateau);
+							lit_liste(copieMain);
+							lit_liste(joueurs[tour].main);
 	
+							//On lui redonne sa main et le plateau,tels qu'ils étaient au début de son tour dans une copie sur laquelle il va refaire ses coups
+							copiePlateau=copie_plateau(plateau);
+							copieMain = copie_liste(joueurs[tour].main);
+							tourMultiTemps=0;
+							tourPasValide=1;
+							refaitTour=1;
+							//s'il y a eu une erreur sur le plateau suite à un coup suivant sa premiere pose de plus de 30 points qui lui debloque le reste des autres coups jouables
+							if(estPremierTour==1){
+								joueurs[tour].premierCoup=false;//il doit recommencer tout son tour et reposer sa combinaison de plus de 30 points
+								estPremierTour=0;
+							}
+						}
+					}
+					//Sinon il n'a pas joué toutes les tuiles obligatoires à jouer durant ce tour et il va devoir recommencer l'entièreté de ce tour
+					else{
 						//On lui redonne sa main et le plateau,tels qu'ils étaient au début de son tour dans une copie sur laquelle il va refaire ses coups
 						copiePlateau=copie_plateau(plateau);
 						copieMain = copie_liste(joueurs[tour].main);
@@ -164,36 +186,22 @@ int main()
 						}
 					}
 				}
-				//Sinon il n'a pas joué toutes les tuiles obligatoires à jouer durant ce tour et il va devoir recommencer l'entièreté de ce tour
-				else{
-					//On lui redonne sa main et le plateau,tels qu'ils étaient au début de son tour dans une copie sur laquelle il va refaire ses coups
-					copiePlateau=copie_plateau(plateau);
-					copieMain = copie_liste(joueurs[tour].main);
-					tourMultiTemps=0;
-					tourPasValide=1;
-					refaitTour=1;
-					//s'il y a eu une erreur sur le plateau suite à un coup suivant sa premiere pose de plus de 30 points qui lui debloque le reste des autres coups jouables
-					if(estPremierTour==1){
-						joueurs[tour].premierCoup=false;//il doit recommencer tout son tour et reposer sa combinaison de plus de 30 points
-						estPremierTour=0;
-					}
-				}
+
+
+
 			}
 
-
-
+			//on remet les variables de traitements telle qu'un joueur commence son tour
+			tourPasValide=1;
+			tourMultiTemps=0;
+			estPremierTour=0;
+			refaitTour=0;
 		}
-
-
-
-		//Le tour du joueur étant validé, on passe au tour du joueur suivant
-		tour=(tour+1)%nbJoueurs;
-		//on remet les variables de traitements telle qu'un joueur commence son tour
-		tourPasValide=1;
-		tourMultiTemps=0;
-		estPremierTour=0;
-		refaitTour=0;
+	
+	tour=(tour+1)%nbJoueurs; //on passe au tour du joueur suivant
+	
 	}
+
 
 
 	if(pioche_finie(niveauPioche))
@@ -212,9 +220,12 @@ int main()
 		rentrer_nom_score(joueurs[i].points,joueurs[i].pseudo);
 	}
 
-	printf("gagnant:%d ; 0:%d ; 1:%d ; 2:%d\n",gagnant,joueurs[0].points,joueurs[1].points,joueurs[2].points);
-	
 
+	printf("\nGAGNANT:%s\n",joueurs[gagnant].pseudo);
+ 	
+	for(i=0;i<nbJoueurs;i++)
+		printf("%s:%d points\n",joueurs[i].pseudo,joueurs[i].points);
+	
 
 	return 0;
 }
