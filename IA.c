@@ -509,7 +509,7 @@ void pose_ia(JOUEUR *j, PLATEAU *plateau,int *niveauPioche)
 	}
 	else 
 	{
-		 piocher_tuile(L,niveauPioche);
+		 pioche_tuile(L,niveauPioche);
 	}
 	
 	
