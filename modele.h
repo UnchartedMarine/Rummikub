@@ -9,6 +9,7 @@
 
 #define NOMBRE_TUILES 106
 
+enum coul{JOKER,BLEU,ROUGE,JAUNE,VERT};
 
 typedef struct TUILE 
 {	
@@ -50,12 +51,14 @@ typedef struct JOUEUR
 
 TUILE pioche[NOMBRE_TUILES];
 PLATEAU *plateau;
+PLATEAU *copiePlateau;
+LISTE *copieMain;
+LISTE *listeTuilesRecup;
 
 //Les fonctions de la pioche
 void init_pioche();
 void init_tuiles();
 void melange_pioche(TUILE* pioche);
-void lit_tuile(TUILE tuile);
 void lit_pioche(TUILE* pioche);
 void piocher_tuile(LISTE *liste,int *niveauPioche);
 void init_main(LISTE *liste,int *niveauPioche);
@@ -64,31 +67,43 @@ int regarde_qui_commence_aux(int nbJoueurs,int valeurMax,int positionMax,JOUEUR 
 
 //Les fonctions de manipulation de liste
 LISTE * cree_liste();
+LISTE * copie_liste(LISTE* original);
 void ajoute_liste(LISTE *liste,TUILE tuile);
 void ajoute_liste_position_donnee(LISTE *liste,TUILE tuile, int position);
 void lit_liste(LISTE *liste);
 void lit_liste_aux(ELEMENT * element,int indiceTuile);
 int nb_elements_liste(LISTE *liste);
 int placement_element_liste(LISTE *liste, TUILE tuile, int position);
-LISTE * separer_liste_en_deux(LISTE *liste, int position);
-bool est_valide(LISTE *liste);
+LISTE * separer_liste_en_deux(LISTE *liste,int position);
 int enleve_element_liste(LISTE * liste,int position);
 TUILE renvoie_tuile_via_position(LISTE *liste,int position);
-void echange_tuiles_listes(LISTE * liste1,LISTE * liste2,int positionListe1,int positionListe2);
+void echange_tuiles_listes_via_main(LISTE * liste1,LISTE * liste2,int positionListe1,int positionListe2);
+void echange_tuiles_listes_via_recup(LISTE * liste1,LISTE * liste2,int positionListe1,int positionListe2);
+int est_suite(LISTE *liste);
+int est_liste_meme_nb(LISTE *liste);
+int nb_points_suite(LISTE *liste);
+int nb_points_liste_mnombre(LISTE *liste);
+bool joker_est_dans_liste(LISTE * liste);
+
 
 //les fonctions liées au plateau
 PLATEAU * cree_plateau();
-void ajoute_plateau(LISTE *liste);
+PLATEAU * copie_plateau(PLATEAU* original);
+int nb_elements_plateau(PLATEAU *plato);
+void ajoute_plateau(LISTE *liste, PLATEAU *plato);
 void lit_plateau();
+bool verif_plateau(PLATEAU * plato);
 
 //Les fonctions pour que le joueur joue son tour
-int choisit_tour(bool premierCoup);
-void joue_tour(JOUEUR * joueur, int *niveauPioche);
-void complete_combinaison(LISTE * main);
-void saisit_combinaison(LISTE * main);
-void recupere_tuile_combinaison(LISTE * main);
-void separe_combinaison();
-void remplace_joker(LISTE * main);
+int choisit_tour(bool premierCoup,int tourMultiTemps);
+int choisirTuile(LISTE *liste);
+int choisir_main_ou_recupTuile();
+int joue_tour(JOUEUR * joueur, int *niveauPioche,int tourMultiTemps);
+void complete_combinaison();
+int saisit_combinaison(int typeSuite, JOUEUR * joueur);
+int recupere_tuile_combinaison();
+int separe_combinaison();
+int remplace_joker();
 
 //les fonctions de détection de fin de partie et calcul de points
 bool pioche_finie(int niveauPioche);
@@ -103,10 +118,14 @@ int calcule_points_perdant(JOUEUR *joueurs,int gagnant,int perdant,int typeFinDe
 
 
 void lit_tuile_liste(LISTE *liste, int position);
-LISTE * renvoie_liste_via_position(int position);
-int nb_elements_plateau();
-void init_joueurs(JOUEUR * joueurs,int nbJoueurs,int * niveauPioche);
+LISTE * renvoie_liste_via_position(PLATEAU *plato,int position);
+void init_joueurs(JOUEUR * joueurs,int modeJeu, int nbJoueurs,int * niveauPioche);
 bool pose_30_points(LISTE *liste);
 void demande_pseudo(JOUEUR * joueur);
 void rentrer_nom_score(int score, char * nom);
+int complete_recup_combinaison();
+int demande_mode_jeu();
+int demande_nb_joueurs();
+
+
 

@@ -5,12 +5,36 @@
 
 
 
-// les fonctions sur la mise ne place du jeu:
+
+int demande_mode_jeu()
+{
+	int mode;
+	do{
+		printf("1 - Joueurs contre joueurs\n2 - Joueurs contre IA\nSaisie:");
+		scanf("%d",&mode);
+	}while(mode<1 || mode>2);
+	
+	return mode;
+}
+
+
+
+int demande_nb_joueurs()
+{
+	int nbJoueurs;
+	do{
+		printf("\nChoisir le nombre de joueurs (2 à 4)\nSaisie:");
+		scanf("%d",&nbJoueurs);
+	}while(nbJoueurs<2 || nbJoueurs>4);
+	
+	return nbJoueurs;
+}
+
+
 void init_pioche()
 {
 	init_tuiles();
 	melange_pioche(pioche);
-	//lit_pioche(pioche);
 }
 
 
@@ -55,25 +79,50 @@ void melange_pioche(TUILE* pioche) // 100 mélanges ça me paraît pas mal
 }
 
 
-void init_joueurs(JOUEUR * joueurs,int nbJoueurs,int * niveauPioche)
+void init_joueurs(JOUEUR * joueurs,int modeJeu, int nbJoueurs,int * niveauPioche)
 {
 	int i;
 
 	for(i=0;i<nbJoueurs;i++)
 	{
-		demande_pseudo(&(joueurs[i]));
-		joueurs[i].main=cree_liste();
-		lit_liste(joueurs[i].main);
-		init_main(joueurs[i].main,niveauPioche);
-		lit_liste(joueurs[i].main);	
-		joueurs[i].premierCoup = false;
+		if(modeJeu==2 && i>0)  //si le joueur est l'IA, lui donne un pseudo défini
+			sprintf(joueurs[i].pseudo,"ORDI n°%d",i);
+		else
+		{
+			printf("Choisissez votre pseudo:");
+			scanf("%s",joueurs[i].pseudo);
+		}
+		joueurs[i].main=cree_liste();  //crée la liste de la main du joueur
+		init_main(joueurs[i].main,niveauPioche);  //distribue au joueur les tuiles de début de partie
+		joueurs[i].premierCoup = false;  //pour dire que le joueur n'a pas encore créé de combinaison de 30pts
 	}
 }
 
 
 void lit_tuile(TUILE tuile)
 {
-	printf("Num:%d ; Coul:%d\n",tuile.num,tuile.coul);
+	char couleur[10];
+
+	switch(tuile.coul)
+	{
+	case 0:
+		sprintf(couleur,"JOKER");
+		break;
+	case 1:
+		sprintf(couleur,"ROUGE");
+		break;
+	case 2:
+		sprintf(couleur,"BLEU");
+		break;
+	case 3:
+		sprintf(couleur,"JAUNE");
+		break;
+	case 4:
+		sprintf(couleur,"NOIR");
+		break;
+	}
+
+	printf("%3d ; %1s\n",tuile.num,couleur);
 }
 
 
@@ -87,7 +136,6 @@ void lit_pioche(TUILE *pioche)
 	}	
 }
 
-
 void pioche_tuile(LISTE *liste,int *niveauPioche)
 {
 	ajoute_liste(liste,pioche[*niveauPioche]);
@@ -99,7 +147,7 @@ void init_main(LISTE *liste,int *niveauPioche)
 {
 	int i;
 
-	for(i=0;i<6;i++)
+	for(i=0;i<14;i++)
 		pioche_tuile(liste,niveauPioche);
 }
 
@@ -136,15 +184,69 @@ PLATEAU * cree_plateau()
 	return plateau;
 }
 
-void ajoute_plateau(LISTE *liste)
+PLATEAU * copie_plateau(PLATEAU* original)
+{
+	PLATEAU* copie= cree_plateau();
+	ELEMENT_PLATEAU* copie_element = malloc(sizeof(*copie_element));
+	copie_element->suivant = NULL;
+	
+	if(original != NULL){
+		copie->premier = copie_element;
+		ELEMENT_PLATEAU* element =  original->premier;
+	
+		while (element != NULL)
+		{
+			copie_element->liste = copie_liste(element->liste);
+			copie_element->suivant = NULL;
+			if (element->suivant != NULL)
+			{
+				ELEMENT_PLATEAU *nouveau = malloc(sizeof(*nouveau));
+				copie_element->suivant=nouveau;
+				copie_element = copie_element->suivant;
+			}
+			element = element->suivant;
+		}
+	}
+	return copie;
+}
+
+
+int nb_elements_plateau(PLATEAU *plato){
+	ELEMENT_PLATEAU *nouveau=plato->premier;
+	int nombreElements=0;
+
+	while(nouveau != NULL)
+	{
+		nombreElements += 1;
+		nouveau=nouveau->suivant;
+	}
+	return nombreElements;
+	
+}
+
+void ajoute_plateau(LISTE *liste,PLATEAU *plato)
 {
 	ELEMENT_PLATEAU *nouveau = malloc(sizeof(*nouveau));
 
 
-	nouveau->suivant=plateau->premier;
+	nouveau->suivant=plato->premier;
 	nouveau->liste=liste;
 
-	plateau->premier=nouveau;
+	plato->premier=nouveau;
+}
+
+bool verif_plateau(PLATEAU * plato)
+{
+	ELEMENT_PLATEAU* element =  plato->premier;
+
+	while(element != NULL)
+	{
+		if(!est_suite(element->liste) && !est_liste_meme_nb(element->liste))
+			return false;
+		element=element->suivant;
+	}
+
+	return true;
 }
 
 
@@ -154,6 +256,32 @@ LISTE * cree_liste()
 	LISTE *liste = (LISTE*) malloc(sizeof(LISTE));
 	liste->premier=NULL;
 	return liste;
+}
+
+
+LISTE* copie_liste(LISTE* original)
+{
+	LISTE* copie= cree_liste();
+	ELEMENT* copie_element = malloc(sizeof(*copie_element));
+	copie_element->suivant = NULL;
+
+	if(original != NULL){
+		copie->premier = copie_element;
+		ELEMENT* element =  original->premier;
+		while (element != NULL)
+		{
+      			copie_element->tuile = element->tuile;
+        		copie_element->suivant = NULL;
+        		if (element->suivant != NULL)
+        		{
+           			ELEMENT *nouveau = malloc(sizeof(*nouveau));
+           			copie_element->suivant=nouveau;
+				copie_element = copie_element->suivant;
+			}
+		 		element = element->suivant;
+    		}
+	}
+    return copie;
 }
 
 
@@ -183,7 +311,8 @@ void lit_liste_aux(ELEMENT * element,int indiceTuile)
 	if(element != NULL)
 	{
 		lit_liste_aux(element->suivant,indiceTuile-1);
-		printf("(%d) %d;%d\n",indiceTuile,element->tuile.num,element->tuile.coul);
+		printf(" (%2d)",indiceTuile);		
+		lit_tuile(element->tuile);
 	}
 }
 
@@ -209,12 +338,11 @@ int nb_elements_liste(LISTE *liste)
 //position ici est la position à laquelle on souhaite placer la tuile dans la suite
 int placement_element_liste(LISTE *liste, TUILE tuile, int position)
 {
-	if(position > nb_elements_liste(liste)){
-		return 0;
+	if(position==1 || nb_elements_liste(liste)== 0){
+        	ajoute_liste(liste,tuile);
 	}
-
-	if(position==1){
-		ajoute_liste(liste,tuile);
+	else if(position > nb_elements_liste(liste)+1){
+		return 0;
 	}
 	else{
 		//On créer un type MAIN pour la tuile fournie en paramètres afin de la placer dans la liste qui est composés d'éléments de type MAIN.
@@ -224,8 +352,11 @@ int placement_element_liste(LISTE *liste, TUILE tuile, int position)
 		nouveau->tuile=tuile;
 
 		//On parcourt la liste jusqu'à obtenir la tuile dont la position est celle qui précède la position où la tuile va être ajoutée.
-		for(i=1;i<position-1;i++){
-			tuileAvant=tuileAvant->suivant;
+		if(nb_elements_liste(liste) != 0)
+		{
+			for(i=1;i<position-1;i++){
+				tuileAvant=tuileAvant->suivant;
+			}
 		}
 
 		//La nouvelle tuile pointe la tuile suivante de la tuile qui la précède dorénavant.
@@ -239,21 +370,21 @@ int placement_element_liste(LISTE *liste, TUILE tuile, int position)
 }
 
 //Renvoie la liste créée; la première liste en paramètres a été modifiée
-//On considère ici que la position c'est l'endroit de coupe soit l'element à cette position sera le premier élément de la seconde liste, que l'on va créer
+//On considère ici que la position c'est l'endroit de coupe soit l'element à cette position sera le dernier élément de la première liste
 LISTE * separer_liste_en_deux(LISTE *liste, int position){
-	ELEMENT *tuileAvant=liste->premier;
+	ELEMENT *element=liste->premier;
 	int i;
 
 	for(i=1;i<position-1;i++){
-		tuileAvant=tuileAvant->suivant;
+		element=element->suivant;
 	}
-	//Creation nouvelle liste a partir de l element demande
-	LISTE *liste2 = (LISTE*) malloc(sizeof(LISTE));
-	liste2->premier=tuileAvant->suivant;
+	
+	//Creation nouvelle liste
+	LISTE *liste2 = cree_liste();
+	liste2->premier=element->suivant;
 
-	//Remplacer la tuile suivante de la derniere tuile de la suite 1 par la tuile vide (dont le numero et la couleur sont NULL)
-	ELEMENT *derniereTuile = (ELEMENT*) malloc(sizeof(ELEMENT));
-	tuileAvant->suivant=derniereTuile;
+	ELEMENT *derniereTuile = NULL;
+	element->suivant=derniereTuile;
 
 	return liste2;
 }
@@ -268,10 +399,14 @@ int est_suite(LISTE *liste){
 	int coulElem = elemVerif->tuile.coul;
 	int nbJoker=0;
 
+	if(nbElemSuite < 3){
+
+		return 0;
+	}
 	elemVerif = elemVerif->suivant;
 	if(numElem==0){
 		if(elemVerif->tuile.num == 0){
-			return 1;
+			return 0;
 		}
 		nbJoker+=1;
 		numElem = elemVerif->tuile.num;
@@ -282,21 +417,21 @@ int est_suite(LISTE *liste){
 	for(i=1+nbJoker;i<nbElemSuite;i++){
 		if(elemVerif->tuile.num != 0){
 			if((elemVerif->tuile.num != numElem+1) || (elemVerif->tuile.coul != coulElem)){
-				return 1;
+				return 0;
 			}
 			numElem = elemVerif->tuile.num;
 		}
 		else{
 			nbJoker+=1;
 			if(nbJoker>1){
-				return 1;
+				return 0;
 			}
 			numElem = numElem+1;
 
 		}
 		elemVerif=elemVerif->suivant;
 	}
-	return 0;
+	return 1;
 }
 
 int est_liste_meme_nb(LISTE *liste){
@@ -307,11 +442,14 @@ int est_liste_meme_nb(LISTE *liste){
 	int coulElem[4]={5,5,5,5};
 	int nbJoker=0;
 
+	if(nbElemSuite < 3){
+		return 0;
+	}
 	coulElem[0]= elemVerif->tuile.coul;
 	elemVerif = elemVerif->suivant;
 	if(numElem==0){
 		if(elemVerif->tuile.num == 0){
-			return 1;
+			return 0;
 		}
 		nbJoker+=1;
 		numElem = elemVerif->tuile.num;
@@ -322,11 +460,11 @@ int est_liste_meme_nb(LISTE *liste){
 	for(i=1+nbJoker;i<nbElemSuite;i++){
 		if(elemVerif->tuile.num != 0){
 			if((elemVerif->tuile.num != numElem)){
-				return 1;
+				return 0;
 			}
 			for(j=0;j<4;j++){//pas sur de cette boucle
 				if(elemVerif->tuile.coul == coulElem[j]){
-					return 1;
+					return 0;
 				}
 			}
 			coulElem[i]=elemVerif->tuile.coul;
@@ -334,14 +472,14 @@ int est_liste_meme_nb(LISTE *liste){
 		else{
 			nbJoker+=1;
 			if(nbJoker>1){
-				return 1;
+				return 0;
 			}
 			coulElem[i]=elemVerif->tuile.coul;
 
 		}
 		elemVerif=elemVerif->suivant;
 	}
-	return 0;
+	return 1;
 }
 
 
@@ -459,7 +597,7 @@ int plus_petite_main(JOUEUR *joueurs, int nbJoueurs)
 	int i;
 	int tmp;
 	int min=10000;  //valeur qui ne sera pas dépassée
-	int gagnant;
+	int gagnant=-1;
 	for(i=0;i<nbJoueurs;i++) 
 	{
 		tmp=additionne_points(joueurs[i].main,1);
@@ -487,7 +625,7 @@ int trouve_joueur_precedent(int nbJoueurs, int tour) /***Est-ce que je crée une
 
 int detecte_gagnant(JOUEUR *joueurs,int nbJoueurs,int tour,int typeFinDePartie)
 {
-	int gagnant;
+	int gagnant=-1;
 
 	if(typeFinDePartie==1)
 		gagnant=plus_petite_main(joueurs,nbJoueurs);
@@ -510,7 +648,7 @@ bool main_finie(JOUEUR *joueurs, int nbJoueurs, int tour)
 
 bool pioche_finie(int niveauPioche)
 {
-	if(niveauPioche==NOMBRE_TUILES-1)
+	if(niveauPioche==NOMBRE_TUILES)
 		return true;
 	return false;
 }
@@ -524,97 +662,251 @@ bool est_partie_finie(JOUEUR *joueurs, int niveauPioche, int nbJoueurs, int tour
 	return false;
 }
 
+int choisirTuile(LISTE *liste){
+	int choix;
+	int nbElems;
+	do{	
+		printf("\nSaisir le n° de la tuile à jouer\n(Si vous créez une combinaison, 0 pour valider sa combinaison)\nSaisie:");	
+		scanf("%d",&choix);
+		nbElems=nb_elements_liste(liste);
+	}while(choix<0 || choix>nbElems);
+	return choix;
+}
 
-int choisit_tour(bool premierCoup)
+int choisir_main_ou_recupTuile(){
+	int choix;
+	do{	
+		printf("\nChoisir une tuile de la main ou de la liste des tuiles obligatoires à jouer ?\n");
+		printf("1-main\n2-liste des tuiles obligatoires\nSaisie:");
+		scanf("%d",&choix);
+	}while(choix<0 || choix>2);
+	return choix;
+}
+
+int choisit_tour(bool premierCoup,int tourMultiTemps)
 {
 	int choix;
 
 	do
 	{
 		if(!premierCoup)
-			printf("1-Piocher\n2-Créer une combinaison d'au moins 30 points\nSaisie:");
-		else
-			printf("1-Piocher\n2-Créer une combinaison (jsais plus si y'a cette option)\n3-Compléter une combinaison\nSaisie:");
+			printf("1 - Piocher\n2 - Créer une combinaison d'au moins 30 points\nSaisie:");
+		else if(tourMultiTemps == 1){
+			printf("2 - Créer une combinaison\n3 - Compléter une combinaison\n4 - Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5 - Séparer une suite en deux\n6 - Récupérer un joker dans une combinaison du plateau\nSaisie:");
+		}
+		else{
+			printf("1 - Piocher\n2 - Créer une combinaison\n3 - Compléter une combinaison\n4 - Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5 - Séparer une suite en deux\n6 - Récupérer un joker dans une combinaison du plateau\nSaisie:");
+		}
 	
 		scanf("%d",&choix);
-	}while((!premierCoup && (choix<1 || choix>2)) || (premierCoup && (choix<1 || choix>3)));
+	}while((!premierCoup && (choix<1 || choix>2)) || ((tourMultiTemps==1) && (choix<2 || choix>6)) || (premierCoup && (choix<1 || choix>6)));
 
 	if(!premierCoup && choix==2)
-		choix=4;
+		choix=7;
 
 	return choix;
 }
 
 
-void joue_tour(JOUEUR * joueur,int *niveauPioche)
+int joue_tour(JOUEUR * joueur,int *niveauPioche,int tourMultiTemps)
 {
-	int typeDeCoup = 0;
+	int typeDeCoup;
+	int choixSuite;
 
-	switch(choisit_tour(joueur->premierCoup))
+	switch(choisit_tour(joueur->premierCoup,tourMultiTemps))
 	{
 	case 1:
-		printf("VOUS PIOCHEZ\n");
+		printf("\nVOUS PIOCHEZ\n");
 		pioche_tuile(joueur->main,niveauPioche);
+		return 2;
 		break;
 	case 2:
-		printf("VOUS CREEZ UNE COMBINAISON\n");
-		saisit_combinaison(joueur->main);
+		do{
+			printf("\nVOUS CREEZ UNE COMBINAISON\n");
+			printf("1 - Suite de nombres de meme couleur\n2 - Liste d'un meme nombre de couleurs differentes\nSAISIE:");
+			scanf("%d",&choixSuite);
+		}while(choixSuite<1 || choixSuite>2);
+
+		if(saisit_combinaison(choixSuite,joueur)==1){
+			return 1;
+		}
 		break;
 	case 3:
-		printf("VOUS COMPLETEZ UNE COMBINAISON\n");
+		do{
+			printf("\nVOUS COMPLETEZ UNE COMBINAISON\n");
+			printf("1 - Ajouter une tuile à une combinaison\n2 - Ajouter une tuile à un bout d'une combinaison et récupérer la tuile à l'autre bout\nSaisie:");
+			scanf("%d",&typeDeCoup);
+		}while(typeDeCoup<1 || typeDeCoup>2);
 
-
-		do
-		{
-			printf("1 - Ajouter à la combinaison\n2 - Récupérer une tuile\n3 - Séparer une combinaison\n4 - Remplacer un joker\n5 - Valider le tour\nSaisie:");
-			scanf("%d",&typeDeCoup);	
-			
-			lit_plateau();
-			printf("MAIN:\n");
-			lit_liste(joueur->main);
-
-			switch(typeDeCoup)
-			{
-			case 1:
-				complete_combinaison(joueur->main);
-				break;
-			case 2:
-				recupere_tuile_combinaison(joueur->main);
-				break;
-			case 3:
-				separe_combinaison();
-				break;
-			case 4:
-				remplace_joker(joueur->main);
-				break;
+		if(typeDeCoup==1){
+			complete_combinaison();
+			return 1;
+		}
+		else if(typeDeCoup==2){
+			if(complete_recup_combinaison()==1){
+				return 1;
 			}
-
-		}while(typeDeCoup!=5);
-
+		}
 		break;
+
 	case 4:
-		printf("VOUS DEVEZ CREER UNE COMBINAISON D'AU MOINS 30 PTS\n");
-		saisit_combinaison(joueur->main);
-		joueur->premierCoup = true;
+		if(recupere_tuile_combinaison()==1){
+			return 1;
+		}
 		break;
-	}
+	case 5:
+		if(separe_combinaison()==1){
+			return 1;	
+		}
+		break;
+	case 6:
+		if(remplace_joker()==1){
+			return 1;	
+		}
+		break;
+	case 7:
+		do{
+			printf("\nVOUS DEVEZ CREER UNE COMBINAISON D'AU MOINS 30 PTS\n");
+			printf("1 - Suite de nombres de meme couleur\n2 - Liste d'un meme nombre de couleurs differentes\nSAISIE:");
+			scanf("%d",&choixSuite);
+		}while(choixSuite<1 || choixSuite>2);
 
+		if(saisit_combinaison(choixSuite,joueur)==1){
+			joueur->premierCoup = true;
+			return 3;
+		}
+		break;
+	
+	}
+	return 0;
 }
 
 
-void complete_combinaison(LISTE * main)
+void complete_combinaison()
 {
 	int positionCombinaison,positionTuile;
 	int positionInsertion=-1;
+	LISTE *quelleListe;
 	LISTE * combinaison;
+	TUILE tuile;
+
+	do{
+		printf("Saisir le numéro de la combinaison du plateau à compléter:");
+		scanf("%d",&positionCombinaison);
+	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau(copiePlateau));
+	
+
+	combinaison = renvoie_liste_via_position(copiePlateau,positionCombinaison);
+	printf("LA COMBINAISON:\n");
+	lit_liste(combinaison);
+
+	do{
+		printf("1 - Ajouter à la fin de la combinaison\n2 - Ajouter au début de la combinaison (début = position 0 et fin = apres la dernière tuile de la combinaison)\nSaisie:");
+		scanf("%d",&positionInsertion);
+	}while(positionInsertion<1 || positionInsertion>2);
+
+	printf("MAIN");
+	lit_liste(copieMain);
+	printf("TUILES A JOUER OBLIGATOIREMENT CE TOUR\n");
+	lit_liste(listeTuilesRecup);
+
+	if(nb_elements_liste(listeTuilesRecup)<1){
+		positionTuile=choisirTuile(copieMain);
+		quelleListe=copieMain;
+	}
+	else if(choisir_main_ou_recupTuile()==1){
+		positionTuile=choisirTuile(copieMain);
+		quelleListe=copieMain;
+	}
+	else{
+		positionTuile=choisirTuile(listeTuilesRecup);
+		quelleListe=listeTuilesRecup;
+	}
+	
+	tuile=renvoie_tuile_via_position(quelleListe,positionTuile);
+
+	if(positionInsertion==1){
+		ajoute_liste(combinaison,tuile);
+	}
+	else if(positionInsertion==2){
+		placement_element_liste(combinaison,tuile,nb_elements_liste(combinaison)+1);
+	}
+	enleve_element_liste(quelleListe,positionTuile);
+}
+
+
+int recupere_tuile_combinaison()
+{	
+	int positionCombinaison,positionTuile;
+	int nbElemsCombi;
+	LISTE * combinaison;
+	TUILE tuile;
+
+	do{
+		printf("Saisir la combinaison dans laquelle récupérer une tuile:");
+		scanf("%d",&positionCombinaison);
+	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau(copiePlateau));
+	
+	combinaison = renvoie_liste_via_position(copiePlateau,positionCombinaison);
+	if(joker_est_dans_liste(combinaison)==true){
+		printf("ON NE PEUT PAS FAIRE CE COUP S'IL Y A UN JOKER DANS LA COMBINAISON,");
+		return 0;
+	}
+	nbElemsCombi=nb_elements_liste(combinaison);
+	if(nbElemsCombi<4){
+		printf("LA COMBINAISON CONTIENT MOINS DE 4 TUILES, C'EST UN COUP IMPOSSIBLE");
+		return 0;
+	}
+
+
+	printf("LA COMBINAISON CHOISIE:\n");
+	lit_liste(combinaison);
+
+	do{
+		printf("1-Récupérer la tuile à la fin de la combinaison\n2-Récupérer la tuile au début de la combinaison\n");
+		scanf("%d",&positionTuile);
+	}while(positionTuile<1 || positionTuile>2);
+
+	if(positionTuile==1){
+		tuile=renvoie_tuile_via_position(combinaison,nbElemsCombi);
+		enleve_element_liste(combinaison,nbElemsCombi);
+		ajoute_liste(listeTuilesRecup,tuile);
+	}
+	else if(positionTuile==2){
+		tuile=renvoie_tuile_via_position(combinaison,1);
+		enleve_element_liste(combinaison,1);
+		ajoute_liste(listeTuilesRecup,tuile);
+	}
+	return 1;
+}
+
+int complete_recup_combinaison()
+{	
+	int positionCombinaison,positionTuile;
+	int positionInsertion=-1;
+	int nbElemsCombi;
+
+	LISTE * combinaison;
+	LISTE *quelleListe;
 	TUILE tuile;
 
 	do{
 		printf("Saisir la combinaison à compléter:");
 		scanf("%d",&positionCombinaison);
-	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau());
+	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau(copiePlateau));
 	
-	combinaison = renvoie_liste_via_position(positionCombinaison);
+	combinaison = renvoie_liste_via_position(copiePlateau,positionCombinaison);
+	
+	if(joker_est_dans_liste(combinaison)==true){
+		printf("ON NE PEUT PAS FAIRE CE COUP S'IL Y A UN JOKER DANS LA COMBINAISON, VOUS POUVEZ JUSTE COMPLETER");
+		return 0;
+	}
+	nbElemsCombi = nb_elements_liste(combinaison);
+	if(nbElemsCombi<3){
+		printf("IMPOSSIBLE DE REALISER CETTE ACTION SUR UNE COMBINAISON DE MOINS DE 3 ELEMENTS");
+		return 0;
+	}	
+	
 	printf("LA COMBINAISON:\n");
 	lit_liste(combinaison);
 
@@ -622,73 +914,122 @@ void complete_combinaison(LISTE * main)
 		printf("1-Ajouter à la fin de la combinaison\n2-Ajouter au début de la combinaison\n");
 		scanf("%d",&positionInsertion);
 	}while(positionInsertion<1 || positionInsertion>2);
-
-	do{
-		printf("Position de la tuile à insérer:\n");
-		scanf("%d",&positionTuile);
-	}while(positionTuile<1 || positionTuile>nb_elements_liste(main));
 	
-	tuile=renvoie_tuile_via_position(combinaison,positionTuile);
+	printf("MAIN");
+	lit_liste(copieMain);
+	printf("TUILES A JOUER OBLIGATOIREMENT CE TOUR\n");
+	lit_liste(listeTuilesRecup);
 
-	if(positionInsertion==1)
+	if(nb_elements_liste(listeTuilesRecup)<1){
+		positionTuile=choisirTuile(copieMain);
+		quelleListe=copieMain;
+	}
+	else if(choisir_main_ou_recupTuile()==1){
+		positionTuile=choisirTuile(copieMain);
+		quelleListe=copieMain;
+	}
+	else{
+		positionTuile=choisirTuile(listeTuilesRecup);
+		quelleListe=listeTuilesRecup;
+	}
+	
+	tuile=renvoie_tuile_via_position(quelleListe,positionTuile);
+
+	if(positionInsertion==1){
 		ajoute_liste(combinaison,tuile);
-	else if(positionInsertion==2)
-		placement_element_liste(combinaison,tuile,0);
+		enleve_element_liste(quelleListe,positionTuile);
 
-	enleve_element_liste(main,positionTuile);
+		tuile = renvoie_tuile_via_position(combinaison,1);
+		enleve_element_liste(combinaison,1);
+		ajoute_liste(listeTuilesRecup,tuile);
+	}
+	else if(positionInsertion==2){
+		placement_element_liste(combinaison,tuile,nb_elements_liste(combinaison)+1);
+		enleve_element_liste(quelleListe,positionTuile);
+
+		nbElemsCombi = nb_elements_liste(combinaison);
+		tuile = renvoie_tuile_via_position(combinaison,nbElemsCombi);
+		enleve_element_liste(combinaison,nbElemsCombi);
+		ajoute_liste(listeTuilesRecup,tuile);
+	}
+	return 1;
+	
+}
+
+bool joker_est_dans_liste(LISTE * liste)
+{
+	ELEMENT * element=liste->premier;
+	
+	while(element != NULL)
+	{
+		if(element->tuile.num == 0)
+			return true;
+		element=element->suivant;
+	}
+	return false;
 }
 
 
-void recupere_tuile_combinaison(LISTE * main)
-{	
-	int positionCombinaison,positionTuile;
+int separe_combinaison()
+{
+	int positionCombinaison,positionSeparation;
+
+	int posSepa;
+	int nbElemsDansCombi;
 	LISTE * combinaison;
-	TUILE tuile;
 
 	do{
-		printf("Saisir la combinaison à compléter:");
+		printf("Saisir la combinaison à séparer:");
 		scanf("%d",&positionCombinaison);
-	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau());
+	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau(copiePlateau));
 	
-	combinaison = renvoie_liste_via_position(positionCombinaison);
+	combinaison = renvoie_liste_via_position(copiePlateau,positionCombinaison);
+
+	if(joker_est_dans_liste(combinaison)==true){
+		return 0;
+	}
+
 	printf("LA COMBINAISON CHOISIE:\n");
 	lit_liste(combinaison);
 
 	do{
-		printf("Saisir la position de la tuile à récupérer:");
-		scanf("%d",&positionTuile);
-	}while(positionTuile<1 || positionTuile>nb_elements_liste(combinaison));
-	
-	tuile = renvoie_tuile_via_position(combinaison,positionTuile);
-	enleve_element_liste(combinaison,positionTuile);
-	ajoute_liste(main,tuile);
-}
-
-
-void separe_combinaison()
-{
-	int positionCombinaison,positionSeparation;
-	LISTE * combinaison;
-
-	do{
-		printf("Saisir la combinaison à compléter:");
-		scanf("%d",&positionCombinaison);
-	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau());
-	
-	combinaison = renvoie_liste_via_position(positionCombinaison);
-	printf("LA COMBINAISON CHOISIE:");
-	lit_liste(combinaison);
-
-	do{
-		printf("Saisir la position à laquelle séparer la combinaison:");
+		printf("Saisir la position à laquelle séparer la combinaison (le numéro entré sera celui de la première tuile de la combinaison créée):");
 		scanf("%d",&positionSeparation);
 	}while(positionSeparation<1 || positionSeparation>nb_elements_liste(combinaison));
 
-	ajoute_plateau(separer_liste_en_deux(combinaison,positionSeparation));
+	nbElemsDansCombi=nb_elements_liste(combinaison);
+	posSepa=nbElemsDansCombi+1-positionSeparation;
+
+	ajoute_plateau(separer_liste_en_deux(combinaison,posSepa),copiePlateau);
+	return 1;
 }
 
 
-void echange_tuiles_listes(LISTE * liste1,LISTE * liste2,int positionListe1,int positionListe2)
+void echange_tuiles_listes_via_main(LISTE * liste1,LISTE * liste2,int positionListe1,int positionListe2)
+{
+	ELEMENT * element1=liste1->premier;
+	ELEMENT * element2=liste2->premier;
+	TUILE tuileTmp;
+	int i,j;
+
+	for(i=1;i<positionListe1;i++)
+		element1=element1->suivant;
+
+	for(j=1;j<positionListe2;j++)
+		element2=element2->suivant;
+
+	tuileTmp=element1->tuile;
+	element1->tuile=element2->tuile;
+	element2->tuile=tuileTmp;
+	
+	//ajoute la tuile a listeTuilesRecup pour que le joueur soit obligé de la rejouer
+	ajoute_liste(listeTuilesRecup,element2->tuile);
+	//enleve cet element de la main car il est dans listeTuilesRecup
+	enleve_element_liste(liste2,positionListe2);
+}
+
+
+void echange_tuiles_listes_via_recup(LISTE * liste1,LISTE * liste2,int positionListe1,int positionListe2)
 {
 	ELEMENT * element1=liste1->premier;
 	ELEMENT * element2=liste2->premier;
@@ -707,62 +1048,126 @@ void echange_tuiles_listes(LISTE * liste1,LISTE * liste2,int positionListe1,int 
 }
 
 
-void remplace_joker(LISTE * main)
+int remplace_joker()
 {	
-	int positionCombinaison,positionJokerCombinaison,positionTuileMain;
+	TUILE tuile;
+	int positionCombinaison,positionJokerCombinaison,positionTuile;
 	LISTE * combinaison;
 
 	do{
 		printf("Saisir la combinaison à compléter:");
 		scanf("%d",&positionCombinaison);
-	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau());
+	}while(positionCombinaison<1 || positionCombinaison>nb_elements_plateau(copiePlateau));
 	
-	combinaison = renvoie_liste_via_position(positionCombinaison);
+	combinaison = renvoie_liste_via_position(copiePlateau,positionCombinaison);
 	printf("LA COMBINAISON CHOISIE:\n");
 	lit_liste(combinaison);
 
 	do{
-		printf("Saisir la position de la tuile à remplacer:");
+		printf("Saisir la position du joker:");
 		scanf("%d",&positionJokerCombinaison);
 	}while(positionJokerCombinaison<1 || positionJokerCombinaison>nb_elements_liste(combinaison));
 
-	do{
-		lit_liste(main);
-		printf("Saisir par quelle tuile remplacer ce joker:");
-		scanf("%d",&positionTuileMain);
-	}while(positionTuileMain<1 || positionTuileMain>nb_elements_liste(main));
+	tuile=renvoie_tuile_via_position(combinaison,positionJokerCombinaison);
+	if(tuile.num!=0){
+		return 0;
+	}
+	
+	printf("MAIN");
+	lit_liste(copieMain);
+	printf("TUILES A JOUER OBLIGATOIREMENT CE TOUR\n");
+	lit_liste(listeTuilesRecup);
 
-	echange_tuiles_listes(combinaison,main,positionJokerCombinaison,positionTuileMain);
+	//choix de la tuile dans la main ou la liste des tuiles à jouer obligatoirement
+	if(nb_elements_liste(listeTuilesRecup)<1){
+		positionTuile=choisirTuile(copieMain);
+		echange_tuiles_listes_via_main(combinaison,copieMain,positionJokerCombinaison,positionTuile);
+	}
+	else if(choisir_main_ou_recupTuile()==1){
+		positionTuile=choisirTuile(copieMain);
+		echange_tuiles_listes_via_main(combinaison,copieMain,positionJokerCombinaison,positionTuile);
+	}
+	else{
+		positionTuile=choisirTuile(listeTuilesRecup);
+		echange_tuiles_listes_via_recup(combinaison,listeTuilesRecup,positionJokerCombinaison,positionTuile);
+	}
+
+	
+	return 1;
 }
 
-
-void saisit_combinaison(LISTE *main)
+int saisit_combinaison(int typeSuite, JOUEUR * joueur)
 {
 	int choix=1;
 	LISTE *combinaison=cree_liste();
+	LISTE *quelleListe;
+	int nbElemsCombi;
 
 	do{
-		lit_liste(main);
-		
-		do{	
-			printf("Saisir le n° de la tuile à jouer\n0 pour valider sa combinaison:");	
-			scanf("%d",&choix);
-		}while(choix<0 || choix>nb_elements_liste(main));
+		printf("MAIN\n");
+		lit_liste(copieMain);
+		printf("TUILES A JOUER OBLIGATOIREMENT CE TOUR\n");
+		lit_liste(listeTuilesRecup);
+		printf("LA COMBINAISON EN TRAIN D'ETRE CREEE:\n");
+		lit_liste(combinaison);
+		if(nb_elements_liste(listeTuilesRecup)<1){
+			choix=choisirTuile(copieMain);
+			quelleListe=copieMain;
+		}
+		else if(choisir_main_ou_recupTuile()==1){
+			choix=choisirTuile(copieMain);
+			quelleListe=copieMain;
+		}
+		else{
+			choix=choisirTuile(listeTuilesRecup);
+			quelleListe=listeTuilesRecup;
+		}
 
 		if(choix!=0)
 		{
-			ajoute_liste(combinaison,renvoie_tuile_via_position(main,choix));
-			enleve_element_liste(main,choix);
+			ajoute_liste(combinaison,renvoie_tuile_via_position(quelleListe,choix));
+			enleve_element_liste(quelleListe,choix);
 		}
 	}while(choix!=0);
-	ajoute_plateau(combinaison);
+
+	nbElemsCombi=nb_elements_liste(combinaison);
+	
+	if(nbElemsCombi>2){
+		if(typeSuite==1){
+			if(est_suite(combinaison)==1){
+			
+				if((joueur->premierCoup == false) && (nb_points_suite(combinaison)<30)){
+					printf("CETTE SUITE FAIT MOINS DE 30 POINTS\n");
+					return 0;
+				}
+				ajoute_plateau(combinaison,copiePlateau);
+				return 1;
+			}
+			printf("CE N'EST PAS UNE SUITE DE NOMBRE DE MEME COULEUR\n");
+		}
+		else if(typeSuite==2){
+			if(est_liste_meme_nb(combinaison)==1){
+				if((joueur->premierCoup == false) && (nb_points_liste_mnombre(combinaison)<30)){
+					printf("CETTE SUITE FAIT MOINS DE 30 POINTS\n");
+					return 0;
+				}
+				ajoute_plateau(combinaison,copiePlateau);
+				return 1;
+			}
+			printf("CE N'EST PAS UNE SUITE D'UN MEME NOMBRE DE COULEURS DIFFERENTES\n");
+		}
+	}
+	
+	
+	return 0;
+
 }
 
 
 
-LISTE * renvoie_liste_via_position(int position)
+LISTE * renvoie_liste_via_position(PLATEAU *plato,int position)
 {
-	ELEMENT_PLATEAU *element=plateau->premier;
+	ELEMENT_PLATEAU *element=plato->premier;
 
 	while(element != NULL)
 	{
@@ -775,25 +1180,11 @@ LISTE * renvoie_liste_via_position(int position)
 	return cree_liste();
 }
 
-int nb_elements_plateau()
-{
-	ELEMENT_PLATEAU *element=plateau->premier;
-	int nombreElements=0;
-
-	while(element != NULL)
-	{
-		nombreElements += 1;
-		element=element->suivant;
-	}
-	return nombreElements;
-}
-
-
-
 TUILE renvoie_tuile_via_position(LISTE *liste,int position)
 {
 	ELEMENT *element=liste->premier;
 	TUILE tuileErreur;
+	position = nb_elements_liste(liste)+1 - position;    //équilibrage vu qu'on a pris nos fonctions à l'envers
 
 	while(element != NULL)
 	{
@@ -808,9 +1199,9 @@ TUILE renvoie_tuile_via_position(LISTE *liste,int position)
 }
 
 
-void lit_plateau()
+void lit_plateau(PLATEAU *plato)
 {
-	ELEMENT_PLATEAU *element=plateau->premier;
+	ELEMENT_PLATEAU *element=plato->premier;
 	int indiceElement=1;
 
 	while(element != NULL)
@@ -827,18 +1218,20 @@ int enleve_element_liste(LISTE * liste,int position){
 	ELEMENT * courant=liste->premier;
 	ELEMENT * elemASuppr;
 	int i;
+	int nbElems=nb_elements_liste(liste);
+	int pos=nbElems+1-position;
 	
-	if((position > nb_elements_liste(liste)) || (position <= 0)){
+	if((pos > nb_elements_liste(liste)) || (pos <= 0) || nb_elements_liste(liste) == 0){
 		return 0;
 	}
 
-	if(position==1){
+	if(pos==1){
 		liste->premier=courant->suivant;
 		free(courant);
 	}
 	else{		
 		//On parcourt la liste jusqu'à obtenir la tuile dont la position est celle qui précède la position où la tuile va être supprimée.
-		for(i=1;i<position-1;i++){
+		for(i=1;i<pos-1;i++){
 			courant=courant->suivant;
 		}
 		elemASuppr=courant->suivant;
@@ -868,6 +1261,5 @@ void rentrer_nom_score(int score, char * nom)
 	fprintf(fichier,"%s %d\n",nom,score);
 	fclose(fichier);
 }
-
 
 
