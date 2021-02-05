@@ -22,7 +22,11 @@ int main()
 	int typeTour;
 	int tourMultiTemps;
 	int estPremierTour;
+	int refaitTour;
 
+	listeTuilesRecup=cree_liste();
+	copieMain=cree_liste();
+	copiePlateau=cree_plateau();
 	plateau=cree_plateau();
 	init_pioche();
 	init_joueurs(joueurs,modeJeu,nbJoueurs,&niveauPioche);
@@ -35,7 +39,7 @@ int main()
 	while(!est_partie_finie(joueurs,niveauPioche,nbJoueurs,tour))
 	{
 
-		printf("---------Tour du joueur %s---------\n",joueurs[tour].pseudo);
+		printf("\n\n---------Tour du joueur %s---------\n",joueurs[tour].pseudo);
 
 		printf("IL RESTE %d TUILE(S) DANS LA PIOCHE\n\n",NOMBRE_TUILES-niveauPioche);
 
@@ -51,17 +55,21 @@ int main()
 		estPremierTour=0;
 		tourMultiTemps=0;
 		tourPasValide=1;
+		refaitTour=0;
 
 		while(tourPasValide){
 	
-			if(nb_elements_plateau(copiePlateau)!= 0){
-				printf("---------Tour du joueur %s---------\n",joueurs[tour].pseudo);
+			if((tourMultiTemps!= 0) || (refaitTour==1)){
+				printf("---------Continuez votre tour %s---------\n",joueurs[tour].pseudo);
 
 				printf("PLATEAU:\n");
 				lit_plateau(copiePlateau);
 
 				printf("MAIN DU JOUEUR:\n");
 				lit_liste(copieMain);
+
+				printf("TUILES A JOUER OBLIGATOIREMENT CE TOUR:\n");
+				lit_liste(listeTuilesRecup);
 			}
 
 			typeTour=joue_tour(&(joueurs[tour]),&niveauPioche,tourMultiTemps);
@@ -70,7 +78,7 @@ int main()
 					tourPasValide=0;
 				}
 				else{
-					printf("VOULEZ-VOUS EFFECTUER UNE AUTRE ACTION ?\n");
+					printf("\n\nVOULEZ-VOUS EFFECTUER UNE AUTRE ACTION ?\n");
 					printf("1 - OUI\n0 - NON, J'AI TERMINÉ\nSaisie:");
 					scanf("%d",&tourPasValide);
 					if(tourPasValide==1){
@@ -83,7 +91,7 @@ int main()
 				}
 			}
 			else{
-				printf("L'ACTION EFFECTUEE EST IMPOSSIBLE\n");
+				printf("\n\nL'ACTION EFFECTUEE EST IMPOSSIBLE\n");
 				printf("VOUS DEVEZ RECOMMENCER L'ENTIERETE DE VOTRE TOUR\n");
 				copiePlateau=copie_plateau(plateau);
 				copieMain = copie_liste(joueurs[tour].main);
@@ -101,9 +109,15 @@ int main()
 						joueurs[tour].main=copie_liste(copieMain);
 					}
 					else{
+						lit_plateau(copiePlateau);
+						lit_plateau(plateau);
+						lit_liste(copieMain);
+						lit_liste(joueurs[tour].main);
 						copiePlateau=copie_plateau(plateau);
 						copieMain = copie_liste(joueurs[tour].main);
 						tourMultiTemps=0;
+						tourPasValide=1;
+						refaitTour=1;
 						if(estPremierTour==1){
 							joueurs[tour].premierCoup=false;
 							estPremierTour=0;
@@ -114,6 +128,8 @@ int main()
 					copiePlateau=copie_plateau(plateau);
 					copieMain = copie_liste(joueurs[tour].main);
 					tourMultiTemps=0;
+					tourPasValide=1;
+					refaitTour=1;
 					if(estPremierTour==1){
 						joueurs[tour].premierCoup=false;
 						estPremierTour=0;
@@ -132,6 +148,7 @@ int main()
 		tourPasValide=1;
 		tourMultiTemps=0;
 		estPremierTour=0;
+		refaitTour=0;
 	}
 
 
@@ -185,3 +202,7 @@ int main()
 	//enlever possibilité de créer une suite de moins de 2 tuiles
 	//remettre la pioche au bon nombre par joueur
 	//enlever les copieMain et copiePlateau des parametres des fonctions
+
+	//faire des message en fin de tour
+	//rajouter des \n et des
+	//rajouter print dans switch modele
