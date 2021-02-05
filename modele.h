@@ -50,9 +50,13 @@ typedef struct JOUEUR
 
 
 TUILE pioche[NOMBRE_TUILES];
+//le plateau de jeu original
 PLATEAU *plateau;
+//la copie du plateau de jeu
 PLATEAU *copiePlateau;
+//la copie de la main originale du joueur
 LISTE *copieMain;
+//liste des tuiles à jouer obligatoirement dans le tour du joueur
 LISTE *listeTuilesRecup;
 
 //Les fonctions de la pioche
@@ -74,7 +78,7 @@ void lit_liste(LISTE *liste);
 void lit_liste_aux(ELEMENT * element,int indiceTuile);
 int nb_elements_liste(LISTE *liste);
 int placement_element_liste(LISTE *liste, TUILE tuile, int position);
-LISTE * separer_liste_en_deux(LISTE *liste,int position);
+LISTE * separer_liste_en_deux(LISTE *liste, int position);
 int enleve_element_liste(LISTE * liste,int position);
 TUILE renvoie_tuile_via_position(LISTE *liste,int position);
 void echange_tuiles_listes_via_main(LISTE * liste1,LISTE * liste2,int positionListe1,int positionListe2);
@@ -126,6 +130,3 @@ void rentrer_nom_score(int score, char * nom);
 int complete_recup_combinaison();
 int demande_mode_jeu();
 int demande_nb_joueurs();
-
-
-
