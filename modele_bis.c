@@ -682,14 +682,14 @@ int choisit_tour(bool premierCoup,int tourMultiTemps)
 		if(!premierCoup)
 			printf("1 - Piocher\n2 - Créer une combinaison d'au moins 30 points\nSaisie:");
 		else if(tourMultiTemps == 1){
-			printf("2 - Créer une combinaison\n3 - Compléter une combinaison\n4 - Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5-Séparer une suite en deux\n6-Récupérer un joker dans une combinaison du plateau\nSaisie:");
+			printf("2 - Créer une combinaison\n3 - Compléter une combinaison\n4 - Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5 - Séparer une suite en deux\n6 - Récupérer un joker dans une combinaison du plateau\nSaisie:");
 		}
 		else{
-			printf("1 - Piocher\n2 - Créer une combinaison\n3 - Compléter une combinaison\n4 - Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5-Séparer une suite en deux\n6-Récupérer un joker dans une combinaison du plateau\nSaisie:");
+			printf("1 - Piocher\n2 - Créer une combinaison\n3 - Compléter une combinaison\n4 - Récupérer une tuile dans une combinaison de taille 4 ou supérieure\n5 - Séparer une suite en deux\n6 - Récupérer un joker dans une combinaison du plateau\nSaisie:");
 		}
 	
 		scanf("%d",&choix);
-	}while((!premierCoup && (choix<1 || choix>2)) || (premierCoup && (choix<1 || choix>3)) || ((tourMultiTemps==1) && (choix<2 || choix>3)));
+	}while((!premierCoup && (choix<1 || choix>2)) || ((tourMultiTemps==1) && (choix<2 || choix>6))) || (premierCoup && (choix<1 || choix>6));
 
 	if(!premierCoup && choix==2)
 		choix=7;
@@ -718,7 +718,7 @@ int joue_tour(JOUEUR * joueur,int *niveauPioche,int tourMultiTemps)
 		}while(choixSuite<1 || choixSuite>2);
 
 		if(saisit_combinaison(choixSuite,joueur)==1){
-			return 4;
+			return 1;
 		}
 		break;
 	case 3:
