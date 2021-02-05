@@ -1802,12 +1802,11 @@ int choix_de_depot(TUILE *t1, TUILE *t2,TUILE *finall,PLATEAU *coup_valide1, PLA
 }
 
 // L'ia le bloc
-void pose_ia(JOUEUR *j, PLATEAU *plateau)
+void pose_ia(JOUEUR *j, PLATEAU *plateau,int *niveauPioche)
 {
 	int score;
 	int i=1;
 	LISTE *L=j->main;
-	LISTE *F=cree_liste();
 	int n=nb_elements_liste(L);
 	PLATEAU *coup_final=cree_plateau();
 	PLATEAU *coup_valide1=cree_plateau();
