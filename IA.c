@@ -86,7 +86,7 @@ void tri_couleur_croissant(TUILE *t, int n)
 	}
 }
 
-void suite_valide(TUILE *t, int n, PLATEAU *p)
+void suite_valide(TUILE *t, int n, PLATEAU *p) //on stock les suites dans le plateeau  et on supprime les tuile utilisé
 {
 	int i,j;
 	LISTE *aux=cree_liste();
@@ -222,7 +222,7 @@ void tri_triple_croissant(TUILE *t, int n)
 	}
 }
 
-void triple_valide(TUILE *t,int n,PLATEAU *p)
+void triple_valide(TUILE *t,int n,PLATEAU *p)  //on stock les triplet ou quadruplet dans le plateau p et on supprime les tuile utilisé
 {
 	int i,j ;
 	LISTE *aux=cree_liste(); 
