@@ -1401,7 +1401,7 @@ void demande_pseudo(JOUEUR * joueur)
 void rentrer_nom_score(int score, char * nom)
 {
 	FILE * fichier = NULL;
-	fichier=fopen("scores.csv", "ayyi");
+	fichier=fopen("scores.csv", "a");
 	
 	if(fichier == NULL)
 		exit(1); 
