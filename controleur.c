@@ -60,7 +60,7 @@ int main()
 
 
 		if(modeJeu==2 && tour>0)
-			pose_ia(&(joueurs[tour]),plateau,&niveauPioche);
+			pose_ia(&(joueurs[tour]),plateau);
 
 		else
 		{
